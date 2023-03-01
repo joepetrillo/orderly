@@ -14,7 +14,7 @@ const inter = Inter({ subsets: ["latin"] });
 function Header() {
   return (
     <header className="mx-auto box-content flex h-11 max-w-screen-lg items-center justify-between py-8 px-4">
-      <h1>Office Hours</h1>
+      <h1>Orderly</h1>
       <SignedIn>
         <UserButton
           appearance={{
