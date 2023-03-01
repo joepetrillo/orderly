@@ -13,10 +13,15 @@ const inter = Inter({ subsets: ["latin"] });
 
 function Header() {
   return (
-    <header className="flex justify-between p-8">
+    <header className="mx-auto box-content flex h-11 max-w-screen-lg items-center justify-between py-8 px-4">
       <h1>Office Hours</h1>
       <SignedIn>
         <UserButton
+          appearance={{
+            elements: {
+              userButtonAvatarBox: "h-11 w-11",
+            },
+          }}
           userProfileMode="navigation"
           userProfileUrl="/account"
           afterSignOutUrl="/"
