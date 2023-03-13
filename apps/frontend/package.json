@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "@orderly/frontend",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -14,8 +14,7 @@
     "@heroicons/react": "^2.0.16",
     "next": "13.2.4",
     "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "schema": "*"
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.0",
