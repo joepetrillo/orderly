@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev"
+    "dev": "turbo run dev",
+    "postinstall": "prisma generate --schema=./apps/api/prisma/schema.prisma"
   },
   "devDependencies": {
     "turbo": "^1.8.3"
