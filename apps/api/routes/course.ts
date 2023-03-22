@@ -1,8 +1,10 @@
 import express from "express";
+import clerk from "@clerk/clerk-sdk-node";
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.json({ foo: "bar" });
+router.get("/", async (req, res) => {
+  const userList = await clerk.users.getUserList();
+  res.json(userList);
 });
 
 export default router;
