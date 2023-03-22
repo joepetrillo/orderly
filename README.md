@@ -10,10 +10,12 @@
 
 **Backend** - Probably Express + PostgreSQL
 
+### Instructions
 
-steps
+1. Install NodeJS (npm comes with this)
+2. Clone the repository
+3. run `npm install`
+4. run `npm run dev`
+5. open `localhost:3001` in your browser
 
-1) Install nodejs
-2) run "npm install" 
-3) run "npm run dev"
-4) open "localhost:3001" in your browser
+The frontend will be on `http://localhost:3000` and backend will be on port `http://localhost:3001`
