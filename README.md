@@ -11,3 +11,9 @@
 **Backend** - Probably Express + PostgreSQL
 
 
+steps
+
+1) Install nodejs
+2) run "npm install" 
+3) run "npm run dev"
+4) open "localhost:3001" in your browser
