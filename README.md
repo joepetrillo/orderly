@@ -9,3 +9,5 @@
 **Frontend** - NextJS + TailwindCSS + Clerk Auth
 
 **Backend** - Probably Express + PostgreSQL
+
+
