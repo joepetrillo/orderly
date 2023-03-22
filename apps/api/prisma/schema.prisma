@@ -10,8 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+model Course {
+  id       Int        @id @default(autoincrement())
+  name     String
+  code     String     @unique
+  Enrolled Enrolled[]
+}
+
+model Enrolled {
+  userId   Int
+  courseId Int
+  role     Int @db.SmallInt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([userId, courseId, role])
 }
