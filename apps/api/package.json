@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon app.ts"
+    "dev": "nodemon app.ts",
+    "resetdb": "prisma db push --force-reset"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.7.16",

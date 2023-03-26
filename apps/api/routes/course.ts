@@ -7,45 +7,51 @@ const router = express.Router();
 
 // create new course
 router.post("/", validateRequest(coursePOST), async (req, res) => {
-  let entryCode: string;
+  try {
+    let entryCode: string;
 
-  while (true) {
-    // generate random entry code
-    entryCode = Array.from(Array(7), () =>
-      Math.floor(Math.random() * 36).toString(36)
-    )
-      .join("")
-      .toUpperCase();
+    while (true) {
+      // generate random entry code
+      entryCode = Array.from(Array(7), () =>
+        Math.floor(Math.random() * 36).toString(36)
+      )
+        .join("")
+        .toUpperCase();
 
-    // ensure the entry code is not already in use for another course
-    const exists = await prisma.course.findUnique({
-      where: {
+      // ensure the entry code is not already in use for another course
+      const exists = await prisma.course.findUnique({
+        where: {
+          code: entryCode,
+        },
+      });
+
+      // code is not already in use, will only reloop if we need to generate a new code
+      if (exists === null) break;
+    }
+
+    // create the course and add creator of course to enrolled table with owner role (2)
+    const course = await prisma.course.create({
+      data: {
+        name: req.body.name,
         code: entryCode,
+        Enrolled: {
+          create: {
+            user_id: "userID999", // req.auth.userID
+            role: 2,
+          },
+        },
+      },
+      include: {
+        Enrolled: true,
       },
     });
 
-    // code is not already in use, will only reloop if we need to generate a new code
-    if (exists === null) break;
+    res.status(201).json(course);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Something went wrong while creating a new course" });
   }
-
-  // create the course
-  const course = await prisma.course.create({
-    data: {
-      name: req.body.name,
-      code: entryCode,
-    },
-  });
-
-  // add creator of course to enrolled table with owner role (2)
-  const enrolled = await prisma.enrolled.create({
-    data: {
-      user_id: req.auth.userId,
-      course_id: course.id,
-      role: 2,
-    },
-  });
-
-  res.status(201).json(course);
 });
 
 export default router;
