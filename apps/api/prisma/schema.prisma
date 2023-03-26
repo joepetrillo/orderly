@@ -11,18 +11,42 @@ datasource db {
 }
 
 model Course {
-  id       Int        @id @default(autoincrement())
-  name     String
-  code     String     @unique
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+  code String @unique @db.Char(7) // random 7 character alphanumeric uppercase string
+
   Enrolled Enrolled[]
+  Meeting  Meeting[]
 }
 
 model Enrolled {
-  userId   Int
-  courseId Int
-  role     Int @db.SmallInt
+  user_id   String
+  course_id Int
+  role      Int    @db.SmallInt
 
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
 
-  @@id([userId, courseId, role])
+  @@id([user_id, course_id])
+}
+
+model Meeting {
+  id         Int      @id @default(autoincrement())
+  owner_id   String
+  course_id  Int
+  day        Int      @db.SmallInt
+  start_time DateTime
+  end_time   DateTime
+
+  course Course  @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  Queue  Queue[]
+}
+
+model Queue {
+  user_id    String
+  meeting_id Int
+  join_time  DateTime @default(now())
+
+  meeting Meeting @relation(fields: [meeting_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, meeting_id])
 }

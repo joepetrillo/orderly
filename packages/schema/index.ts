@@ -1,5 +1,7 @@
 import z from "zod";
 
-export const testSchema = z.object({
-  test: z.string(),
-});
+export const coursePOST = {
+  body: z.object({
+    name: z.string().min(5).max(255),
+  }),
+};
