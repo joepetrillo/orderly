@@ -3,6 +3,7 @@ dotenv.config();
 import express, { ErrorRequestHandler } from "express";
 import { ClerkExpressRequireAuth, StrictAuthProp } from "@clerk/clerk-sdk-node";
 import course from "./routes/course";
+import enrolled from "./routes/enrolled";
 
 declare global {
   namespace Express {
@@ -16,6 +17,7 @@ const port = process.env.PORT || 3001;
 // app.use(ClerkExpressRequireAuth());
 app.use(express.json());
 app.use("/course", course);
+app.use("/enrolled", enrolled);
 
 const authErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err.message === "Unauthenticated") {

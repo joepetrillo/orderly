@@ -14,3 +14,12 @@ export const courseEnrollPOST = {
       .regex(/^[A-Z0-9]{7}$/),
   }),
 };
+
+export const updateRolePATCH = {
+  body: z.object({
+    course_id: z.number(),
+    user_id: z.string(),
+    role: z.number().min(0).max(1),
+  }),
+};
+
