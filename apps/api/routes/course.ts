@@ -1,9 +1,26 @@
 import express from "express";
 import { prisma } from "../prisma/init";
 import { validateRequest } from "zod-express-middleware";
-import { coursePOST, courseEnrollPOST } from "@orderly/schema";
+import { coursePOST, courseEnrollPOST} from "@orderly/schema";
 
 const router = express.Router();
+
+// delete a course
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params
+    const course = await prisma.course.delete({
+      where: {
+        id: Number(id)
+      }
+    })
+    res.status(204).json(course);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Something went wrong while deleting the course" });
+  }
+});
 
 // create new course
 router.post("/", validateRequest(coursePOST), async (req, res) => {
