@@ -15,5 +15,8 @@
     "apps/frontend",
     "packages/schema"
   ],
-  "packageManager": "npm@9.6.1"
+  "packageManager": "npm@9.6.1",
+  "dependencies": {
+    "railway": "^2.0.17"
+  }
 }
