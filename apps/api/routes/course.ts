@@ -101,4 +101,5 @@ router.post("/enroll", validateRequest(courseEnrollPOST), async (req, res) => {
   }
 });
 
+
 export default router;
