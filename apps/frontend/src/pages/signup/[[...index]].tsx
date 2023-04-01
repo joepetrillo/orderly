@@ -6,7 +6,7 @@ const SignUpPage = () => (
       <SignUp
         routing="path"
         path="/signup"
-        redirectUrl="/"
+        redirectUrl="/dashboard"
         signInUrl="/signin"
       />
     </div>
