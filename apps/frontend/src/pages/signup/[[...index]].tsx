@@ -1,8 +1,15 @@
 import { SignUp } from "@clerk/nextjs";
 
 const SignUpPage = () => (
-  <div className="flex items-center justify-center py-10">
-    <SignUp routing="path" path="/signup" redirectUrl="/" signInUrl="/signin" />
+  <div className="flex items-center justify-center py-16">
+    <div className="min-h-[517px]">
+      <SignUp
+        routing="path"
+        path="/signup"
+        redirectUrl="/"
+        signInUrl="/signin"
+      />
+    </div>
   </div>
 );
 

@@ -5,7 +5,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-export default function Example() {
+export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
@@ -14,11 +14,8 @@ export default function Example() {
   }, [router.route]);
 
   return (
-    <header>
-      <nav
-        className="mx-auto flex h-24 max-w-7xl items-center justify-between p-6 lg:px-8"
-        aria-label="Global"
-      >
+    <header className="relative z-10">
+      <nav className="mx-auto flex h-24 max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Orderly</span>
