@@ -18,3 +18,5 @@
 4. Run `npm run dev`
 
 The frontend will be on `http://localhost:3000` and the backend will be on `http://localhost:3001`
+
+Checkout the [frontend preview](https://orderly-frontend.vercel.app/)
