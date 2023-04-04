@@ -44,10 +44,10 @@ export default function CreateCourse() {
       body: JSON.stringify(requestBody),
     };
 
-    // send a request to the API to update the data
-    await fetch("http://localhost:3001/course", requestOptions);
+    // send a request to the API to update the data (TODO - better error handling here)
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/course`, requestOptions);
 
-    mutate("http://localhost:3001/course");
+    mutate(`${process.env.NEXT_PUBLIC_API_URL}/course`);
 
     setOpen(false);
     isLoading(false);
@@ -124,7 +124,7 @@ export default function CreateCourse() {
                   <div className="flex justify-end gap-4 bg-gray-50 px-4 py-3 sm:px-6">
                     <button
                       type="button"
-                      className="inline-flex w-full items-center justify-center rounded bg-white px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-100 hover:bg-gray-50"
+                      className="inline-flex w-full items-center justify-center rounded bg-white px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-100 hover:bg-gray-50 disabled:pointer-events-none"
                       onClick={() => setOpen(false)}
                       ref={cancelButtonRef}
                       disabled={loading}
@@ -135,7 +135,7 @@ export default function CreateCourse() {
                       disabled={loading}
                       type="submit"
                       form="create_course"
-                      className="inline-flex w-full items-center justify-center gap-3 rounded bg-green-100 px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset ring-green-400 transition-all duration-100 hover:bg-green-200"
+                      className="inline-flex w-full items-center justify-center gap-3 rounded bg-green-100 px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset ring-green-400 transition-all duration-100 hover:bg-green-200 disabled:pointer-events-none"
                     >
                       Create
                       {loading && <Spinner small />}
