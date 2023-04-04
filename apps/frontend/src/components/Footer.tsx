@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <footer className="relative z-10 mt-auto">
-      <div className="mx-auto max-w-5xl p-6 py-16 lg:px-8">
+      <div className="mx-auto max-w-5xl px-6 py-16 lg:px-8">
         {/* <nav className="mt-6">
           <ul className="flex flex-wrap justify-center gap-4 md:gap-8 lg:gap-12">
             <li>
