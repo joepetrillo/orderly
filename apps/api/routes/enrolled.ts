@@ -14,7 +14,7 @@ router.patch("/", validateRequest(updateRolePATCH), async (req, res) => {
       where: {
         course_id: req.body.course_id,
         role: 2,
-        user_id: "userID888", //req.auth.userId
+        user_id: req.auth.userId,
       },
     });
 

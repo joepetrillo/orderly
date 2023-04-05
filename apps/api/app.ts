@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 import express, { ErrorRequestHandler } from "express";
+import cors from "cors";
 import { ClerkExpressRequireAuth, StrictAuthProp } from "@clerk/clerk-sdk-node";
 import course from "./routes/course";
 import enrolled from "./routes/enrolled";
@@ -14,8 +15,11 @@ declare global {
 const app = express();
 const port = process.env.PORT || 3001;
 
-// app.use(ClerkExpressRequireAuth());
+app.use(cors());
 app.use(express.json());
+
+app.use(ClerkExpressRequireAuth());
+
 app.use("/course", course);
 app.use("/enrolled", enrolled);
 
