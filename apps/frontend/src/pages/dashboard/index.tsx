@@ -35,7 +35,8 @@ export default function Dashboard() {
               href={`/course/${curr.course.id}`}
               key={curr.course.id}
             >
-              {curr.course.name}
+              <p>{curr.course.name}</p>
+              <p>{curr.course.code}</p>
             </Link>
           ))}
         </div>
