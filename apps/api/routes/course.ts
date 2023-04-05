@@ -50,6 +50,19 @@ router.post("/", validateRequest(coursePOST), async (req, res) => {
       if (exists === null) break;
     }
 
+    const alreadyOwned = await prisma.enrolled.findMany({
+      where: {
+        user_id: req.auth.userId,
+        role: 2,
+      },
+    });
+
+    if (alreadyOwned.length >= 6) {
+      return res
+        .status(400)
+        .json({ error: "You have reached the maximum of 6 courses owned" }); // TODO - probably change this to something else
+    }
+
     // create the course and add creator of course to enrolled table with owner role (2)
     const course = await prisma.course.create({
       data: {
