@@ -16,11 +16,10 @@ export default function Dashboard() {
     `${process.env.NEXT_PUBLIC_API_URL}/course`
   );
 
-  if (error) return <p>{error.message}</p>;
-
   return (
     <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
       <h1 className="mb-5 text-4xl font-bold">Your Courses</h1>
+      {error && <p className="mb-5 text-red-500">{error.message}</p>}
       <div className="mb-10 grid grid-cols-2 gap-4">
         <CreateCourse />
         <JoinCourse />

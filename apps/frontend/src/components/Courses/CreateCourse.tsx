@@ -112,7 +112,7 @@ export default function CreateCourse() {
                             name="name"
                             id="course_name"
                             placeholder="Computer Programming 101"
-                            className="mt-2 block w-full rounded p-1.5 px-4 text-sm shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400"
+                            className="mt-2 block w-full appearance-none rounded p-1.5 px-4 text-sm shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400"
                           />
                         </form>
                       </fieldset>
