@@ -11,7 +11,10 @@ export const courseEnrollPOST = {
     code: z
       .string()
       .length(7)
-      .regex(/^[A-Z0-9]{7}$/),
+      .regex(
+        /^[A-Z0-9]{7}$/,
+        "Valid codes only contain uppercase letters and numbers"
+      ),
   }),
 };
 
@@ -22,4 +25,3 @@ export const updateRolePATCH = {
     role: z.number().min(0).max(1),
   }),
 };
-
