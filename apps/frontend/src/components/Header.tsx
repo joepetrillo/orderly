@@ -14,7 +14,7 @@ export default function Header() {
   }, [router.pathname]);
 
   return (
-    <header className="relative z-10">
+    <header className="z-10">
       <nav className="mx-auto flex h-24 max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">

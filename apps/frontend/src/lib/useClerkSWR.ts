@@ -17,5 +17,12 @@ export default function useClerkSWR<Data>(url: string) {
     return res.json();
   };
 
-  return useSWR<Data, Error>(isLoaded ? url : null, fetcher);
+  const { data, error, isLoading, isValidating, mutate } = useSWR<Data, Error>(
+    isLoaded ? url : null,
+    fetcher
+  );
+
+  const loading = !isLoaded || isLoading;
+
+  return { data, error, isValidating, mutate, loading };
 }

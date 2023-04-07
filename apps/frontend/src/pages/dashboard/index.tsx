@@ -12,34 +12,71 @@ type Enrolled = Prisma.EnrolledGetPayload<{
 }>;
 
 export default function Dashboard() {
-  const { data, error, isLoading } = useClerkSWR<Enrolled[]>(
+  const { data, error, loading } = useClerkSWR<Enrolled[]>(
     `${process.env.NEXT_PUBLIC_API_URL}/course`
   );
 
+  const ownedCourses = data?.filter((course) => course.role === 2);
+  const joinedCourses = data?.filter((course) => course.role !== 2);
+
   return (
-    <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
-      <h1 className="mb-5 text-4xl font-bold">Your Courses</h1>
-      {error && <p className="mb-5 text-red-500">{error.message}</p>}
-      <div className="mb-10 grid grid-cols-2 gap-4">
-        <CreateCourse />
-        <JoinCourse />
-      </div>
-      {isLoading ? (
-        <CoursesSkeleton />
-      ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {data?.map((curr) => (
-            <Link
-              className="rounded-md border-[1px] border-gray-300 border-opacity-60 bg-white p-4 shadow-sm transition-all duration-100 hover:shadow"
-              href={`/course/${curr.course.id}`}
-              key={curr.course.id}
-            >
-              <p>{curr.course.name}</p>
-              <p>{curr.course.code}</p>
-            </Link>
-          ))}
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 lg:px-8">
+      <div>
+        <h1 className="mb-5 text-4xl font-bold">Your Courses</h1>
+        {error && <p className="mb-5 text-red-500">{error.message}</p>}
+        <div className="mb-10">
+          <CreateCourse />
         </div>
-      )}
+        {loading ? (
+          <CoursesSkeleton />
+        ) : (
+          <>
+            {ownedCourses?.length === 0 && (
+              <p>You have not created any courses</p>
+            )}
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {ownedCourses?.map((curr) => (
+                <Link
+                  className="rounded-md border-[1px] border-gray-300 border-opacity-60 bg-white p-4 shadow-sm transition-all duration-100 hover:shadow"
+                  href={`/course/${curr.course.id}`}
+                  key={curr.course.id}
+                >
+                  <p>{curr.course.name}</p>
+                  <p>{curr.course.code}</p>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+      <div>
+        <h1 className="mb-5 text-4xl font-bold">Joined Courses</h1>
+        {error && <p className="mb-5 text-red-500">{error.message}</p>}
+        <div className="mb-10">
+          <JoinCourse />
+        </div>
+        {loading ? (
+          <CoursesSkeleton />
+        ) : (
+          <>
+            {joinedCourses?.length === 0 && (
+              <p>You have not joined any courses</p>
+            )}
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {joinedCourses?.map((curr) => (
+                <Link
+                  className="rounded-md border-[1px] border-gray-300 border-opacity-60 bg-white p-4 shadow-sm transition-all duration-100 hover:shadow"
+                  href={`/course/${curr.course.id}`}
+                  key={curr.course.id}
+                >
+                  <p>{curr.course.name}</p>
+                  <p>{curr.course.code}</p>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

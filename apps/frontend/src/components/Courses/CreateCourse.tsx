@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
-import { FormEvent, Fragment, useRef, useState } from "react";
+import { FormEvent, Fragment, useEffect, useRef, useState } from "react";
 import { mutate } from "swr";
 import { Dialog, Transition } from "@headlessui/react";
 import Spinner from "@/components/Spinner";
@@ -8,12 +8,15 @@ import { z } from "zod";
 
 export default function CreateCourse() {
   const { getToken } = useAuth();
-
   const [open, setOpen] = useState(false);
-  const [loading, isLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
   const cancelButtonRef = useRef(null);
+
+  useEffect(() => {
+    setLoading(false);
+    setError("");
+  }, [open]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -32,8 +35,7 @@ export default function CreateCourse() {
       return;
     }
 
-    isLoading(true);
-    setError("");
+    setLoading(true);
 
     const requestOptions = {
       method: "POST",
@@ -44,13 +46,32 @@ export default function CreateCourse() {
       body: JSON.stringify(requestBody),
     };
 
-    // send a request to the API to update the data (TODO - better error handling here)
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/course`, requestOptions);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/course`,
+        requestOptions
+      );
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setError("An unexpected error has occurred, please try again later");
+        }
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      setError(
+        "There was an error reaching the server, please try again later"
+      );
+      setLoading(false);
+      return;
+    }
 
     mutate(`${process.env.NEXT_PUBLIC_API_URL}/course`);
-
     setOpen(false);
-    isLoading(false);
   }
 
   return (
@@ -65,7 +86,9 @@ export default function CreateCourse() {
         <Dialog
           className="relative z-20"
           initialFocus={cancelButtonRef}
-          onClose={() => setOpen(false)}
+          onClose={() => {
+            if (!loading) setOpen(false);
+          }}
         >
           <Transition.Child
             as={Fragment}

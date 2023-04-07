@@ -2,7 +2,7 @@ export default function Spinner({ small }: { small?: true }) {
   let size = "h-9 w-9";
 
   if (small) {
-    size = "h-5 w-5";
+    size = "h-4 w-4";
   }
 
   return (
