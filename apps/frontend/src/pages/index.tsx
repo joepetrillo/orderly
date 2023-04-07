@@ -34,7 +34,7 @@ export default function Home() {
                 <button>Get Started</button>
               </Link>
               <a href="#" className="text-sm font-semibold leading-6">
-                Learn more <span aria-hidden="true">→</span>
+                Learn More <span aria-hidden="true">→</span>
               </a>
             </div>
           </div>
