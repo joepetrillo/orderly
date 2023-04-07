@@ -8,6 +8,13 @@ const SignUpPage = () => (
         path="/signup"
         redirectUrl="/dashboard"
         signInUrl="/signin"
+        appearance={{
+          variables: {
+            colorPrimary: "#4E46E5",
+            colorText: "#030712",
+            colorTextOnPrimaryBackground: "#F9FAFB",
+          },
+        }}
       />
     </div>
   </div>
