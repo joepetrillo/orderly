@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
-import { FormEvent, Fragment, useEffect, useRef, useState } from "react";
+import { FormEvent, Fragment, useRef, useState } from "react";
 import { mutate } from "swr";
 import { Dialog, Transition } from "@headlessui/react";
 import Spinner from "@/components/Spinner";
@@ -12,11 +12,6 @@ export default function CreateCourse() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const cancelButtonRef = useRef(null);
-
-  useEffect(() => {
-    setLoading(false);
-    setError("");
-  }, [open]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -71,6 +66,7 @@ export default function CreateCourse() {
     }
 
     mutate(`${process.env.NEXT_PUBLIC_API_URL}/course`);
+    setLoading(false);
     setOpen(false);
   }
 
@@ -78,7 +74,10 @@ export default function CreateCourse() {
     <>
       <button
         className="rounded border-[1px] border-green-400 bg-green-100 px-6 py-2 font-medium transition-all duration-100 hover:bg-green-200"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setError("");
+          setOpen(true);
+        }}
       >
         Create New Course
       </button>

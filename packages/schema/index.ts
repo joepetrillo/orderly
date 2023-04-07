@@ -2,7 +2,10 @@ import z from "zod";
 
 export const coursePOST = {
   body: z.object({
-    name: z.string().min(5).max(255),
+    name: z
+      .string()
+      .min(5, "Must contain at least 5 characters")
+      .max(255, "Must contain at most 255 characters"),
   }),
 };
 
@@ -10,7 +13,7 @@ export const courseEnrollPOST = {
   body: z.object({
     code: z
       .string()
-      .length(7)
+      .length(7, "Must contain exactly 7 characters")
       .regex(
         /^[A-Z0-9]{7}$/,
         "Valid codes only contain uppercase letters and numbers"
