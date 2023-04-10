@@ -2,9 +2,10 @@ import { useAuth } from "@clerk/nextjs";
 import { FormEvent, Fragment, useRef, useState } from "react";
 import { mutate } from "swr";
 import { Dialog, Transition } from "@headlessui/react";
-import Spinner from "@/components/Spinner";
 import { coursePOST } from "@orderly/schema";
 import { z } from "zod";
+import Spinner from "@/components/UI/Spinner";
+import Button from "@/components/UI/Button";
 
 export default function CreateCourse() {
   const { getToken } = useAuth();
@@ -72,15 +73,14 @@ export default function CreateCourse() {
 
   return (
     <>
-      <button
-        className="rounded border-[1px] border-green-400 bg-green-100 px-6 py-2 font-medium transition-all duration-100 hover:bg-green-200"
+      <Button
         onClick={() => {
           setError("");
           setOpen(true);
         }}
       >
         Create New Course
-      </button>
+      </Button>
       <Transition.Root show={open} as={Fragment}>
         <Dialog
           className="relative z-20"
@@ -98,7 +98,7 @@ export default function CreateCourse() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 bg-gray-500/75 transition-opacity" />
           </Transition.Child>
 
           <div className="fixed inset-0 z-20 overflow-y-auto">
@@ -112,7 +112,7 @@ export default function CreateCourse() {
                 leaveFrom="opacity-100 translate-y-0"
                 leaveTo="opacity-0 translate-y-4"
               >
-                <Dialog.Panel className="relative w-full max-w-lg transform overflow-hidden rounded-lg bg-white text-left text-gray-900 shadow-xl transition-all">
+                <Dialog.Panel className="relative w-full max-w-lg overflow-hidden rounded-lg bg-white text-left text-gray-950 shadow-xl transition-all">
                   <div className="bg-white px-4 py-6 sm:px-6">
                     <Dialog.Title
                       as="h3"
@@ -143,25 +143,26 @@ export default function CreateCourse() {
                       )}
                     </div>
                   </div>
-                  <div className="flex justify-end gap-4 bg-gray-50 px-4 py-3 sm:px-6">
-                    <button
+                  <div className="flex justify-end gap-2 bg-gray-50 px-4 py-3 sm:px-6">
+                    <Button
                       type="button"
-                      className="inline-flex w-full items-center justify-center rounded bg-white px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-100 hover:bg-gray-50 disabled:pointer-events-none"
                       onClick={() => setOpen(false)}
+                      className="w-full"
                       ref={cancelButtonRef}
                       disabled={loading}
+                      variant="ghost"
                     >
                       Cancel
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       disabled={loading}
+                      className="w-full"
                       type="submit"
                       form="create_course"
-                      className="inline-flex w-full items-center justify-center gap-3 rounded bg-green-100 px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset ring-green-400 transition-all duration-100 hover:bg-green-200 disabled:pointer-events-none"
                     >
                       Create
                       {loading && <Spinner small />}
-                    </button>
+                    </Button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
