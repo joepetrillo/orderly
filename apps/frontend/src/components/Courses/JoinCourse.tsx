@@ -151,6 +151,7 @@ export default function JoinCourse() {
                       ref={cancelButtonRef}
                       disabled={loading}
                       variant="ghost"
+                      size="sm"
                     >
                       Cancel
                     </Button>
@@ -159,6 +160,7 @@ export default function JoinCourse() {
                       className="w-full"
                       type="submit"
                       form="join_course"
+                      size="sm"
                     >
                       Join
                       {loading && <Spinner small />}

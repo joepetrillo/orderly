@@ -4,6 +4,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Button from "@/components/UI/Button";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,8 +24,8 @@ export default function Header() {
           </Link>
         </div>
         <SignedOut>
-          <Link href="/signin" className="font-semibold leading-6">
-            Sign In
+          <Link href="/signin">
+            <Button variant="outline">Sign in</Button>
           </Link>
         </SignedOut>
         <SignedIn>
@@ -40,9 +41,7 @@ export default function Header() {
           </div>
           <div className="hidden text-sm font-semibold leading-6 lg:flex lg:gap-x-12">
             <Link href="/dashboard">Dashboard</Link>
-            <Link href="#">Features</Link>
-            <Link href="#">Marketplace</Link>
-            <Link href="#">Company</Link>
+            <Link href="/upcoming">Upcoming</Link>
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <UserButton
@@ -97,22 +96,10 @@ export default function Header() {
                     Dashboard
                   </Link>
                   <Link
-                    href="#"
+                    href="/upcoming"
                     className="-mx-3 block rounded-lg px-3 py-2 hover:bg-gray-50"
                   >
-                    Features
-                  </Link>
-                  <Link
-                    href="#"
-                    className="-mx-3 block rounded-lg px-3 py-2 hover:bg-gray-50"
-                  >
-                    Marketplace
-                  </Link>
-                  <Link
-                    href="#"
-                    className="-mx-3 block rounded-lg px-3 py-2 hover:bg-gray-50"
-                  >
-                    Company
+                    Upcoming
                   </Link>
                 </div>
                 <div className="py-6">

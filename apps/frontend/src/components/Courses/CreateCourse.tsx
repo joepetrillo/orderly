@@ -151,6 +151,7 @@ export default function CreateCourse() {
                       ref={cancelButtonRef}
                       disabled={loading}
                       variant="ghost"
+                      size="sm"
                     >
                       Cancel
                     </Button>
@@ -159,6 +160,7 @@ export default function CreateCourse() {
                       className="w-full"
                       type="submit"
                       form="create_course"
+                      size="sm"
                     >
                       Create
                       {loading && <Spinner small />}
