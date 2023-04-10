@@ -1,9 +1,9 @@
 import type { AppProps } from "next/app";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
+import "@/styles/globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import "@/styles/globals.css";
 import Layout from "@/components/Layout";
 
 const inter = Inter({ subsets: ["latin"] });

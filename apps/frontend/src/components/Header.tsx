@@ -4,6 +4,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Button from "@/components/UI/Button";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,8 +24,8 @@ export default function Header() {
           </Link>
         </div>
         <SignedOut>
-          <Link href="/signin" className="font-semibold leading-6">
-            Sign In
+          <Link href="/signin">
+            <Button variant="outline">Sign in</Button>
           </Link>
         </SignedOut>
         <SignedIn>
@@ -40,9 +41,7 @@ export default function Header() {
           </div>
           <div className="hidden text-sm font-semibold leading-6 lg:flex lg:gap-x-12">
             <Link href="/dashboard">Dashboard</Link>
-            <Link href="#">Features</Link>
-            <Link href="#">Marketplace</Link>
-            <Link href="#">Company</Link>
+            <Link href="/upcoming">Upcoming</Link>
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <UserButton
@@ -72,7 +71,7 @@ export default function Header() {
           onClose={setMobileMenuOpen}
         >
           <div className="fixed inset-0 z-10" />
-          <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="flex h-12 items-center justify-between">
               <Link href="/" className="-m-1.5 p-1.5">
                 <span className="sr-only">Orderly</span>
@@ -97,22 +96,10 @@ export default function Header() {
                     Dashboard
                   </Link>
                   <Link
-                    href="#"
+                    href="/upcoming"
                     className="-mx-3 block rounded-lg px-3 py-2 hover:bg-gray-50"
                   >
-                    Features
-                  </Link>
-                  <Link
-                    href="#"
-                    className="-mx-3 block rounded-lg px-3 py-2 hover:bg-gray-50"
-                  >
-                    Marketplace
-                  </Link>
-                  <Link
-                    href="#"
-                    className="-mx-3 block rounded-lg px-3 py-2 hover:bg-gray-50"
-                  >
-                    Company
+                    Upcoming
                   </Link>
                 </div>
                 <div className="py-6">
