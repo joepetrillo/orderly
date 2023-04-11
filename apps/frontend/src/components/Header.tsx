@@ -42,7 +42,7 @@ export default function Header() {
           <div className="hidden text-sm font-semibold leading-6 lg:flex lg:gap-x-12">
             <Link href="/dashboard">Dashboard</Link>
             <Link href="/upcoming">Upcoming</Link>
-            <Link href="/prof">prof</Link>
+            <Link href="/prof">Professor View</Link>
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <UserButton
