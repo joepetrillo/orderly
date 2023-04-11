@@ -42,6 +42,7 @@ export default function Header() {
           <div className="hidden text-sm font-semibold leading-6 lg:flex lg:gap-x-12">
             <Link href="/dashboard">Dashboard</Link>
             <Link href="/upcoming">Upcoming</Link>
+            <Link href="/prof">prof</Link>
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <UserButton
@@ -100,6 +101,13 @@ export default function Header() {
                     className="-mx-3 block rounded-lg px-3 py-2 hover:bg-gray-50"
                   >
                     Upcoming
+                  </Link>
+
+                  <Link
+                    href="/prof"
+                    className="-mx-3 block rounded-lg px-3 py-2 hover:bg-gray-50"
+                  >
+                    ProfessorView
                   </Link>
                 </div>
                 <div className="py-6">
