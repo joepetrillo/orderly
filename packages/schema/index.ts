@@ -1,5 +1,17 @@
 import z from "zod";
 
+export const courseGET = {
+  params: z.object({
+    course_id: z.coerce
+      .number()
+      .int()
+      .positive()
+      .finite()
+      .safe()
+      .transform(Number),
+  }),
+};
+
 export const coursePOST = {
   body: z.object({
     name: z

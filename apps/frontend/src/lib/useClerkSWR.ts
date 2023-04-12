@@ -1,7 +1,7 @@
 import useSWR, { Fetcher } from "swr";
 import { useAuth } from "@clerk/nextjs";
 
-export default function useClerkSWR<Data>(url: string) {
+export default function useClerkSWR<Data>(url: string | null) {
   const { getToken, isLoaded } = useAuth();
 
   const fetcher: Fetcher<Data, string> = async (...args) => {
@@ -11,18 +11,33 @@ export default function useClerkSWR<Data>(url: string) {
 
     if (!res.ok) {
       const message = await res.json();
-      throw new Error(message["error"]);
+      const error: Error & { status?: number } = new Error(
+        message.error || "An error occurred while fetching data"
+      );
+      error.status = res.status;
+      throw error;
     }
 
     return res.json();
   };
 
-  const { data, error, isLoading, isValidating, mutate } = useSWR<Data, Error>(
-    isLoaded ? url : null,
-    fetcher
+  const { data, error, isLoading, isValidating, mutate } = useSWR<
+    Data,
+    Error & { status?: number }
+  >(
+    isLoaded && url !== null
+      ? `${process.env.NEXT_PUBLIC_API_URL}${url}`
+      : null,
+    fetcher,
+    {
+      shouldRetryOnError: (error) => {
+        if (error.status === 403) return false;
+        return true;
+      },
+    }
   );
 
   const loading = !isLoaded || isLoading;
 
-  return { data, error, isValidating, mutate, loading };
+  return { data, error, loading, isValidating, mutate };
 }
