@@ -12,9 +12,7 @@ type Enrolled = Prisma.EnrolledGetPayload<{
 }>;
 
 export default function Dashboard() {
-  const { data, error, loading } = useClerkSWR<Enrolled[]>(
-    `${process.env.NEXT_PUBLIC_API_URL}/course`
-  );
+  const { data, error, loading } = useClerkSWR<Enrolled[]>("/course");
 
   const ownedCourses = data?.filter((course) => course.role === 2);
   const joinedCourses = data?.filter((course) => course.role !== 2);

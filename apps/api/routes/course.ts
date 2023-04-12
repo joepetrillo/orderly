@@ -1,7 +1,8 @@
 import express from "express";
 import { prisma } from "../prisma/init";
-import { validateRequest } from "zod-express-middleware";
-import { coursePOST, courseEnrollPOST } from "@orderly/schema";
+import { processRequest, validateRequest } from "zod-express-middleware";
+import { coursePOST, courseEnrollPOST, courseGET } from "@orderly/schema";
+import { Prisma } from "@prisma/client";
 
 const router = express.Router();
 
@@ -22,7 +23,79 @@ router.get("/", async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ error: "Something went wrong while fetching courses" });
+      .json({ error: "Something went wrong while fetching course data" });
+  }
+});
+
+router.get("/:course_id", processRequest(courseGET), async (req, res) => {
+  try {
+    const { course_id } = req.params;
+
+    // first check if the course with the given course id exists
+    const exists = await prisma.course.findFirst({
+      where: {
+        id: course_id,
+      },
+      include: {
+        Enrolled: {
+          where: {
+            user_id: req.auth.userId,
+            course_id: course_id,
+          },
+        },
+        Meeting: true,
+      },
+    });
+
+    // course does not exist
+    if (exists === null) {
+      return res.status(404).json({ error: "This course does not exist" });
+    }
+
+    // requester is not enrolled in the course
+    if (exists.Enrolled.length === 0) {
+      return res
+        .status(403)
+        .json({ error: "You are not enrolled in this course" });
+    }
+
+    type CourseData = {
+      role: 0 | 1 | 2;
+      course: Prisma.CourseGetPayload<{
+        select: {
+          id: true;
+          name: true;
+          code: true;
+          Meeting: true;
+        } & Prisma.CourseSelect;
+      }>;
+    };
+
+    const response: CourseData = {
+      role: exists.Enrolled[0].role as 0 | 1 | 2,
+      course: {
+        id: exists.id,
+        name: exists.name,
+        code: exists.code,
+        Meeting: exists.Meeting,
+      },
+    };
+
+    // if they are owner of course, include all of the enrolled data in response
+    if (exists.Enrolled[0].role === 2 || exists.Enrolled[0].role === 1) {
+      const allEnrolled = await prisma.enrolled.findMany({
+        where: {
+          course_id: course_id,
+        },
+      });
+      response.course.Enrolled = allEnrolled;
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Something went wrong while fetching course data" });
   }
 });
 
