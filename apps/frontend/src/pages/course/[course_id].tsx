@@ -26,7 +26,9 @@ export default function Course() {
     paramOk.success === true ? `/course/${course_id}` : null
   );
 
-  if (course_id && paramOk.success === false) {
+  if (!course_id) return null;
+
+  if (paramOk.success === false) {
     return <NotFound />;
   }
 
