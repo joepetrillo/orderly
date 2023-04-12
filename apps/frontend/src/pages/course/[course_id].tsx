@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { useRouter } from "next/router";
 import NotFound from "@/pages/404";
 import { courseGET } from "@orderly/schema";
+import JoinCourseError from "@/components/Courses/JoinCourseError";
 
 type CourseData = {
   role: 0 | 1 | 2;
@@ -28,9 +29,7 @@ export default function Course() {
 
   if (!course_id) return null;
 
-  if (paramOk.success === false) {
-    return <NotFound />;
-  }
+  if (paramOk.success === false) return <NotFound />;
 
   // switch to skeleton loader eventually
   if (loading) {
@@ -42,18 +41,18 @@ export default function Course() {
   }
 
   if (error) {
-    if (error.message === "This course does not exist") {
+    if (error.status === 404) {
       return <NotFound />;
     }
-    if (error.message === "You are not enrolled in this course") {
-      return <p>THIS WILL BE ENROLLMENT PROMPT COMPONENT</p>;
+    if (error.status === 403) {
+      return <JoinCourseError course_id={course_id} />;
     }
     return (
       <p className="flex justify-center py-16 text-red-500">{error.message}</p>
     );
   }
 
-  let authorizedView = null;
+  let authorizedView: JSX.Element | null = null;
   if (data?.role === 2) {
     authorizedView = <p>Owner (Professor) view</p>;
   } else if (data?.role === 1) {
@@ -64,7 +63,7 @@ export default function Course() {
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 lg:px-8">
-      <h1 className="mb-5 text-4xl font-bold">{data?.course.name}</h1>
+      <h1 className="text-4xl font-bold">{data?.course.name}</h1>
       <p>Course Code - {data?.course.code}</p>
       {authorizedView}
     </div>

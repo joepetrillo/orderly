@@ -2,8 +2,8 @@ import useClerkSWR from "@/lib/useClerkSWR";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import CoursesSkeleton from "@/components/Courses/CoursesSkeleton";
-import CreateCourse from "@/components/Courses/CreateCourse";
-import JoinCourse from "@/components/Courses/JoinCourse";
+import CreateCourseModal from "@/components/Courses/CreateCourseModal";
+import JoinCourseModal from "@/components/Courses/JoinCourseModal";
 
 type Enrolled = Prisma.EnrolledGetPayload<{
   include: {
@@ -28,7 +28,7 @@ export default function Dashboard() {
       <div>
         <h1 className="mb-5 text-4xl font-bold">Your Courses</h1>
         <div className="mb-10">
-          <CreateCourse />
+          <CreateCourseModal />
         </div>
         {loading ? (
           <CoursesSkeleton />
@@ -55,7 +55,7 @@ export default function Dashboard() {
       <div>
         <h1 className="mb-5 text-4xl font-bold">Joined Courses</h1>
         <div className="mb-10">
-          <JoinCourse />
+          <JoinCourseModal />
         </div>
         {loading ? (
           <CoursesSkeleton />
