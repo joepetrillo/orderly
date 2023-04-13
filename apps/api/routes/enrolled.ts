@@ -12,9 +12,9 @@ router.patch("/", validateRequest(updateRolePATCH), async (req, res) => {
     // we want to know if the person who made this request has role 2 (owner)
     const isOwner = await prisma.enrolled.findFirst({
       where: {
-        course_id: 2,//req.body.course_id,
+        course_id: req.body.course_id,
         role: 2,
-        user_id: "1"//req.auth.userId,
+        user_id: req.auth.userId,
       },
     });
 
