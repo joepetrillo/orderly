@@ -28,3 +28,10 @@ export const updateRolePATCH = {
     role: z.number().min(0).max(1),
   }),
 };
+
+export const user = {
+  body: z.object({
+    course_id: z.number(),
+    user_id: z.string(),
+  }),
+};

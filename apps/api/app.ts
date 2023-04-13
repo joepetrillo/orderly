@@ -5,6 +5,7 @@ import cors from "cors";
 import { ClerkExpressRequireAuth, StrictAuthProp } from "@clerk/clerk-sdk-node";
 import course from "./routes/course";
 import enrolled from "./routes/enrolled";
+import { errorHandler } from "./middleware/errorHandler";
 
 declare global {
   namespace Express {
@@ -18,7 +19,7 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-app.use(ClerkExpressRequireAuth());
+//app.use(ClerkExpressRequireAuth());
 
 app.use("/course", course);
 app.use("/enrolled", enrolled);
@@ -31,7 +32,8 @@ const authErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   }
 };
 
-app.use(authErrorHandler);
+//app.use(authErrorHandler);
+//app.use(errorHandler)
 
 app.listen(port, () => {
   console.log(`✅ express server running on port ${port}`);

@@ -1,7 +1,7 @@
 import express from "express";
 import { prisma } from "../prisma/init";
 import { validateRequest } from "zod-express-middleware";
-import { updateRolePATCH } from "@orderly/schema";
+import { updateRolePATCH, user } from "@orderly/schema";
 
 const router = express.Router();
 
@@ -12,9 +12,9 @@ router.patch("/", validateRequest(updateRolePATCH), async (req, res) => {
     // we want to know if the person who made this request has role 2 (owner)
     const isOwner = await prisma.enrolled.findFirst({
       where: {
-        course_id: req.body.course_id,
+        course_id: 2,//req.body.course_id,
         role: 2,
-        user_id: req.auth.userId,
+        user_id: "1"//req.auth.userId,
       },
     });
 
@@ -59,5 +59,67 @@ router.patch("/", validateRequest(updateRolePATCH), async (req, res) => {
     });
   }
 });
+
+// student side leave class
+router.delete("/", validateRequest(user), async (req, res, next) => {
+  try {
+    // owner cannot leave own class
+    const isOwner = await prisma.enrolled.findFirst({
+      where: {
+        course_id: req.body.course_id,
+        role: 2,
+        user_id: req.auth.userId,
+      },
+    });
+
+    if (isOwner === null) {
+      return res.status(400).json({
+        error: "Cannot leave course",
+      });
+    }
+
+    // verify that the user that is being updated is already enrolled in the course
+    const deleteUser = await prisma.enrolled.delete({
+      where: {
+        user_id_course_id: {
+          user_id: req.auth.userId,
+          course_id: req.body.course_id,
+        },
+      },
+    });
+
+    res.status(200).json(deleteUser);
+  } catch (error) {
+    next(error)
+  }
+});
+
+// get current position in queue
+router.get("/position", validateRequest(user), async (req, res, next) => {
+  
+  //TODO add some functionality to get multiple positions
+  // this currently only returns course, somehow need indexof
+  try {
+    const course = await prisma.course.findFirst({
+      where: {
+        id: req.body.course_id,
+        Meeting: {
+          some: {
+            Queue: {
+              some:{
+                user_id : req.auth.userId,
+              },
+            },
+          },
+        },
+      },
+    });
+    res.status(200).json(course);
+  } catch (error) {
+    next(error)
+  }
+});
+
+
 
 export default router;
