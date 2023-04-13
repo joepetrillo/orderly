@@ -1,4 +1,4 @@
-import LinkButton from "@/components/UI/LinkButton";
+import Button from "@/components/UI/Button";
 
 export default function Home() {
   return (
@@ -27,10 +27,12 @@ export default function Home() {
               fugiat aliqua.
             </p>
             <div className="flex items-center justify-center gap-2">
-              <LinkButton href="/signup">Get Started</LinkButton>
-              <LinkButton variant="ghost" href="/">
+              <Button as="link" href="/signup">
+                Get Started
+              </Button>
+              <Button as="link" href="/" variant="ghost">
                 Learn More
-              </LinkButton>
+              </Button>
             </div>
           </div>
           <div

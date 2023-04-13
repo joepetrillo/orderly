@@ -12,7 +12,7 @@ export default function CreateCourseModal() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const cancelButtonRef = useRef(null);
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -101,8 +101,8 @@ export default function CreateCourseModal() {
             <div className="fixed inset-0 bg-gray-500/75 transition-opacity" />
           </Transition.Child>
 
-          <div className="fixed inset-0 z-20 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className="fixed inset-0 w-screen overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"

@@ -4,7 +4,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import LinkButton from "@/components/UI/LinkButton";
+import Button from "@/components/UI/Button";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,9 +24,9 @@ export default function Header() {
           </Link>
         </div>
         <SignedOut>
-          <LinkButton variant="outline" href="/signin">
+          <Button as="link" variant="outline" href="/signin">
             Sign in
-          </LinkButton>
+          </Button>
         </SignedOut>
         <SignedIn>
           <div className="flex lg:hidden">

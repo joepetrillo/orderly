@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+import Link, { LinkProps } from "next/link";
 import { VariantProps, cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -25,22 +26,87 @@ const buttonVariants = cva(
   }
 );
 
-interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {}
+type BaseProps = {
+  children: React.ReactNode;
+  className?: string;
+};
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, size, variant, ...props }, ref) => {
+type ButtonAsButton = BaseProps &
+  VariantProps<typeof buttonVariants> &
+  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseProps> & {
+    as?: "button";
+    ref?: React.RefObject<HTMLButtonElement>;
+  };
+
+type ButtonAsLink = BaseProps &
+  VariantProps<typeof buttonVariants> &
+  Omit<LinkProps, keyof BaseProps> & {
+    as: "link";
+    ref?: React.RefObject<HTMLAnchorElement>;
+  };
+
+type ButtonAsExternal = BaseProps &
+  VariantProps<typeof buttonVariants> &
+  Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseProps> & {
+    as: "externalLink";
+    ref?: React.RefObject<HTMLAnchorElement>;
+  };
+
+type ButtonProps = ButtonAsButton | ButtonAsLink | ButtonAsExternal;
+
+const AsLink = React.forwardRef<HTMLAnchorElement, ButtonAsLink>(
+  (props, ref) => {
+    const { as, className, variant, size, href, ...rest } = props;
     return (
-      <button
+      <Link
         className={cn(buttonVariants({ variant, size, className }))}
+        href={href}
         ref={ref}
-        {...props}
+        {...rest}
       />
     );
   }
 );
+AsLink.displayName = "Link";
 
-Button.displayName = "Button";
+const AsExternalLink = React.forwardRef<HTMLAnchorElement, ButtonAsExternal>(
+  (props, ref) => {
+    const { as, className, variant, size, ...rest } = props;
+    return (
+      <a
+        className={cn(buttonVariants({ variant, size, className }))}
+        target="_blank"
+        rel="noopener noreferrer"
+        ref={ref}
+        {...rest}
+      >
+        {rest.children}
+      </a>
+    );
+  }
+);
+AsExternalLink.displayName = "ExternalLink";
 
-export default Button;
+const AsButton = React.forwardRef<HTMLButtonElement, ButtonAsButton>(
+  (props, ref) => {
+    const { as, className, variant, size, ...rest } = props;
+    return (
+      <button
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...rest}
+      />
+    );
+  }
+);
+AsButton.displayName = "Button";
+
+export default function Button(props: ButtonProps): JSX.Element {
+  if (props.as === "link") {
+    return <AsLink {...props} />;
+  } else if (props.as === "externalLink") {
+    return <AsExternalLink {...props} />;
+  } else {
+    return <AsButton {...props} />;
+  }
+}

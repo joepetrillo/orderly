@@ -14,14 +14,14 @@ type Enrolled = Prisma.EnrolledGetPayload<{
 export default function Dashboard() {
   const { data, error, loading } = useClerkSWR<Enrolled[]>("/course");
 
-  const ownedCourses = data?.filter((course) => course.role === 2);
-  const joinedCourses = data?.filter((course) => course.role !== 2);
-
   if (error) {
     return (
       <p className="flex justify-center py-16 text-red-500">{error.message}</p>
     );
   }
+
+  const ownedCourses = data?.filter((course) => course.role === 2);
+  const joinedCourses = data?.filter((course) => course.role !== 2);
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 lg:px-8">
