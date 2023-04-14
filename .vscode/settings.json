@@ -4,5 +4,6 @@
   },
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
-  ]
+  ],
+  "eslint.workingDirectories": ["apps/frontend"]
 }

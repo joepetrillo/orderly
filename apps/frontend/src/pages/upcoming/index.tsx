@@ -1,4 +1,4 @@
-import Button from "@/components/UI/Button";
+import Button from "@/components/ui/Button";
 
 export default function Upcoming() {
   return (

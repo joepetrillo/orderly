@@ -37,6 +37,6 @@ export const updateRolePATCH = {
   body: z.object({
     course_id: z.number(),
     user_id: z.string(),
-    role: z.number().min(0).max(1),
+    role: z.literal(0).or(z.literal(1)),
   }),
 };

@@ -4,8 +4,8 @@ import { mutate } from "swr";
 import { Dialog, Transition } from "@headlessui/react";
 import { courseEnrollPOST } from "@orderly/schema";
 import { z } from "zod";
-import Spinner from "@/components/UI/Spinner";
-import Button from "@/components/UI/Button";
+import Spinner from "@/components/ui/Spinner";
+import Button from "@/components/ui/Button";
 
 export default function JoinCourseModal() {
   const { getToken } = useAuth();

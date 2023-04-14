@@ -27,6 +27,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+// get specific course details for exact course
 router.get("/:course_id", processRequest(courseGET), async (req, res) => {
   try {
     const { course_id } = req.params;

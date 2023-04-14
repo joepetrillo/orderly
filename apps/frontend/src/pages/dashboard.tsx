@@ -1,9 +1,9 @@
 import useClerkSWR from "@/lib/useClerkSWR";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
-import CoursesSkeleton from "@/components/Courses/CoursesSkeleton";
-import CreateCourseModal from "@/components/Courses/CreateCourseModal";
-import JoinCourseModal from "@/components/Courses/JoinCourseModal";
+import CoursesSkeleton from "@/components/courses/CoursesSkeleton";
+import CreateCourseModal from "@/components/courses/CreateCourseModal";
+import JoinCourseModal from "@/components/courses/JoinCourseModal";
 
 type Enrolled = Prisma.EnrolledGetPayload<{
   include: {
