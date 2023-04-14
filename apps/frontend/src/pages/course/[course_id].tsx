@@ -1,10 +1,10 @@
-import Spinner from "@/components/UI/Spinner";
+import Spinner from "@/components/ui/Spinner";
 import useClerkSWR from "@/lib/useClerkSWR";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/router";
 import NotFound from "@/pages/404";
 import { courseGET } from "@orderly/schema";
-import JoinCourseError from "@/components/Courses/JoinCourseError";
+import JoinCourseError from "@/components/courses/JoinCourseError";
 
 type CourseData = {
   role: 0 | 1 | 2;

@@ -1,4 +1,4 @@
-import Button from "@/components/UI/Button";
+import Button from "@/components/ui/Button";
 
 export default function Upcoming() {
   return (
@@ -11,7 +11,7 @@ export default function Upcoming() {
             <p className="">4/15, 8:00 to 9:00pm</p>
             <br />
             <br />
-            <div className="pl">
+            <div>
               <p className="text-center">Current Queue Postion: 3</p>
               <p className="text-center">Submission Type: Private Question</p>
             </div>
@@ -30,7 +30,7 @@ export default function Upcoming() {
             <p className="">4/15, 8:00 to 9:00pm</p>
             <br />
             <br />
-            <div className="pl">
+            <div>
               <p className="text-center">Current Queue Postion: 3</p>
               <p className="text-center">Submission Type: Private Question</p>
             </div>
