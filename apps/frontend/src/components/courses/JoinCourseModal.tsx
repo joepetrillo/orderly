@@ -6,6 +6,7 @@ import { courseEnrollPOST } from "@orderly/schema";
 import { z } from "zod";
 import Spinner from "@/components/ui/Spinner";
 import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 
 export default function JoinCourseModal() {
   const { getToken } = useAuth();
@@ -120,30 +121,28 @@ export default function JoinCourseModal() {
                     >
                       Join Existing Course
                     </Dialog.Title>
-                    <div className="mt-4">
-                      <fieldset disabled={loading}>
-                        <form onSubmit={handleSubmit} id="join_course">
-                          <label
-                            htmlFor="course_code"
-                            className="block text-sm font-medium leading-6"
-                          >
-                            Code
-                          </label>
-                          <input
-                            type="text"
-                            name="code"
-                            id="course_code"
-                            placeholder="XXXXXXX"
-                            className="mt-2 block w-full appearance-none rounded p-2 px-4 text-sm shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400"
-                          />
-                        </form>
-                      </fieldset>
-                      {error && (
-                        <p className="mt-2 text-xs text-red-500">{error}</p>
-                      )}
-                    </div>
+                    <fieldset disabled={loading} className="mt-5">
+                      <form onSubmit={handleSubmit} id="join_course">
+                        <label
+                          htmlFor="course_code"
+                          className="block font-medium leading-6"
+                        >
+                          Code
+                        </label>
+                        <Input
+                          type="text"
+                          name="code"
+                          id="course_code"
+                          placeholder="XXXXXXX"
+                          className="mt-2"
+                        />
+                      </form>
+                    </fieldset>
+                    {error && (
+                      <p className="mt-2 text-xs text-red-500">{error}</p>
+                    )}
                   </div>
-                  <div className="flex justify-end gap-2 bg-gray-50 px-4 py-3 sm:px-6">
+                  <div className="flex justify-end gap-2 bg-gray-100 px-4 py-3 sm:px-6">
                     <Button
                       type="button"
                       onClick={() => setOpen(false)}
@@ -151,7 +150,6 @@ export default function JoinCourseModal() {
                       ref={cancelButtonRef}
                       disabled={loading}
                       variant="ghost"
-                      size="sm"
                     >
                       Cancel
                     </Button>
@@ -160,7 +158,6 @@ export default function JoinCourseModal() {
                       className="w-full"
                       type="submit"
                       form="join_course"
-                      size="sm"
                     >
                       Join
                       {loading && <Spinner small />}

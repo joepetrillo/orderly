@@ -4,47 +4,42 @@ import { CakeIcon } from "@heroicons/react/24/outline";
 
 const BackgroundBlur = () => {
   return (
-    <>
+    <div
+      className="absolute inset-x-0 -top-10 -z-10 transform-gpu overflow-hidden blur-[100px]  sm:-top-60"
+      aria-hidden="true"
+    >
       <div
-        className="absolute inset-x-0 -top-10 -z-10 transform-gpu overflow-hidden blur-[100px]  sm:-top-60"
-        aria-hidden="true"
-      >
-        <div
-          className="relative aspect-[1155/678] rotate-[30deg] bg-gradient-to-tr from-purple-600 to-pink-300 opacity-50 sm:left-[calc(50%-30rem)] sm:w-[65rem] sm:opacity-30"
-          style={{
-            clipPath:
-              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-          }}
-        />
-      </div>
-    </>
+        className="relative aspect-[1155/678] rotate-[30deg] bg-gradient-to-tr from-purple-600 to-pink-300 opacity-50 sm:left-[calc(50%-30rem)] sm:w-[65rem] sm:opacity-30"
+        style={{
+          clipPath:
+            "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+        }}
+      />
+    </div>
   );
 };
 
 const Hero = () => {
   return (
-    <div className="relative">
-      {/* <BackgroundBlur /> */}
-      <Container className="py-20 text-center sm:py-28">
-        <h1 className="mx-auto max-w-4xl font-display text-5xl leading-[1.1] tracking-tight sm:text-5xl sm:leading-[1.1] md:text-7xl md:leading-[1.1]">
-          Office hours management made{" "}
-          <span className="font-medium text-indigo-600">effortless</span>.
-        </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 tracking-tight text-gray-600">
-          Optimize student-instructor interactions and maximize engagement
-          opportunities with Orderly. Boost productivity, stay organized and
-          elevate your office hours.
-        </p>
-        <div className="mt-8 flex items-center justify-center gap-2">
-          <Button as="link" href="/signup" size="lg">
-            Get Started
-          </Button>
-          <Button as="link" href="/#features" variant="ghost" size="lg">
-            Learn More
-          </Button>
-        </div>
-      </Container>
-    </div>
+    <Container className="relative py-20 text-center sm:py-28">
+      <h1 className="mx-auto max-w-4xl font-display text-5xl leading-[1.1] tracking-tight sm:text-5xl sm:leading-[1.1] md:text-7xl md:leading-[1.1]">
+        Office hours management made{" "}
+        <span className="font-medium text-indigo-600">effortless</span>.
+      </h1>
+      <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 tracking-tight text-gray-600">
+        Optimize student-instructor interactions and maximize engagement
+        opportunities with Orderly. Boost productivity, stay organized and
+        elevate your office hours.
+      </p>
+      <div className="mt-8 flex items-center justify-center gap-2">
+        <Button as="link" href="/signup" size="lg">
+          Get Started
+        </Button>
+        <Button as="link" href="/#features" variant="ghost" size="lg">
+          Learn More
+        </Button>
+      </div>
+    </Container>
 
     // <span className="font-medium text-indigo-600">
     //   Impactful and effortless <br className="md:hidden" />
@@ -104,10 +99,7 @@ const Features = () => {
           <h2 className="text-3xl font-medium tracking-tight">
             Orderly Features
           </h2>
-          <p className="mt-6 text-lg text-gray-600">
-            Still on the fence? Read through everything Orderly can help you
-            improve
-          </p>
+          <p className="mt-6 text-lg text-gray-600">Still on the fence?</p>
         </div>
         <ul
           role="list"

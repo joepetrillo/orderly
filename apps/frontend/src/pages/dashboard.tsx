@@ -1,9 +1,10 @@
-import useClerkSWR from "@/lib/useClerkSWR";
+import useClerkSWR from "@/hooks/useClerkSWR";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import CoursesSkeleton from "@/components/courses/CoursesSkeleton";
 import CreateCourseModal from "@/components/courses/CreateCourseModal";
 import JoinCourseModal from "@/components/courses/JoinCourseModal";
+import { Container } from "@/components/Container";
 
 type Enrolled = Prisma.EnrolledGetPayload<{
   include: {
@@ -24,9 +25,9 @@ export default function Dashboard() {
   const joinedCourses = data?.filter((course) => course.role !== 2);
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 lg:px-8">
+    <Container className="space-y-10">
       <div>
-        <h1 className="mb-5 text-4xl font-bold">Your Courses</h1>
+        <h1 className="mb-5 font-display text-4xl font-bold">Your Courses</h1>
         <div className="mb-10">
           <CreateCourseModal />
         </div>
@@ -53,7 +54,7 @@ export default function Dashboard() {
         )}
       </div>
       <div>
-        <h1 className="mb-5 text-4xl font-bold">Joined Courses</h1>
+        <h1 className="mb-5 font-display text-4xl font-bold">Joined Courses</h1>
         <div className="mb-10">
           <JoinCourseModal />
         </div>
@@ -79,6 +80,6 @@ export default function Dashboard() {
           </>
         )}
       </div>
-    </div>
+    </Container>
   );
 }
