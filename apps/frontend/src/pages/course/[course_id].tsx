@@ -1,10 +1,11 @@
 import Spinner from "@/components/ui/Spinner";
-import useClerkSWR from "@/lib/useClerkSWR";
+import useClerkSWR from "@/hooks/useClerkSWR";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/router";
 import NotFound from "@/pages/404";
 import { courseGET } from "@orderly/schema";
 import JoinCourseError from "@/components/courses/JoinCourseError";
+import { Container } from "@/components/Container";
 
 type CourseData = {
   role: 0 | 1 | 2;
@@ -62,10 +63,10 @@ export default function Course() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 lg:px-8">
+    <Container className="space-y-5">
       <h1 className="text-4xl font-bold">{data?.course.name}</h1>
       <p>Course Code - {data?.course.code}</p>
       {authorizedView}
-    </div>
+    </Container>
   );
 }

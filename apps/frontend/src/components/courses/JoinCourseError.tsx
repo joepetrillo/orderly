@@ -6,6 +6,7 @@ import { mutate } from "swr";
 import { z } from "zod";
 import Button from "@/components/ui/Button";
 import Spinner from "@/components/ui/Spinner";
+import { Container } from "@/components/Container";
 
 export default function JoinCourseError({ course_id }: { course_id: string }) {
   const { getToken } = useAuth();
@@ -69,36 +70,32 @@ export default function JoinCourseError({ course_id }: { course_id: string }) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center px-6 py-16 lg:px-8">
-      <h1 className="mb-5 max-w-sm text-center text-4xl font-bold">
+    <Container className="flex flex-col items-center justify-center py-16">
+      <h1 className="max-w-sm text-center font-display text-4xl font-bold">
         You are not enrolled in this course
       </h1>
-      <p className="mb-5 text-gray-500">
+      <p className="mt-5 text-center text-gray-600">
         Enter the course entry code to gain access.
       </p>
-      <fieldset disabled={loading} className="w-full max-w-md">
+      <fieldset disabled={loading} className="mt-8 w-full max-w-md">
         <form onSubmit={handleSubmit}>
-          <label
-            htmlFor="course_code"
-            className="block text-sm font-medium leading-6"
-          >
+          <label htmlFor="course_code" className="block font-medium leading-6">
             Code
           </label>
-          <div className="mb-5">
-            <Input
-              type="text"
-              placeholder="XXXXXXX"
-              id="course_code"
-              name="code"
-            />
-            {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
-          </div>
-          <Button disabled={loading} className="w-full">
+          <Input
+            type="text"
+            placeholder="XXXXXXX"
+            id="course_code"
+            name="code"
+            className="mt-2"
+          />
+          {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+          <Button disabled={loading} className="mt-5 w-full">
             Join
             {loading && <Spinner small />}
           </Button>
         </form>
       </fieldset>
-    </div>
+    </Container>
   );
 }
