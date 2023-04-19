@@ -2,12 +2,23 @@ import express from "express";
 import { prisma } from "../prisma/init";
 import { processRequest, validateRequest } from "zod-express-middleware";
 import { coursePOST, courseEnrollPOST, courseGET } from "@orderly/schema";
-import { Prisma } from "@prisma/client";
+import clerkClient from "@clerk/clerk-sdk-node";
 
 const router = express.Router();
 
-// get all courses enrolled in
+// get general details about all courses enrolled in
 router.get("/", async (req, res) => {
+  type CourseGeneral = {
+    id: number;
+    name: string;
+    code: string;
+    role: 0 | 1 | 2;
+    owner_name: string;
+    member_count: number;
+  };
+
+  const allCourses: CourseGeneral[] = [];
+
   try {
     // get all of the courses the person making this request are a part of (owner, host, or just enrolled in)
     const courses = await prisma.enrolled.findMany({
@@ -15,11 +26,41 @@ router.get("/", async (req, res) => {
         user_id: req.auth.userId,
       },
       include: {
-        course: true,
+        course: {
+          include: {
+            _count: {
+              select: {
+                Enrolled: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    res.status(200).json(courses);
+    if (courses.length === 0) return res.status(200).json(allCourses);
+
+    // get owner user objects from clerk
+    const userId = courses.map((curr) => curr.course.owner_id);
+    const owners = await clerkClient.users.getUserList({ userId });
+
+    for (const curr of courses) {
+      const owner = owners.find((user) => user.id === curr.course.owner_id);
+      if (!owner) throw new Error("The owner of a course was not found");
+
+      const course = {
+        id: curr.course.id,
+        name: curr.course.name,
+        code: curr.course.code,
+        role: curr.role as 0 | 1 | 2,
+        owner_name: `${owner.firstName} ${owner.lastName}`,
+        member_count: curr.course._count.Enrolled,
+      };
+
+      allCourses.push(course);
+    }
+
+    res.status(200).json(allCourses);
   } catch (error) {
     res
       .status(500)
@@ -27,13 +68,31 @@ router.get("/", async (req, res) => {
   }
 });
 
-// get specific course details for exact course
+// get all specific course details for an exact course
 router.get("/:course_id", processRequest(courseGET), async (req, res) => {
+  type CourseData = {
+    id: number;
+    name: string;
+    code: string;
+    role: 0 | 1 | 2;
+    meetings: {
+      id: number;
+      owner_id: string;
+      day: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+      start_time: Date;
+      end_time: Date;
+    }[];
+    enrolled: {
+      user_id: string;
+      role: number;
+    }[];
+  };
+
   try {
     const { course_id } = req.params;
 
     // first check if the course with the given course id exists
-    const exists = await prisma.course.findFirst({
+    const course = await prisma.course.findFirst({
       where: {
         id: course_id,
       },
@@ -49,47 +108,52 @@ router.get("/:course_id", processRequest(courseGET), async (req, res) => {
     });
 
     // course does not exist
-    if (exists === null) {
+    if (course === null) {
       return res.status(404).json({ error: "This course does not exist" });
     }
 
     // requester is not enrolled in the course
-    if (exists.Enrolled.length === 0) {
+    if (course.Enrolled.length === 0) {
       return res
         .status(403)
         .json({ error: "You are not enrolled in this course" });
     }
 
-    type CourseData = {
-      role: 0 | 1 | 2;
-      course: Prisma.CourseGetPayload<{
-        select: {
-          id: true;
-          name: true;
-          code: true;
-          Meeting: true;
-        } & Prisma.CourseSelect;
-      }>;
-    };
-
     const response: CourseData = {
-      role: exists.Enrolled[0].role as 0 | 1 | 2,
-      course: {
-        id: exists.id,
-        name: exists.name,
-        code: exists.code,
-        Meeting: exists.Meeting,
-      },
+      id: course.id,
+      name: course.name,
+      code: course.code,
+      role: course.Enrolled[0].role as 0 | 1 | 2,
+      meetings: course.Meeting.map((meeting) => {
+        return {
+          id: meeting.id,
+          owner_id: meeting.owner_id,
+          day: meeting.day as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+          start_time: meeting.start_time,
+          end_time: meeting.end_time,
+        };
+      }),
+      enrolled: course.Enrolled.map((enrollment) => {
+        return {
+          user_id: enrollment.user_id,
+          role: enrollment.role,
+        };
+      }),
     };
 
-    // if they are owner of course, include all of the enrolled data in response
-    if (exists.Enrolled[0].role === 2 || exists.Enrolled[0].role === 1) {
+    // if they are an instructor of the course, include ALL of the enrolled data in response
+    if (course.Enrolled[0].role === 2 || course.Enrolled[0].role === 1) {
       const allEnrolled = await prisma.enrolled.findMany({
         where: {
           course_id: course_id,
         },
       });
-      response.course.Enrolled = allEnrolled;
+      response.enrolled = allEnrolled.map((enrollment) => {
+        return {
+          user_id: enrollment.user_id,
+          role: enrollment.role,
+        };
+      });
     }
 
     res.status(200).json(response);
@@ -140,6 +204,7 @@ router.post("/", validateRequest(coursePOST), async (req, res) => {
     // create the course and add creator of course to enrolled table with owner role (2)
     const course = await prisma.course.create({
       data: {
+        owner_id: req.auth.userId,
         name: req.body.name,
         code: entryCode,
         Enrolled: {

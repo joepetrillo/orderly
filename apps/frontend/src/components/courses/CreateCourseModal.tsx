@@ -80,7 +80,7 @@ export default function CreateCourseModal() {
           setOpen(true);
         }}
       >
-        Create New Course
+        Create
       </Button>
       <Transition.Root show={open} as={Fragment}>
         <Dialog

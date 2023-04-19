@@ -70,12 +70,12 @@ export default function JoinCourseError({ course_id }: { course_id: string }) {
   }
 
   return (
-    <Container className="flex flex-col items-center justify-center py-16">
+    <Container className="flex flex-col items-center justify-center">
       <h1 className="max-w-sm text-center font-display text-4xl font-bold">
         You are not enrolled in this course
       </h1>
       <p className="mt-5 text-center text-gray-600">
-        Enter the course entry code to gain access.
+        Enter the course code to gain access.
       </p>
       <fieldset disabled={loading} className="mt-8 w-full max-w-md">
         <form onSubmit={handleSubmit}>
