@@ -26,10 +26,10 @@ export default withClerkMiddleware((request: NextRequest) => {
     return NextResponse.redirect(signInUrl);
   }
 
-  // IS logged in and trying to access public page, redirect to dashboard
+  // IS logged in and trying to access public page, redirect to courses
   if (isPublic(request.nextUrl.pathname)) {
-    const dashboardUrl = new URL("/dashboard", request.url);
-    return NextResponse.redirect(dashboardUrl);
+    const coursesURL = new URL("/courses", request.url);
+    return NextResponse.redirect(coursesURL);
   }
 
   // IS logged in and trying to access protected page, allow this

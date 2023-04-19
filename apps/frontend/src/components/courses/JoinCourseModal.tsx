@@ -80,7 +80,7 @@ export default function JoinCourseModal() {
           setOpen(true);
         }}
       >
-        Join Existing Course
+        Join
       </Button>
       <Transition.Root show={open} as={Fragment}>
         <Dialog

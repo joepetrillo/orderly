@@ -19,10 +19,10 @@ export default function Header() {
   }, [router.pathname]);
 
   return (
-    <header className="z-10 bg-white pb-10 text-gray-950">
+    <header className="z-10 border-b border-b-gray-200 bg-white text-gray-950">
       <Container>
         {/* consistent header */}
-        <nav className="flex h-24 items-center justify-between border-b border-b-gray-200">
+        <nav className="flex h-24 items-center justify-between">
           {/* logo and links (links only visible medium and up) */}
           <div className="flex items-center gap-4">
             <Link
@@ -41,25 +41,25 @@ export default function Header() {
               <div className="hidden text-sm font-medium leading-7 md:flex md:gap-x-2">
                 <Link
                   className={cn(
-                    router.pathname === "/dashboard"
-                      ? "bg-gray-200 hover:bg-gray-200"
+                    router.pathname === "/courses"
+                      ? "bg-gray-200/70 hover:bg-gray-200/70"
                       : "hover:bg-gray-100",
                     "inline-block rounded px-3 py-1.5"
                   )}
-                  href="/dashboard"
+                  href="/courses"
                 >
-                  Dashboard
+                  Courses
                 </Link>
                 <Link
                   className={cn(
-                    router.pathname === "/upcoming"
-                      ? "bg-gray-200 hover:bg-gray-200"
+                    router.pathname === "/scheduled"
+                      ? "bg-gray-200/70 hover:bg-gray-200/70"
                       : "hover:bg-gray-100",
                     "inline-block rounded px-3 py-1.5"
                   )}
-                  href="/upcoming"
+                  href="/scheduled"
                 >
-                  Upcoming
+                  Scheduled
                 </Link>
               </div>
             </SignedIn>
@@ -111,7 +111,7 @@ export default function Header() {
             onClose={setMobileMenuOpen}
           >
             <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white p-6 px-4 pt-0 sm:px-6 sm:ring-1 sm:ring-gray-900/10 lg:px-8">
-              <div className="flex h-24 items-center justify-between border-b border-b-gray-200">
+              <div className="flex h-[97px] items-center justify-between border-b border-b-gray-200">
                 <Link
                   href="/"
                   className="-m-2.5 p-2.5 focus-visible:rounded focus-visible:outline focus-visible:outline-4 focus-visible:outline-indigo-400"
@@ -131,26 +131,26 @@ export default function Header() {
                 <div className="divide-y divide-gray-200">
                   <div className="space-y-2 pb-6 font-medium leading-7">
                     <Link
-                      href="/dashboard"
+                      href="/courses"
                       className={cn(
-                        router.pathname === "/dashboard"
-                          ? "bg-gray-200 hover:bg-gray-200"
+                        router.pathname === "/courses"
+                          ? "bg-gray-200/70 hover:bg-gray-200/70"
                           : "hover:bg-gray-100",
                         "-mx-2.5 block rounded px-2.5 py-4"
                       )}
                     >
-                      Dashboard
+                      Courses
                     </Link>
                     <Link
-                      href="/upcoming"
+                      href="/scheduled"
                       className={cn(
-                        router.pathname === "/upcoming"
-                          ? "bg-gray-200 hover:bg-gray-200"
+                        router.pathname === "/scheduled"
+                          ? "bg-gray-200/70 hover:bg-gray-200/70"
                           : "hover:bg-gray-100",
                         "-mx-2.5 block rounded px-2.5 py-4"
                       )}
                     >
-                      Upcoming
+                      Scheduled
                     </Link>
                   </div>
                   <div className="flex gap-4 pt-6">

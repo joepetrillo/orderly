@@ -1,6 +1,5 @@
 import Spinner from "@/components/ui/Spinner";
 import useClerkSWR from "@/hooks/useClerkSWR";
-import { Prisma } from "@prisma/client";
 import { useRouter } from "next/router";
 import NotFound from "@/pages/404";
 import { courseGET } from "@orderly/schema";
@@ -8,15 +7,21 @@ import JoinCourseError from "@/components/courses/JoinCourseError";
 import { Container } from "@/components/Container";
 
 type CourseData = {
+  id: number;
+  name: string;
+  code: string;
   role: 0 | 1 | 2;
-  course: Prisma.CourseGetPayload<{
-    select: {
-      id: true;
-      name: true;
-      code: true;
-      Meeting: true;
-    } & Prisma.CourseSelect;
-  }>;
+  meetings: {
+    id: number;
+    owner_id: string;
+    day: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+    start_time: Date;
+    end_time: Date;
+  }[];
+  enrolled: {
+    user_id: string;
+    role: number;
+  }[];
 };
 
 export default function Course() {
@@ -35,7 +40,7 @@ export default function Course() {
   // switch to skeleton loader eventually
   if (loading) {
     return (
-      <div className="flex justify-center py-16">
+      <div className="flex justify-center">
         <Spinner />
       </div>
     );
@@ -48,9 +53,7 @@ export default function Course() {
     if (error.status === 403) {
       return <JoinCourseError course_id={course_id} />;
     }
-    return (
-      <p className="flex justify-center py-16 text-red-500">{error.message}</p>
-    );
+    return <p className="flex justify-center text-red-500">{error.message}</p>;
   }
 
   let authorizedView: JSX.Element | null = null;
@@ -64,8 +67,8 @@ export default function Course() {
 
   return (
     <Container className="space-y-5">
-      <h1 className="text-4xl font-bold">{data?.course.name}</h1>
-      <p>Course Code - {data?.course.code}</p>
+      <h1 className="text-4xl font-bold">{data?.name}</h1>
+      <p>Course Code - {data?.code}</p>
       {authorizedView}
     </Container>
   );

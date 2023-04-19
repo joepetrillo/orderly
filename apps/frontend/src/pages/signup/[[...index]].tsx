@@ -1,11 +1,11 @@
 import { SignUp } from "@clerk/nextjs";
 
 const SignUpPage = () => (
-  <div className="flex items-center justify-center py-16">
+  <div className="flex items-center justify-center">
     <SignUp
       routing="path"
       path="/signup"
-      redirectUrl="/dashboard"
+      redirectUrl="/courses"
       signInUrl="/signin"
       appearance={{
         variables: {

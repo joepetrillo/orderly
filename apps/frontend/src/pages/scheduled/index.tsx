@@ -1,6 +1,6 @@
 import Button from "@/components/ui/Button";
 
-export default function Upcoming() {
+export default function Scheduled() {
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 lg:px-8">
       <h1 className="mb-5 text-4xl font-bold">Current Office Hours</h1>
@@ -43,7 +43,7 @@ export default function Upcoming() {
           </div>
         </div>
       </div>
-      <h1 className="mb-5 text-4xl font-bold">Upcoming Office Hours</h1>
+      <h1 className="mb-5 text-4xl font-bold">Scheduled Office Hours</h1>
       <div>
         <p className="pl-2">CS 320 Prof Jaime</p>
         <p className="pl-2">4/15, 8:00 to 9:00pm</p>
