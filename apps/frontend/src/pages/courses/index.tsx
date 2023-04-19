@@ -66,7 +66,7 @@ export default function Courses() {
           <p className="text-red-500">{error.message}</p>
         ) : (
           <>
-            {ownedCourses.length === 0 && (
+            {data?.length === 0 && (
               <p>You have not created or joined any courses</p>
             )}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,7 +1,7 @@
 import { SignUp } from "@clerk/nextjs";
 
 const SignUpPage = () => (
-  <div className="flex items-center justify-center">
+  <div className="flex items-center justify-center py-10">
     <SignUp
       routing="path"
       path="/signup"
@@ -12,6 +12,9 @@ const SignUpPage = () => (
           colorPrimary: "#4E46E5",
           colorText: "#030712",
           colorTextOnPrimaryBackground: "#F9FAFB",
+        },
+        elements: {
+          card: "border border-gray-200 shadow shadow-gray-200/70",
         },
       }}
     />

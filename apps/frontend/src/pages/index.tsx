@@ -21,7 +21,7 @@ const BackgroundBlur = () => {
 
 const Hero = () => {
   return (
-    <Container className="relative py-12 text-center sm:py-20">
+    <Container className="relative py-20 text-center sm:py-28">
       <h1 className="mx-auto max-w-4xl font-display text-5xl leading-[1.1] tracking-tight sm:text-5xl sm:leading-[1.1] md:text-7xl md:leading-[1.1]">
         Office hours management made{" "}
         <span className="font-medium text-indigo-600">effortless</span>.

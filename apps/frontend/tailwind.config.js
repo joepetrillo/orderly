@@ -12,7 +12,7 @@ module.exports = {
         "pulse-fast": "pulse 0.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;",
       },
       minHeight: {
-        dash: "calc(100vh - 80px)",
+        dash: "calc(100vh - 96px)",
       },
     },
   },
