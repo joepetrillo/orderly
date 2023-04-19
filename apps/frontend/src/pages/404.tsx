@@ -20,7 +20,7 @@ export default function NotFound() {
   }, [router]);
 
   return (
-    <Container className="flex flex-col items-center justify-center text-center">
+    <Container className="flex flex-col items-center justify-center py-20 text-center">
       <h1 className="max-w-sm font-display text-4xl font-bold">
         Page Not Found
       </h1>

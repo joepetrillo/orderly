@@ -1,7 +1,7 @@
 import { UserProfile } from "@clerk/nextjs";
 
 const UserProfilePage = () => (
-  <div className="flex items-center justify-center">
+  <div className="flex items-center justify-center py-10">
     <UserProfile
       routing="path"
       path="/account"
@@ -9,6 +9,7 @@ const UserProfilePage = () => (
         elements: {
           navbar: "hidden",
           navbarMobileMenuRow: "hidden",
+          card: "border border-gray-200 shadow shadow-gray-200/70",
         },
         variables: {
           colorPrimary: "#4E46E5",

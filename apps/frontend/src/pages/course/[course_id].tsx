@@ -40,8 +40,10 @@ export default function Course() {
   // switch to skeleton loader eventually
   if (loading) {
     return (
-      <div className="flex justify-center">
-        <Spinner />
+      <div className="min-h-dash bg-gray-50 py-10">
+        <div className="flex justify-center py-20">
+          <Spinner />
+        </div>
       </div>
     );
   }
@@ -53,7 +55,13 @@ export default function Course() {
     if (error.status === 403) {
       return <JoinCourseError course_id={course_id} />;
     }
-    return <p className="flex justify-center text-red-500">{error.message}</p>;
+    return (
+      <div className="min-h-dash bg-gray-50 py-10">
+        <p className="flex justify-center py-20 text-red-500">
+          {error.message}
+        </p>
+      </div>
+    );
   }
 
   let authorizedView: JSX.Element | null = null;
@@ -66,10 +74,12 @@ export default function Course() {
   }
 
   return (
-    <Container className="space-y-5">
-      <h1 className="text-4xl font-bold">{data?.name}</h1>
-      <p>Course Code - {data?.code}</p>
-      {authorizedView}
-    </Container>
+    <div className="min-h-dash bg-gray-50 py-10">
+      <Container className="space-y-5">
+        <h1 className="text-4xl font-bold">{data?.name}</h1>
+        <p>Course Code - {data?.code}</p>
+        {authorizedView}
+      </Container>
+    </div>
   );
 }
