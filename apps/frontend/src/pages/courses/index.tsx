@@ -5,7 +5,7 @@ import CreateCourseModal from "@/components/courses/CreateCourseModal";
 import JoinCourseModal from "@/components/courses/JoinCourseModal";
 import { Container } from "@/components/Container";
 import { doubleFilter } from "@/lib/utils";
-import { PlusIcon, UserIcon, KeyIcon } from "@heroicons/react/20/solid";
+import { UserIcon, KeyIcon } from "@heroicons/react/20/solid";
 
 type CourseGeneral = {
   id: number;
