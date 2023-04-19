@@ -14,8 +14,7 @@ router.get("/", async (req, res) => {
     code: string;
     role: 0 | 1 | 2;
     owner_name: string;
-    instructor_count: number;
-    student_count: number;
+    member_count: number;
   };
 
   const allCourses: CourseGeneral[] = [];
@@ -27,51 +26,35 @@ router.get("/", async (req, res) => {
         user_id: req.auth.userId,
       },
       include: {
-        course: true,
+        course: {
+          include: {
+            _count: {
+              select: {
+                Enrolled: true,
+              },
+            },
+          },
+        },
       },
     });
 
+    if (courses.length === 0) return res.status(200).json(allCourses);
+
+    // get owner user objects from clerk
+    const userId = courses.map((curr) => curr.course.owner_id);
+    const owners = await clerkClient.users.getUserList({ userId });
+
     for (const curr of courses) {
-      // get instructor id
-      const creator = await prisma.enrolled.findFirst({
-        select: {
-          user_id: true,
-        },
-        where: {
-          role: 2,
-          course_id: curr.course.id,
-        },
-      });
+      const owner = owners.find((user) => user.id === curr.course.owner_id);
+      if (!owner) throw new Error("The owner of a course was not found");
 
-      // get instructor count
-      const instructor = await prisma.enrolled.aggregate({
-        _count: true,
-        where: {
-          OR: [{ role: 1 }, { role: 2 }],
-          course_id: curr.course.id,
-        },
-      });
-
-      // get student count
-      const student = await prisma.enrolled.aggregate({
-        _count: true,
-        where: {
-          role: 0,
-          course_id: curr.course.id,
-        },
-      });
-
-      if (!creator) throw new Error("The owner of a course was not found");
-      const owner = await clerkClient.users.getUser(creator.user_id);
-
-      const course: CourseGeneral = {
+      const course = {
         id: curr.course.id,
         name: curr.course.name,
         code: curr.course.code,
         role: curr.role as 0 | 1 | 2,
         owner_name: `${owner.firstName} ${owner.lastName}`,
-        instructor_count: instructor._count,
-        student_count: student._count,
+        member_count: curr.course._count.Enrolled,
       };
 
       allCourses.push(course);
@@ -221,6 +204,7 @@ router.post("/", validateRequest(coursePOST), async (req, res) => {
     // create the course and add creator of course to enrolled table with owner role (2)
     const course = await prisma.course.create({
       data: {
+        owner_id: req.auth.userId,
         name: req.body.name,
         code: entryCode,
         Enrolled: {

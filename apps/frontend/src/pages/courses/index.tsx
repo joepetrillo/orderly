@@ -13,8 +13,7 @@ type CourseGeneral = {
   code: string;
   role: 0 | 1 | 2;
   owner_name: string;
-  instructor_count: number;
-  student_count: number;
+  member_count: number;
 };
 
 const CourseCard = ({
@@ -22,8 +21,7 @@ const CourseCard = ({
   name,
   code,
   owner_name,
-  instructor_count,
-  student_count,
+  member_count,
 }: CourseGeneral) => {
   return (
     <Link
@@ -38,16 +36,9 @@ const CourseCard = ({
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-500">
         <UserIcon className="h-[1.3em]" />
-        <div className="flex items-center gap-1">
-          <p>
-            {instructor_count}{" "}
-            {instructor_count === 1 ? "Instructor" : "Instructors"}
-          </p>
-          <PlusIcon className="h-[1.1em]" />
-          <p>
-            {student_count} {student_count === 1 ? "Student" : "Students"}
-          </p>
-        </div>
+        <p>
+          {member_count} {member_count === 1 ? "Member" : "Members"}
+        </p>
       </div>
     </Link>
   );
