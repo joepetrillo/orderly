@@ -29,7 +29,7 @@ export const updateRolePATCH = {
   }),
 };
 
-export const user = {
+export const courseUnenrollDELETE = {
   body: z.object({
     course_id: z.number(),
     user_id: z.string(),
