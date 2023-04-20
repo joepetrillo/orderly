@@ -1,7 +1,7 @@
 import express from "express";
 import { prisma } from "../prisma/init";
 import { validateRequest } from "zod-express-middleware";
-import { updateRolePATCH } from "@orderly/schema";
+import { updateRolePATCH, courseUnenrollDELETE } from "@orderly/schema";
 
 const router = express.Router();
 
@@ -59,5 +59,42 @@ router.patch("/", validateRequest(updateRolePATCH), async (req, res) => {
     });
   }
 });
+
+// student side leave class
+router.delete("/", validateRequest(courseUnenrollDELETE), async (req, res, next) => {
+  try {
+    // owner cannot leave own class
+    const isOwner = await prisma.enrolled.findFirst({
+      where: {
+        course_id: req.body.course_id,
+        role: 2,
+        user_id: req.auth.userId,
+      },
+    });
+
+    if (isOwner === null) {
+      return res.status(400).json({
+        error: "Cannot leave course",
+      });
+    }
+
+    // verify that the user that is being updated is already enrolled in the course
+    const deleteUser = await prisma.enrolled.delete({
+      where: {
+        user_id_course_id: {
+          user_id: req.auth.userId,
+          course_id: req.body.course_id,
+        },
+      },
+    });
+
+    res.status(200).json(deleteUser);
+  } catch (error) {
+    res.status(500).json({
+      error: "Something went wrong while unenrolling from a course",
+    });
+  }
+});
+
 
 export default router;

@@ -40,3 +40,10 @@ export const updateRolePATCH = {
     role: z.literal(0).or(z.literal(1)),
   }),
 };
+
+export const courseUnenrollDELETE = {
+  body: z.object({
+    course_id: z.number(),
+    user_id: z.string(),
+  }),
+};
