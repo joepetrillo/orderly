@@ -1,7 +1,7 @@
 import express from "express";
 import { prisma } from "../prisma/init";
 import { validateRequest } from "zod-express-middleware";
-import { updateRolePATCH, user } from "@orderly/schema";
+import { updateRolePATCH, courseUnenrollDELETE } from "@orderly/schema";
 
 const router = express.Router();
 
@@ -61,7 +61,7 @@ router.patch("/", validateRequest(updateRolePATCH), async (req, res) => {
 });
 
 // student side leave class
-router.delete("/", validateRequest(user), async (req, res, next) => {
+router.delete("/", validateRequest(courseUnenrollDELETE), async (req, res, next) => {
   try {
     // owner cannot leave own class
     const isOwner = await prisma.enrolled.findFirst({
