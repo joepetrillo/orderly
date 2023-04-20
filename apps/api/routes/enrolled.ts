@@ -90,36 +90,11 @@ router.delete("/", validateRequest(user), async (req, res, next) => {
 
     res.status(200).json(deleteUser);
   } catch (error) {
-    next(error)
-  }
-});
-
-// get current position in queue
-router.get("/position", validateRequest(user), async (req, res, next) => {
-  
-  //TODO add some functionality to get multiple positions
-  // this currently only returns course, somehow need indexof
-  try {
-    const course = await prisma.course.findFirst({
-      where: {
-        id: req.body.course_id,
-        Meeting: {
-          some: {
-            Queue: {
-              some:{
-                user_id : req.auth.userId,
-              },
-            },
-          },
-        },
-      },
+    res.status(500).json({
+      error: "Something went wrong while unenrolling from a course",
     });
-    res.status(200).json(course);
-  } catch (error) {
-    next(error)
   }
 });
-
 
 
 export default router;
