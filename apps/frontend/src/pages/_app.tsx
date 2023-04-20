@@ -1,22 +1,29 @@
 import type { AppProps } from "next/app";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Inter } from "next/font/google";
-import Header from "@/components/Header";
+import { Lexend, Golos_Text } from "next/font/google";
 import "@/styles/globals.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import RootLayout from "@/components/RootLayout";
 
-const inter = Inter({ subsets: ["latin"] });
+const primaryFont = Golos_Text({ subsets: ["latin"] });
+const secondaryFont = Lexend({ subsets: ["latin"] });
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <style jsx global>{`
 				:root {
-					--font-inter: ${inter.style.fontFamily};
+					--font-primary: ${primaryFont.style.fontFamily};
+          --font-secondary: ${secondaryFont.style.fontFamily};
 				}
 			}`}</style>
       <ClerkProvider {...pageProps}>
-        <Header />
-        <Component {...pageProps} />
+        <RootLayout>
+          <Header />
+          <Component {...pageProps} />
+          <Footer />
+        </RootLayout>
       </ClerkProvider>
     </>
   );

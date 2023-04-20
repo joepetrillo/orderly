@@ -11,9 +11,10 @@ datasource db {
 }
 
 model Course {
-  id   Int    @id @default(autoincrement())
-  name String @db.VarChar(255)
-  code String @unique @db.Char(7) // random 7 character alphanumeric uppercase string
+  id       Int    @id @default(autoincrement())
+  owner_id String
+  name     String @db.VarChar(255)
+  code     String @unique @db.Char(7) // random 7 character alphanumeric uppercase string
 
   Enrolled Enrolled[]
   Meeting  Meeting[]
@@ -36,6 +37,7 @@ model Meeting {
   day        Int      @db.SmallInt
   start_time DateTime
   end_time   DateTime
+  link       String
 
   course Course  @relation(fields: [course_id], references: [id], onDelete: Cascade)
   Queue  Queue[]
