@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
   const allCourses: CourseGeneral[] = [];
 
   try {
-    // get all of the courses the person making this request are a part of (owner, host, or just enrolled in)
+    // get all of the courses the person making this request are a part of (owner, instructor, or student)
     const courses = await prisma.enrolled.findMany({
       where: {
         user_id: req.auth.userId,
@@ -38,6 +38,7 @@ router.get("/", async (req, res) => {
       },
     });
 
+    // if not enrolled in any courses, return empty array
     if (courses.length === 0) return res.status(200).json(allCourses);
 
     // get owner user objects from clerk
