@@ -275,4 +275,21 @@ router.post("/enroll", validateRequest(courseEnrollPOST), async (req, res) => {
   }
 });
 
+// delete a course
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params
+    const course = await prisma.course.delete({
+      where: {
+        id: Number(id)
+      }
+    })
+    res.status(204).json(course);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Something went wrong while deleting the course" });
+  }
+});
+
 export default router;
