@@ -1,6 +1,6 @@
 import Input from "@/components/ui/Input";
 import { useAuth } from "@clerk/nextjs";
-import { courseEnrollPOST } from "@orderly/schema";
+import { joinCoursePOST } from "@orderly/schema";
 import { FormEvent, useState } from "react";
 import { mutate } from "swr";
 import { z } from "zod";
@@ -23,7 +23,7 @@ export default function JoinCourseError({ course_id }: { course_id: string }) {
     };
 
     try {
-      courseEnrollPOST.body.parse(requestBody);
+      joinCoursePOST.body.parse(requestBody);
     } catch (error) {
       const zodError = error as z.ZodError;
       setError(zodError.issues[0].message);
@@ -43,7 +43,7 @@ export default function JoinCourseError({ course_id }: { course_id: string }) {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/course/enroll`,
+        `${process.env.NEXT_PUBLIC_API_URL}/courses/enroll`,
         requestOptions
       );
       const data = await res.json();
@@ -65,7 +65,7 @@ export default function JoinCourseError({ course_id }: { course_id: string }) {
       return;
     }
 
-    mutate(`${process.env.NEXT_PUBLIC_API_URL}/course/${course_id}`);
+    mutate(`${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}`);
     setLoading(false);
   }
 

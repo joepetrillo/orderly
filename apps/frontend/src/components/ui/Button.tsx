@@ -36,21 +36,18 @@ type ButtonAsButton = BaseProps &
   VariantProps<typeof buttonVariants> &
   Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseProps> & {
     as?: "button";
-    ref?: React.RefObject<HTMLButtonElement>;
   };
 
 type ButtonAsLink = BaseProps &
   VariantProps<typeof buttonVariants> &
   Omit<LinkProps, keyof BaseProps> & {
     as: "link";
-    ref?: React.RefObject<HTMLAnchorElement>;
   };
 
 type ButtonAsExternal = BaseProps &
   VariantProps<typeof buttonVariants> &
   Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseProps> & {
     as: "externalLink";
-    ref?: React.RefObject<HTMLAnchorElement>;
   };
 
 type ButtonProps = ButtonAsButton | ButtonAsLink | ButtonAsExternal;
@@ -100,14 +97,29 @@ const AsButton = React.forwardRef<HTMLButtonElement, ButtonAsButton>(
     );
   }
 );
-AsButton.displayName = "Button";
+AsButton.displayName = "RegularButton";
 
-export default function Button(props: ButtonProps): JSX.Element {
+const Button = React.forwardRef<
+  HTMLAnchorElement | HTMLButtonElement,
+  ButtonProps
+>((props, ref) => {
   if (props.as === "link") {
-    return <AsLink {...props} />;
+    return (
+      <AsLink ref={ref as React.ForwardedRef<HTMLAnchorElement>} {...props} />
+    );
   } else if (props.as === "externalLink") {
-    return <AsExternalLink {...props} />;
+    return (
+      <AsExternalLink
+        ref={ref as React.ForwardedRef<HTMLAnchorElement>}
+        {...props}
+      />
+    );
   } else {
-    return <AsButton {...props} />;
+    return (
+      <AsButton ref={ref as React.ForwardedRef<HTMLButtonElement>} {...props} />
+    );
   }
-}
+});
+Button.displayName = "Button";
+
+export default Button;

@@ -4,7 +4,7 @@
 
 ### Course creation
 
-**Request:** POST /course/
+**Request:** POST /courses/
 
 ```{.json}
 {
@@ -12,7 +12,7 @@
     "name": "CS320"
 }
 ```
-  
+
 **Response:**
 
 ```{.json}
@@ -34,7 +34,7 @@
 
 ### User enrollment into a course
 
-**Request:** POST /course/enroll
+**Request:** POST /courses/enroll
 
 ```{.json}
 {
@@ -42,7 +42,7 @@
     "code": "R1B4C0S"
 }
 ```
-  
+
 **Response:**
 
 ```{.json}
@@ -57,14 +57,14 @@
 
 ### Get currently enrolled courses
 
-**Request:** GET /course/
+**Request:** GET /courses/
 
 ```{.json}
 {
     "auth.userId": "123",
 }
 ```
-  
+
 **Response:**
 
 ```{.json}
@@ -86,7 +86,7 @@
 
 ### Update Role
 
-**Request:** PATCH /enrolled/
+**Request:** PATCH /courses/:course_id/members/
 
 ```{.json}
     {
@@ -111,7 +111,7 @@
 
 ### Enrolled leaves class
 
-**Request:** DELETE /enrolled/
+**Request:** DELETE /courses/:course_id/members/
 
 ```{.json}
     {
@@ -133,7 +133,7 @@
 
 ### Get Enrolled's current position
 
-**Request:** GET /enrolled/position
+**Request:** GET /courses/:course_id/members/position
 
 ```{.json}
     {

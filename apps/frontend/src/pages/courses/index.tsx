@@ -26,7 +26,7 @@ const CourseCard = ({
   return (
     <Link
       className="flex flex-col gap-2 rounded border border-gray-200 bg-white p-6 shadow shadow-gray-200/70 transition-all duration-150 hover:border-gray-300 hover:shadow-md"
-      href={`/course/${id}`}
+      href={`/courses/${id}`}
     >
       <p className="line-clamp-1 text-sm text-gray-500">{owner_name}</p>
       <h3 className="mb-2 line-clamp-2 h-12 font-medium">{name}</h3>
@@ -45,7 +45,7 @@ const CourseCard = ({
 };
 
 export default function Courses() {
-  const { data, error, loading } = useClerkSWR<CourseGeneral[]>("/course");
+  const { data, error, loading } = useClerkSWR<CourseGeneral[]>("/courses");
 
   const [ownedCourses, joinedCourses] = doubleFilter(
     data,
