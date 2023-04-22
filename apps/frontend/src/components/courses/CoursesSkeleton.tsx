@@ -22,9 +22,6 @@ export default function CoursesSkeleton() {
         <LoadingCard />
         <LoadingCard />
         <LoadingCard />
-        <LoadingCard />
-        <LoadingCard />
-        <LoadingCard />
       </div>
     </>
   );

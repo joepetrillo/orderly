@@ -1,10 +1,13 @@
 import express from "express";
 import { prisma } from "../prisma/init";
 import { processRequest, validateRequest } from "zod-express-middleware";
-import { coursePOST, courseEnrollPOST, courseGET } from "@orderly/schema";
+import { coursePARAM, createCoursePOST, joinCoursePOST } from "@orderly/schema";
 import clerkClient from "@clerk/clerk-sdk-node";
+import members from "./members";
 
 const router = express.Router();
+
+router.use("/:course_id/members", members);
 
 // get general details about all courses enrolled in
 router.get("/", async (req, res) => {
@@ -20,7 +23,7 @@ router.get("/", async (req, res) => {
   const allCourses: CourseGeneral[] = [];
 
   try {
-    // get all of the courses the person making this request are a part of (owner, host, or just enrolled in)
+    // get all of the courses the person making this request are a part of (owner, instructor, or student)
     const courses = await prisma.enrolled.findMany({
       where: {
         user_id: req.auth.userId,
@@ -38,6 +41,7 @@ router.get("/", async (req, res) => {
       },
     });
 
+    // if not enrolled in any courses, return empty array
     if (courses.length === 0) return res.status(200).json(allCourses);
 
     // get owner user objects from clerk
@@ -69,7 +73,7 @@ router.get("/", async (req, res) => {
 });
 
 // get all specific course details for an exact course
-router.get("/:course_id", processRequest(courseGET), async (req, res) => {
+router.get("/:course_id", processRequest(coursePARAM), async (req, res) => {
   type CourseData = {
     id: number;
     name: string;
@@ -88,9 +92,9 @@ router.get("/:course_id", processRequest(courseGET), async (req, res) => {
     }[];
   };
 
-  try {
-    const { course_id } = req.params;
+  const { course_id } = req.params;
 
+  try {
     // first check if the course with the given course id exists
     const course = await prisma.course.findFirst({
       where: {
@@ -165,7 +169,7 @@ router.get("/:course_id", processRequest(courseGET), async (req, res) => {
 });
 
 // create new course
-router.post("/", validateRequest(coursePOST), async (req, res) => {
+router.post("/", validateRequest(createCoursePOST), async (req, res) => {
   try {
     let entryCode: string;
 
@@ -228,7 +232,7 @@ router.post("/", validateRequest(coursePOST), async (req, res) => {
 });
 
 // enroll in a course
-router.post("/enroll", validateRequest(courseEnrollPOST), async (req, res) => {
+router.post("/enroll", validateRequest(joinCoursePOST), async (req, res) => {
   try {
     // check if code provided by client matches an existing course
     const course = await prisma.course.findUnique({
@@ -275,15 +279,37 @@ router.post("/enroll", validateRequest(courseEnrollPOST), async (req, res) => {
 });
 
 // delete a course
-router.delete("/:id", async (req, res) => {
+router.delete("/:course_id", processRequest(coursePARAM), async (req, res) => {
+  const { course_id } = req.params;
+
   try {
-    const { id } = req.params
-    const course = await prisma.course.delete({
+    // first check if the course with the given course id exists
+    const course = await prisma.course.findFirst({
       where: {
-        id: Number(id)
-      }
-    })
-    res.status(204).json(course);
+        id: course_id,
+      },
+    });
+
+    // course does not exist
+    if (course === null) {
+      return res.status(404).json({ error: "This course does not exist" });
+    }
+
+    // requester is not the owner of the course, so they are not allowed to delete it (IMPORTANT!)
+    if (course.owner_id !== req.auth.userId) {
+      return res
+        .status(403)
+        .json({ error: "You do not have permission to delete this course" });
+    }
+
+    // delete the course (NO GOING BACK - WILL DELETE ALL DATA RELATED TO THIS COURSE)
+    const deletedCourse = await prisma.course.delete({
+      where: {
+        id: course_id,
+      },
+    });
+
+    res.status(200).json(deletedCourse);
   } catch (error) {
     res
       .status(500)

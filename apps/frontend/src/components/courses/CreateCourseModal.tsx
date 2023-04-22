@@ -2,7 +2,7 @@ import { useAuth } from "@clerk/nextjs";
 import { FormEvent, Fragment, useRef, useState } from "react";
 import { mutate } from "swr";
 import { Dialog, Transition } from "@headlessui/react";
-import { coursePOST } from "@orderly/schema";
+import { createCoursePOST } from "@orderly/schema";
 import { z } from "zod";
 import Spinner from "@/components/ui/Spinner";
 import Button from "@/components/ui/Button";
@@ -25,7 +25,7 @@ export default function CreateCourseModal() {
     };
 
     try {
-      coursePOST.body.parse(requestBody);
+      createCoursePOST.body.parse(requestBody);
     } catch (error) {
       const zodError = error as z.ZodError;
       setError(zodError.issues[0].message);
@@ -45,7 +45,7 @@ export default function CreateCourseModal() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/course`,
+        `${process.env.NEXT_PUBLIC_API_URL}/courses`,
         requestOptions
       );
       const data = await res.json();
@@ -67,7 +67,7 @@ export default function CreateCourseModal() {
       return;
     }
 
-    mutate(`${process.env.NEXT_PUBLIC_API_URL}/course`);
+    mutate(`${process.env.NEXT_PUBLIC_API_URL}/courses`);
     setLoading(false);
     setOpen(false);
   }
