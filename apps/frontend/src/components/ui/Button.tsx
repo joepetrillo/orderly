@@ -12,10 +12,10 @@ const buttonVariants = cva(
         ghost: "hover:bg-indigo-200/60 text-indigo-600",
         outline:
           "ring-2 ring-inset ring-indigo-600 hover:bg-indigo-200/60 text-indigo-600",
-        light: "bg-white hover:bg-gray-100 text-indigo-600",
+        light: "bg-gray-200 hover:bg-gray-300 text-indigo-600",
       },
       size: {
-        sm: "px-5 py-2.5 text-[0.6875rem]",
+        sm: "px-5 py-2 text-[0.6875rem]",
         default: "px-6 py-3 text-xs",
         lg: "px-6 py-3 text-sm",
       },
@@ -93,7 +93,9 @@ const AsButton = React.forwardRef<HTMLButtonElement, ButtonAsButton>(
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...rest}
-      />
+      >
+        {rest.children}
+      </button>
     );
   }
 );
