@@ -6,6 +6,9 @@ import JoinCourseModal from "@/components/courses/JoinCourseModal";
 import { Container } from "@/components/Container";
 import { doubleFilter } from "@/lib/utils";
 import { UserIcon, KeyIcon } from "@heroicons/react/20/solid";
+import { Tab } from "@headlessui/react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
 type CourseGeneral = {
   id: number;
@@ -44,8 +47,15 @@ const CourseCard = ({
   );
 };
 
+const tabs = [
+  { id: "all", label: "All" },
+  { id: "created", label: "Created" },
+  { id: "joined", label: "Joined" },
+];
+
 export default function Courses() {
   const { data, error, loading } = useClerkSWR<CourseGeneral[]>("/courses");
+  const [selectedTab, setSelectedTab] = useState(0);
 
   const [ownedCourses, joinedCourses] = doubleFilter(
     data,
@@ -55,30 +65,77 @@ export default function Courses() {
   return (
     <div className="min-h-dash bg-gray-50 py-10">
       <Container>
-        <h1 className="font-display text-4xl font-bold">Courses</h1>
-        <div className="mb-10 mt-6 space-x-4">
-          <CreateCourseModal />
-          <JoinCourseModal />
+        <div className="items-center justify-between pb-10 sm:flex ">
+          <h1 className="mb-5 font-display text-4xl font-semibold sm:m-0">
+            Courses
+          </h1>
+          <div className="space-x-4">
+            <CreateCourseModal />
+            <JoinCourseModal />
+          </div>
         </div>
-        {loading ? (
-          <CoursesSkeleton />
-        ) : error ? (
-          <p className="text-red-500">{error.message}</p>
-        ) : (
-          <>
-            {data?.length === 0 && (
-              <p>You have not created or joined any courses</p>
-            )}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {ownedCourses.map((curr) => (
-                <CourseCard key={curr.id} {...curr} />
-              ))}
-              {joinedCourses.map((curr) => (
-                <CourseCard key={curr.id} {...curr} />
-              ))}
-            </div>
-          </>
-        )}
+        <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
+          <Tab.List className="mb-5 space-x-2">
+            {tabs.map((tab, index) => {
+              return (
+                <Tab
+                  key={tab.id}
+                  className="relative rounded px-4 py-1.5 text-sm font-medium ring-indigo-400 transition focus:outline-none ui-focus-visible:ring-2"
+                  style={{ WebkitTapHighlightColor: "transparent" }}
+                >
+                  {selectedTab === index && (
+                    <motion.span
+                      layoutId="bubble"
+                      className="absolute inset-0 z-10 rounded bg-white mix-blend-difference"
+                      style={{ borderRadius: 4 }}
+                      transition={{
+                        type: "spring",
+                        bounce: 0.3,
+                        duration: 0.6,
+                      }}
+                    />
+                  )}
+                  {tab.label}
+                </Tab>
+              );
+            })}
+          </Tab.List>
+          {loading ? (
+            <CoursesSkeleton />
+          ) : error ? (
+            <p className="text-red-500">{error.message}</p>
+          ) : (
+            <Tab.Panels>
+              <Tab.Panel className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {data?.length === 0 && (
+                  <p>You have not created or joined any courses</p>
+                )}
+                {ownedCourses.map((curr) => (
+                  <CourseCard key={curr.id} {...curr} />
+                ))}
+                {joinedCourses.map((curr) => (
+                  <CourseCard key={curr.id} {...curr} />
+                ))}
+              </Tab.Panel>
+              <Tab.Panel className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {ownedCourses.length === 0 && (
+                  <p>You have not created any courses</p>
+                )}
+                {ownedCourses.map((curr) => (
+                  <CourseCard key={curr.id} {...curr} />
+                ))}
+              </Tab.Panel>
+              <Tab.Panel className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {joinedCourses.length === 0 && (
+                  <p>You have not joined any courses</p>
+                )}
+                {joinedCourses.map((curr) => (
+                  <CourseCard key={curr.id} {...curr} />
+                ))}
+              </Tab.Panel>
+            </Tab.Panels>
+          )}
+        </Tab.Group>
       </Container>
     </div>
   );

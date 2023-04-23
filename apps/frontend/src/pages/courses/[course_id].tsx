@@ -33,14 +33,7 @@ export default function Course() {
     paramOk.success === true ? `/courses/${course_id}` : null
   );
 
-  if (!course_id)
-    return (
-      <div className="min-h-dash bg-gray-50">
-        <div className="flex justify-center py-20">
-          <Spinner />
-        </div>
-      </div>
-    );
+  if (!course_id) return <div className="min-h-dash bg-gray-50" />;
 
   if (paramOk.success === false) return <NotFound />;
 
@@ -83,7 +76,7 @@ export default function Course() {
   return (
     <div className="min-h-dash bg-gray-50 py-10">
       <Container className="space-y-5">
-        <h1 className="text-4xl font-bold">{data?.name}</h1>
+        <h1 className="font-display text-4xl font-semibold">{data?.name}</h1>
         <p>Course Code - {data?.code}</p>
         {authorizedView}
       </Container>
