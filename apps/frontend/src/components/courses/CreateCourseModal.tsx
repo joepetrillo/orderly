@@ -123,24 +123,16 @@ export default function CreateCourseModal() {
                     </Dialog.Title>
                     <fieldset disabled={loading} className="mt-5">
                       <form onSubmit={handleSubmit} id="create_course">
-                        <label
-                          htmlFor="course_name"
-                          className="block font-medium leading-6"
-                        >
-                          Name
-                        </label>
                         <Input
+                          inputId="course_name"
+                          label="Name"
+                          errorMessage={error}
                           type="text"
-                          name="name"
-                          id="course_name"
                           placeholder="Computer Programming 101"
-                          className="mt-2"
+                          name="name"
                         />
                       </form>
                     </fieldset>
-                    {error && (
-                      <p className="mt-2 text-xs text-red-500">{error}</p>
-                    )}
                   </div>
                   <div className="flex justify-center gap-2 bg-gray-100 px-4 py-3 sm:px-6">
                     <Button
@@ -149,7 +141,7 @@ export default function CreateCourseModal() {
                       className="w-full"
                       ref={cancelButtonRef}
                       disabled={loading}
-                      variant="ghost"
+                      variant="outline"
                     >
                       Cancel
                     </Button>

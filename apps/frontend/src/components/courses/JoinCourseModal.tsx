@@ -123,24 +123,16 @@ export default function JoinCourseModal() {
                     </Dialog.Title>
                     <fieldset disabled={loading} className="mt-5">
                       <form onSubmit={handleSubmit} id="join_course">
-                        <label
-                          htmlFor="course_code"
-                          className="block font-medium leading-6"
-                        >
-                          Code
-                        </label>
                         <Input
+                          inputId="course_code"
+                          label="Code"
+                          errorMessage={error}
                           type="text"
-                          name="code"
-                          id="course_code"
                           placeholder="XXXXXXX"
-                          className="mt-2"
+                          name="code"
                         />
                       </form>
                     </fieldset>
-                    {error && (
-                      <p className="mt-2 text-xs text-red-500">{error}</p>
-                    )}
                   </div>
                   <div className="flex justify-end gap-2 bg-gray-100 px-4 py-3 sm:px-6">
                     <Button
@@ -149,7 +141,7 @@ export default function JoinCourseModal() {
                       className="w-full"
                       ref={cancelButtonRef}
                       disabled={loading}
-                      variant="ghost"
+                      variant="outline"
                     >
                       Cancel
                     </Button>

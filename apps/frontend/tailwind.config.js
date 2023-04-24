@@ -12,9 +12,12 @@ module.exports = {
         "pulse-fast": "pulse 0.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;",
       },
       minHeight: {
-        dash: "calc(100vh - 96px)",
+        dash: "calc(100vh - 80px)",
       },
     },
   },
-  plugins: [require("@headlessui/tailwindcss")],
+  plugins: [
+    require("@headlessui/tailwindcss"),
+    require("@tailwindcss/forms")({ strategy: "class" }),
+  ],
 };
