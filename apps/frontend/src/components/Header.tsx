@@ -38,29 +38,27 @@ export default function Header() {
               </SignedIn>
             </Link>
             <SignedIn>
-              <div className="hidden text-sm font-medium leading-7 md:flex md:gap-x-2">
-                <Link
-                  className={cn(
-                    router.pathname === "/courses"
-                      ? "bg-gray-200/70 hover:bg-gray-200/70"
-                      : "hover:bg-gray-100",
-                    "inline-block rounded px-3 py-1.5"
-                  )}
+              <div className="hidden items-center text-sm font-medium leading-7 md:flex md:gap-x-2">
+                <Button
+                  as="link"
                   href="/courses"
+                  variant="tabGray"
+                  className={cn(
+                    router.pathname === "/courses" && "bg-gray-100"
+                  )}
                 >
                   Courses
-                </Link>
-                <Link
-                  className={cn(
-                    router.pathname === "/scheduled"
-                      ? "bg-gray-200/70 hover:bg-gray-200/70"
-                      : "hover:bg-gray-100",
-                    "inline-block rounded px-3 py-1.5"
-                  )}
+                </Button>
+                <Button
+                  as="link"
                   href="/scheduled"
+                  variant="tabGray"
+                  className={cn(
+                    router.pathname === "/scheduled" && "bg-gray-100"
+                  )}
                 >
                   Scheduled
-                </Link>
+                </Button>
               </div>
             </SignedIn>
           </div>
@@ -133,10 +131,8 @@ export default function Header() {
                     <Link
                       href="/courses"
                       className={cn(
-                        router.pathname === "/courses"
-                          ? "bg-gray-200/70 hover:bg-gray-200/70"
-                          : "hover:bg-gray-100",
-                        "-mx-2.5 block rounded px-2.5 py-4"
+                        router.pathname === "/courses" && "bg-gray-100",
+                        "-mx-2.5 block rounded px-2.5 py-4 hover:bg-gray-100"
                       )}
                     >
                       Courses
@@ -144,10 +140,8 @@ export default function Header() {
                     <Link
                       href="/scheduled"
                       className={cn(
-                        router.pathname === "/scheduled"
-                          ? "bg-gray-200/70 hover:bg-gray-200/70"
-                          : "hover:bg-gray-100",
-                        "-mx-2.5 block rounded px-2.5 py-4"
+                        router.pathname === "/scheduled" && "bg-gray-100",
+                        "-mx-2.5 block rounded px-2.5 py-4 hover:bg-gray-100"
                       )}
                     >
                       Scheduled

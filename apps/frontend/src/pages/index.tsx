@@ -26,7 +26,7 @@ const Hero = () => {
         Office hours management made{" "}
         <span className="font-medium text-indigo-600">effortless</span>.
       </h1>
-      <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 tracking-tight text-gray-600">
+      <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 tracking-tight text-gray-700">
         Optimize student-instructor interactions and maximize engagement
         opportunities with Orderly. Boost productivity, stay organized and
         elevate your office hours.
