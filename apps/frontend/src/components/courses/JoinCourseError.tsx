@@ -79,17 +79,14 @@ export default function JoinCourseError({ course_id }: { course_id: string }) {
       </p>
       <fieldset disabled={loading} className="mt-8 w-full max-w-md">
         <form onSubmit={handleSubmit}>
-          <label htmlFor="course_code" className="block font-medium leading-6">
-            Code
-          </label>
           <Input
+            inputId="course_code"
+            label="Code"
+            errorMessage={error}
             type="text"
             placeholder="XXXXXXX"
-            id="course_code"
             name="code"
-            className="mt-2"
           />
-          {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
           <Button disabled={loading} className="mt-5 w-full">
             Join
             {loading && <Spinner small />}
