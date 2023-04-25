@@ -25,7 +25,6 @@ router.patch("/:id", processRequest(meetingPATCH), async (req, res) => {
         link: req.body.link,
       },
     });
-
     res.status(200).json(updatedMeeting);
   } catch (error) {
     res.status(500).json({
