@@ -33,14 +33,15 @@ const CourseCard = ({
     >
       <p className="line-clamp-1 text-sm text-gray-500">{owner_name}</p>
       <h3 className="mb-2 line-clamp-2 h-12 font-medium">{name}</h3>
-      <div className="flex justify-between">
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="inline-flex items-center gap-2 text-sm text-gray-500">
           <UserIcon className="h-[1.3em]" />
           <p>
-            {member_count} {member_count === 1 ? "Member" : "Members"}
+            {member_count}{" "}
+            <span>{member_count === 1 ? "Member" : "Members"}</span>
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="inline-flex items-center gap-2 text-sm text-gray-500">
           <KeyIcon className="h-[1.3em]" />
           <p>{code}</p>
         </div>
