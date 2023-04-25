@@ -56,3 +56,39 @@ export const updateRolePATCH = {
     role: z.literal(0).or(z.literal(1)),
   }),
 };
+
+export const meetingPOST = {
+  body: z.object({
+    course_id: z.number(),
+    day: z
+      .literal(0)
+      .or(z.literal(1))
+      .or(z.literal(2))
+      .or(z.literal(3))
+      .or(z.literal(4))
+      .or(z.literal(5))
+      .or(z.literal(6)),
+    start_time: z.string().datetime(),
+    end_time: z.string().datetime(),
+    link: z.string().url(),
+  }),
+};
+
+export const meetingPATCH = {
+  body: z.object({
+    id: z.number(),
+    course_id: z.number().optional(),
+    day: z
+      .literal(0)
+      .or(z.literal(1))
+      .or(z.literal(2))
+      .or(z.literal(3))
+      .or(z.literal(4))
+      .or(z.literal(5))
+      .or(z.literal(6))
+      .optional(),
+    start_time: z.string().datetime().optional(),
+    end_time: z.string().datetime().optional(),
+    link: z.string().url().optional(),
+  }),
+};
