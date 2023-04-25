@@ -39,24 +39,6 @@ const Hero = () => {
           Learn More
         </Button>
       </div>
-      <div className="flex flex-col gap-2 rounded border border-gray-200 bg-white p-6 shadow shadow-gray-200/70 transition-all duration-150  hover:border-gray-300 hover:shadow-md">
-        <p className="line-clamp-1 text-sm text-gray-500">Name here</p>
-        <h3 className="mb-2 line-clamp-2 h-12 font-medium">
-          CS 320 Software Engineering
-        </h3>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="inline-flex items-center gap-2 text-sm text-gray-500">
-            <UserIcon className="inline h-[1.3em]" />
-            <p>
-              {6} <span>{"Members"}</span>
-            </p>
-          </div>
-          <div className="inline-flex items-center gap-2 text-sm text-gray-500">
-            <KeyIcon className="inline h-[1.3em]" />
-            <p>DWDWA83</p>
-          </div>
-        </div>
-      </div>
     </Container>
 
     // <span className="font-medium text-indigo-600">
