@@ -1,18 +1,22 @@
 import z from "zod";
 
-export const courseGET = {
+const valid_course_id = z.coerce
+  .number()
+  .int()
+  .positive()
+  .finite()
+  .safe()
+  .transform(Number);
+
+// just for checking course_id
+export const coursePARAM = {
   params: z.object({
-    course_id: z.coerce
-      .number()
-      .int()
-      .positive()
-      .finite()
-      .safe()
-      .transform(Number),
+    course_id: valid_course_id,
   }),
 };
 
-export const coursePOST = {
+// creating a new course
+export const createCoursePOST = {
   body: z.object({
     name: z
       .string()
@@ -21,7 +25,8 @@ export const coursePOST = {
   }),
 };
 
-export const courseEnrollPOST = {
+// joining a course
+export const joinCoursePOST = {
   body: z.object({
     code: z
       .string()
@@ -33,17 +38,21 @@ export const courseEnrollPOST = {
   }),
 };
 
-export const updateRolePATCH = {
-  body: z.object({
-    course_id: z.number(),
+// leaving (or kicking a user from) a course
+export const kickUserDELETE = {
+  params: z.object({
+    course_id: valid_course_id,
     user_id: z.string(),
-    role: z.literal(0).or(z.literal(1)),
   }),
 };
 
-export const courseUnenrollDELETE = {
-  body: z.object({
-    course_id: z.number(),
+// update user role to 0 or 1
+export const updateRolePATCH = {
+  params: z.object({
+    course_id: valid_course_id,
     user_id: z.string(),
+  }),
+  body: z.object({
+    role: z.literal(0).or(z.literal(1)),
   }),
 };

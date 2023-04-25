@@ -1,6 +1,6 @@
 import Button from "@/components/ui/Button";
 import { Container } from "@/components/Container";
-import { CakeIcon } from "@heroicons/react/24/outline";
+import { CakeIcon, KeyIcon, UserIcon } from "@heroicons/react/24/outline";
 
 const BackgroundBlur = () => {
   return (
@@ -26,16 +26,16 @@ const Hero = () => {
         Office hours management made{" "}
         <span className="font-medium text-indigo-600">effortless</span>.
       </h1>
-      <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 tracking-tight text-gray-600">
+      <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 tracking-tight text-gray-700">
         Optimize student-instructor interactions and maximize engagement
         opportunities with Orderly. Boost productivity, stay organized and
         elevate your office hours.
       </p>
-      <div className="mt-8 flex items-center justify-center gap-2">
+      <div className="mt-8 flex items-center justify-center gap-4">
         <Button as="link" href="/signup" size="lg">
           Get Started
         </Button>
-        <Button as="link" href="/#features" variant="ghost" size="lg">
+        <Button as="link" href="/#features" variant="secondary" size="lg">
           Learn More
         </Button>
       </div>
@@ -96,10 +96,10 @@ const Features = () => {
     >
       <Container>
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-medium tracking-tight">
-            Orderly Features
-          </h2>
-          <p className="mt-6 text-lg text-gray-600">Still on the fence?</p>
+          <h2 className="text-3xl font-medium tracking-tight">Features</h2>
+          <p className="mt-6 text-lg text-gray-600">
+            We are most proud of the following features.
+          </p>
         </div>
         <ul
           role="list"
@@ -108,7 +108,7 @@ const Features = () => {
           {features.map((feature) => (
             <li
               key={feature.name}
-              className="rounded-2xl border border-gray-200 p-8"
+              className="rounded border border-gray-200 p-8"
             >
               <feature.icon className="h-8 w-8" />
               <h3 className="mt-6 font-semibold text-gray-900">
@@ -136,7 +136,7 @@ const CallToAction = () => {
             can feel like you are doing something productive.
           </p>
           <Button
-            variant="light"
+            variant="outline"
             as="link"
             href="/signup"
             className="mt-10"

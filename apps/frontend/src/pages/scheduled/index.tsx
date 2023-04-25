@@ -58,12 +58,7 @@ const MeetingCard = ({
             <br />
             <br />
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-2">
-              <Button variant="ghost">Edit Queue Submission</Button>
-              <Button as="link" href={link}>
-                Join Zoom
-              </Button>
-            </div>
-          </div>
+
         </div>
       </div>
     </Link>

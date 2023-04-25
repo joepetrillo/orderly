@@ -19,10 +19,10 @@ export default function Header() {
   }, [router.pathname]);
 
   return (
-    <header className="z-10 border-b border-b-gray-200 bg-white text-gray-950">
+    <header className="z-10 flex h-20 items-center border-b border-b-gray-200 bg-white text-gray-950">
       <Container>
         {/* consistent header */}
-        <nav className="flex h-24 items-center justify-between">
+        <nav className="flex items-center justify-between">
           {/* logo and links (links only visible medium and up) */}
           <div className="flex items-center gap-4">
             <Link
@@ -38,37 +38,35 @@ export default function Header() {
               </SignedIn>
             </Link>
             <SignedIn>
-              <div className="hidden text-sm font-medium leading-7 md:flex md:gap-x-2">
-                <Link
-                  className={cn(
-                    router.pathname === "/courses"
-                      ? "bg-gray-200/70 hover:bg-gray-200/70"
-                      : "hover:bg-gray-100",
-                    "inline-block rounded px-3 py-1.5"
-                  )}
+              <div className="hidden items-center text-sm font-medium leading-7 md:flex md:gap-x-2">
+                <Button
+                  as="link"
                   href="/courses"
+                  variant="tabGray"
+                  className={cn(
+                    router.pathname === "/courses" && "bg-gray-100"
+                  )}
                 >
                   Courses
-                </Link>
-                <Link
-                  className={cn(
-                    router.pathname === "/scheduled"
-                      ? "bg-gray-200/70 hover:bg-gray-200/70"
-                      : "hover:bg-gray-100",
-                    "inline-block rounded px-3 py-1.5"
-                  )}
+                </Button>
+                <Button
+                  as="link"
                   href="/scheduled"
+                  variant="tabGray"
+                  className={cn(
+                    router.pathname === "/scheduled" && "bg-gray-100"
+                  )}
                 >
                   Scheduled
-                </Link>
+                </Button>
               </div>
             </SignedIn>
           </div>
 
           {/* sign in button */}
           <SignedOut>
-            <Button as="link" variant="outline" href="/signin" size="lg">
-              Sign in
+            <Button as="link" variant="outline" href="/signin">
+              Sign In
             </Button>
           </SignedOut>
 
@@ -86,7 +84,7 @@ export default function Header() {
               <UserButton
                 appearance={{
                   elements: {
-                    userButtonAvatarBox: "h-11 w-11",
+                    userButtonAvatarBox: "h-10 w-10",
                   },
                   variables: {
                     colorPrimary: "#4E46E5",
@@ -111,7 +109,7 @@ export default function Header() {
             onClose={setMobileMenuOpen}
           >
             <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white p-6 px-4 pt-0 sm:px-6 sm:ring-1 sm:ring-gray-900/10 lg:px-8">
-              <div className="flex h-[97px] items-center justify-between border-b border-b-gray-200">
+              <div className="flex h-20 items-center justify-between border-b border-b-gray-200">
                 <Link
                   href="/"
                   className="-m-2.5 p-2.5 focus-visible:rounded focus-visible:outline focus-visible:outline-4 focus-visible:outline-indigo-400"
@@ -133,10 +131,8 @@ export default function Header() {
                     <Link
                       href="/courses"
                       className={cn(
-                        router.pathname === "/courses"
-                          ? "bg-gray-200/70 hover:bg-gray-200/70"
-                          : "hover:bg-gray-100",
-                        "-mx-2.5 block rounded px-2.5 py-4"
+                        router.pathname === "/courses" && "bg-gray-100",
+                        "-mx-2.5 block rounded px-2.5 py-4 hover:bg-gray-100"
                       )}
                     >
                       Courses
@@ -144,10 +140,8 @@ export default function Header() {
                     <Link
                       href="/scheduled"
                       className={cn(
-                        router.pathname === "/scheduled"
-                          ? "bg-gray-200/70 hover:bg-gray-200/70"
-                          : "hover:bg-gray-100",
-                        "-mx-2.5 block rounded px-2.5 py-4"
+                        router.pathname === "/scheduled" && "bg-gray-100",
+                        "-mx-2.5 block rounded px-2.5 py-4 hover:bg-gray-100"
                       )}
                     >
                       Scheduled
@@ -157,7 +151,7 @@ export default function Header() {
                     <UserButton
                       appearance={{
                         elements: {
-                          userButtonAvatarBox: "h-11 w-11",
+                          userButtonAvatarBox: "h-10 w-10",
                         },
                         variables: {
                           colorPrimary: "#4E46E5",

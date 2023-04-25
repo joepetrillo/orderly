@@ -1,19 +1,50 @@
 import { cn } from "@/lib/utils";
 import React from "react";
+import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 
 const Input = React.forwardRef<
   HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement>
->(({ className, ...props }, ref) => {
+  React.InputHTMLAttributes<HTMLInputElement> & {
+    inputId: string;
+    label: string;
+    errorMessage?: string;
+  }
+>(({ className, inputId, label, errorMessage, ...props }, ref) => {
   return (
-    <input
-      ref={ref}
-      className={cn(
-        "w-full min-w-0 flex-auto appearance-none rounded bg-white px-3 py-1.5 shadow shadow-gray-300 ring-2 ring-gray-400 placeholder:text-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-indigo-400  disabled:opacity-50",
-        className
+    <div>
+      <label
+        htmlFor={inputId}
+        className="block text-sm font-medium text-gray-700"
+      >
+        {label}
+      </label>
+      <div className="relative mt-1 rounded-md shadow-sm">
+        <input
+          ref={ref}
+          id={inputId}
+          aria-invalid={Boolean(errorMessage)}
+          aria-describedby={`${inputId}-error`}
+          className={cn(
+            "form-input block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 sm:text-sm",
+            className
+          )}
+          {...props}
+        />
+        {errorMessage && (
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <ExclamationCircleIcon
+              className="h-5 w-5 text-red-500"
+              aria-hidden="true"
+            />
+          </div>
+        )}
+      </div>
+      {errorMessage && (
+        <p className="mt-2 text-xs text-red-500" id={`${inputId}-error`}>
+          {errorMessage}
+        </p>
       )}
-      {...props}
-    />
+    </div>
   );
 });
 

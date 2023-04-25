@@ -1,31 +1,29 @@
 import { useAuth } from "@clerk/nextjs";
-import { FormEvent, Fragment, useRef, useState } from "react";
+import { FormEvent, SetStateAction, useState } from "react";
 import { mutate } from "swr";
-import { Dialog, Transition } from "@headlessui/react";
-import { coursePOST } from "@orderly/schema";
 import { z } from "zod";
-import Spinner from "@/components/ui/Spinner";
-import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import Modal from "@/components/ui/Modal";
+import { createCoursePOST } from "@orderly/schema";
 
 export default function CreateCourseModal() {
   const { getToken } = useAuth();
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    e: FormEvent<HTMLFormElement>,
+    setOpen: (value: SetStateAction<boolean>) => void
+  ) {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(e.currentTarget));
-
     const requestBody = {
       name: formData.name,
     };
 
     try {
-      coursePOST.body.parse(requestBody);
+      createCoursePOST.body.parse(requestBody);
     } catch (error) {
       const zodError = error as z.ZodError;
       setError(zodError.issues[0].message);
@@ -45,7 +43,7 @@ export default function CreateCourseModal() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/course`,
+        `${process.env.NEXT_PUBLIC_API_URL}/courses`,
         requestOptions
       );
       const data = await res.json();
@@ -67,108 +65,27 @@ export default function CreateCourseModal() {
       return;
     }
 
-    mutate(`${process.env.NEXT_PUBLIC_API_URL}/course`);
+    mutate(`${process.env.NEXT_PUBLIC_API_URL}/courses`);
     setLoading(false);
     setOpen(false);
   }
 
   return (
-    <>
-      <Button
-        onClick={() => {
-          setError("");
-          setOpen(true);
-        }}
-      >
-        Create
-      </Button>
-      <Transition.Root show={open} as={Fragment}>
-        <Dialog
-          className="relative z-20"
-          initialFocus={cancelButtonRef}
-          onClose={() => {
-            if (!loading) setOpen(false);
-          }}
-        >
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-gray-500/75 transition-opacity" />
-          </Transition.Child>
-
-          <div className="fixed inset-0 w-screen overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 translate-y-4"
-                enterTo="opacity-100 translate-y-0"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 translate-y-0"
-                leaveTo="opacity-0 translate-y-4"
-              >
-                <Dialog.Panel className="relative w-full max-w-lg overflow-hidden rounded-lg bg-white text-left text-gray-950 shadow-xl transition-all">
-                  <div className="bg-white px-4 py-6 sm:px-6">
-                    <Dialog.Title
-                      as="h3"
-                      className="text-lg font-semibold leading-6"
-                    >
-                      Create New Course
-                    </Dialog.Title>
-                    <fieldset disabled={loading} className="mt-5">
-                      <form onSubmit={handleSubmit} id="create_course">
-                        <label
-                          htmlFor="course_name"
-                          className="block font-medium leading-6"
-                        >
-                          Name
-                        </label>
-                        <Input
-                          type="text"
-                          name="name"
-                          id="course_name"
-                          placeholder="Computer Programming 101"
-                          className="mt-2"
-                        />
-                      </form>
-                    </fieldset>
-                    {error && (
-                      <p className="mt-2 text-xs text-red-500">{error}</p>
-                    )}
-                  </div>
-                  <div className="flex justify-center gap-2 bg-gray-100 px-4 py-3 sm:px-6">
-                    <Button
-                      type="button"
-                      onClick={() => setOpen(false)}
-                      className="w-full"
-                      ref={cancelButtonRef}
-                      disabled={loading}
-                      variant="ghost"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      disabled={loading}
-                      className="w-full"
-                      type="submit"
-                      form="create_course"
-                    >
-                      Create
-                      {loading && <Spinner small />}
-                    </Button>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </Dialog>
-      </Transition.Root>
-    </>
+    <Modal
+      title="Create New Course"
+      actionTitle="Create"
+      handleSubmit={handleSubmit}
+      loading={loading}
+      setError={setError}
+    >
+      <Input
+        inputId="course_name"
+        label="Name"
+        errorMessage={error}
+        type="text"
+        placeholder="Computer Programming 101"
+        name="name"
+      />
+    </Modal>
   );
 }
