@@ -63,6 +63,7 @@ export const enqueueMeetingPOST = {
     meeting_id: valid_id_type,
   }),
 };
+
 export const meetingPOST = {
   body: z.object({
     course_id: z.number(),
