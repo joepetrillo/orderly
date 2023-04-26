@@ -3,7 +3,7 @@ import { prisma } from "../prisma/init";
 import { processRequest, validateRequest } from "zod-express-middleware";
 import { coursePARAM, createCoursePOST, joinCoursePOST } from "@orderly/schema";
 import clerkClient from "@clerk/clerk-sdk-node";
-import members from "./member";
+import members from "./members";
 
 const router = express.Router();
 

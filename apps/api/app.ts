@@ -6,8 +6,8 @@ import cors from "cors";
 import { ClerkExpressRequireAuth, StrictAuthProp } from "@clerk/clerk-sdk-node";
 import courses from "./routes/courses";
 
-import meeting from "./routes/meeting";
-import member from "./routes/member";
+import meeting from "./routes/meetings";
+import member from "./routes/members";
 
 declare global {
   namespace Express {
