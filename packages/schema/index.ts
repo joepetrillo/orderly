@@ -1,14 +1,6 @@
 import z from "zod";
 
-const valid_course_id = z.coerce
-  .number()
-  .int()
-  .positive()
-  .finite()
-  .safe()
-  .transform(Number);
-
-  const valid_meeting_id = z.coerce
+const valid_id_type = z.coerce
   .number()
   .int()
   .positive()
@@ -19,7 +11,7 @@ const valid_course_id = z.coerce
 // just for checking course_id
 export const coursePARAM = {
   params: z.object({
-    course_id: valid_course_id,
+    course_id: valid_id_type,
   }),
 };
 
@@ -49,7 +41,7 @@ export const joinCoursePOST = {
 // leaving (or kicking a user from) a course
 export const kickUserDELETE = {
   params: z.object({
-    course_id: valid_course_id,
+    course_id: valid_id_type,
     user_id: z.string(),
   }),
 };
@@ -57,7 +49,7 @@ export const kickUserDELETE = {
 // update user role to 0 or 1
 export const updateRolePATCH = {
   params: z.object({
-    course_id: valid_course_id,
+    course_id: valid_id_type,
     user_id: z.string(),
   }),
   body: z.object({
@@ -67,7 +59,42 @@ export const updateRolePATCH = {
 
 export const enqueueMeetingPOST = {
   params: z.object({
-    course_id: valid_course_id,
-    meeting_id: valid_meeting_id,
+    course_id: valid_id_type,
+    meeting_id: valid_id_type,
   }),
-}
+};
+export const meetingPOST = {
+  body: z.object({
+    course_id: z.number(),
+    day: z
+      .literal(0)
+      .or(z.literal(1))
+      .or(z.literal(2))
+      .or(z.literal(3))
+      .or(z.literal(4))
+      .or(z.literal(5))
+      .or(z.literal(6)),
+    start_time: z.string().datetime(),
+    end_time: z.string().datetime(),
+    link: z.string().url(),
+  }),
+};
+
+export const meetingPATCH = {
+  body: z.object({
+    id: z.number(),
+    course_id: z.number().optional(),
+    day: z
+      .literal(0)
+      .or(z.literal(1))
+      .or(z.literal(2))
+      .or(z.literal(3))
+      .or(z.literal(4))
+      .or(z.literal(5))
+      .or(z.literal(6))
+      .optional(),
+    start_time: z.string().datetime().optional(),
+    end_time: z.string().datetime().optional(),
+    link: z.string().url().optional(),
+  }),
+};
