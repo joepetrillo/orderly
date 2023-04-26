@@ -4,10 +4,12 @@ import { processRequest, validateRequest } from "zod-express-middleware";
 import { coursePARAM, createCoursePOST, joinCoursePOST } from "@orderly/schema";
 import clerkClient from "@clerk/clerk-sdk-node";
 import members from "./members";
+import meetings from "./meetings";
 
 const router = express.Router();
 
 router.use("/:course_id/members", members);
+router.use("/:course_id/meetings", meetings);
 
 // get general details about all courses enrolled in
 router.get("/", async (req, res) => {

@@ -8,6 +8,14 @@ const valid_course_id = z.coerce
   .safe()
   .transform(Number);
 
+  const valid_meeting_id = z.coerce
+  .number()
+  .int()
+  .positive()
+  .finite()
+  .safe()
+  .transform(Number);
+
 // just for checking course_id
 export const coursePARAM = {
   params: z.object({
@@ -56,3 +64,10 @@ export const updateRolePATCH = {
     role: z.literal(0).or(z.literal(1)),
   }),
 };
+
+export const enqueueMeetingPOST = {
+  params: z.object({
+    course_id: valid_course_id,
+    meeting_id: valid_meeting_id,
+  }),
+}
