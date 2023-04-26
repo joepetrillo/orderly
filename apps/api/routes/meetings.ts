@@ -119,77 +119,75 @@ router.post(
 );
 
 // get current position in queue
-router.get(
-  "/:meeting_id",
-  processRequest(courseAndMeetingPARAM),
-  async (req, res, next) => {
-    const { meeting_id } = req.params;
+router.get("/:meeting_id", processRequest(courseAndMeetingPARAM), async (req, res, next) => {
+  const { meeting_id } = req.params;
 
-    try {
-      const queue = await prisma.queue.findMany({
-        orderBy: [
-          {
-            join_time: "asc",
-          },
-        ],
-        where: {
-          meeting_id: meeting_id,
+  try {
+    const queue = await prisma.queue.findMany({
+      orderBy: [
+        {
+          join_time: 'asc',
         },
-      });
+      ],
+      where: { 
+        meeting_id: meeting_id
+       },
+    });
 
-      if (queue === null) {
-        return res
-          .status(404)
-          .json({ error: "Could not find queue with meeting id" });
-      }
 
-      let pos = 0;
-      const queueList = queue.map((user) => {
-        return {
-          user_id: req.auth.userId,
-          meeting_id: meeting_id,
-          position: pos,
-        };
-      }, pos++);
-
-      const userPosition = queueList.filter(
-        (user) => user.user_id == req.auth.userId
-      );
-
-      // const course = await prisma.course.findFirst({
-      //   where: {
-      //     id: req.body.course_id,
-      //     Meeting: {
-      //       some: {
-      //         Queue: {
-      //           some:{
-      //             user_id : req.auth.userId,
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   include: {
-      //     Meeting: {
-      //       include: {
-      //         Queue: {
-      //           select: {
-      //             user_id: true,
-      //             join_time: true,
-      //           }
-      //         },
-      //       },
-      //     },
-      //   },
-      // });
-
-      res.status(200).json(userPosition);
-    } catch (error) {
-      res.status(500).json({
-        error: "Something went wrong getting queue position",
-      });
+    if (queue === null) {
+      return res.status(404).json({ error: "Could not find queue with meeting id" });
     }
+
+    let pos = 0;
+    const queueList = queue.map((user) => 
+      {
+        pos++;
+        return {
+          user_id : user.user_id,
+          meeting_id : meeting_id,
+          position: pos
+        };
+      },
+    );
+
+    const userPosition = queueList.filter((user) =>
+      user.user_id == req.body.user_id
+    );
+
+    // const course = await prisma.course.findFirst({
+    //   where: {
+    //     id: req.body.course_id,
+    //     Meeting: {
+    //       some: {
+    //         Queue: {
+    //           some:{
+    //             user_id : req.auth.userId,
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   include: {
+    //     Meeting: {
+    //       include: {
+    //         Queue: {
+    //           select: {
+    //             user_id: true,
+    //             join_time: true,
+    //           }
+    //         },
+    //       },
+    //     },
+    //   },
+    // });
+
+    res.status(200).json(userPosition);
+  } catch (error) {
+    res.status(500).json({
+      error: "Something went wrong getting queue position",
+    });
   }
-);
+});
 
 export default router;
