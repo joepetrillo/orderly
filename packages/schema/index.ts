@@ -15,6 +15,14 @@ export const coursePARAM = {
   }),
 };
 
+// check meeting paramters
+export const courseAndMeetingPARAM = {
+  params: z.object({
+    meeting_id: valid_id_type,
+    course_id: valid_id_type,
+  }),
+};
+
 // creating a new course
 export const createCoursePOST = {
   body: z.object({
