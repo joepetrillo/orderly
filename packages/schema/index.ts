@@ -1,6 +1,6 @@
 import z from "zod";
 
-const valid_course_id = z.coerce
+const valid_id_type = z.coerce
   .number()
   .int()
   .positive()
@@ -11,7 +11,7 @@ const valid_course_id = z.coerce
 // just for checking course_id
 export const coursePARAM = {
   params: z.object({
-    course_id: valid_course_id,
+    course_id: valid_id_type,
   }),
 };
 
@@ -41,7 +41,7 @@ export const joinCoursePOST = {
 // leaving (or kicking a user from) a course
 export const kickUserDELETE = {
   params: z.object({
-    course_id: valid_course_id,
+    course_id: valid_id_type,
     user_id: z.string(),
   }),
 };
@@ -49,7 +49,7 @@ export const kickUserDELETE = {
 // update user role to 0 or 1
 export const updateRolePATCH = {
   params: z.object({
-    course_id: valid_course_id,
+    course_id: valid_id_type,
     user_id: z.string(),
   }),
   body: z.object({
