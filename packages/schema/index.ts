@@ -56,3 +56,13 @@ export const updateRolePATCH = {
     role: z.literal(0).or(z.literal(1)),
   }),
 };
+
+// check meeting paramters
+export const meetingPARAM = {
+  params: z.object({
+    meeting_id: valid_course_id, //make 
+  }),
+  body: z.object({
+    user_id: z.string(),
+  })
+};
