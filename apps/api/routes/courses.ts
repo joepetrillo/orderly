@@ -4,10 +4,12 @@ import { processRequest, validateRequest } from "zod-express-middleware";
 import { coursePARAM, createCoursePOST, joinCoursePOST } from "@orderly/schema";
 import clerkClient from "@clerk/clerk-sdk-node";
 import members from "./members";
+import meetings from "./meetings";
 
 const router = express.Router();
 
 router.use("/:course_id/members", members);
+router.use("/:course_id/meetings", meetings);
 
 // get general details about all courses enrolled in
 router.get("/", async (req, res) => {
@@ -194,7 +196,7 @@ router.post("/", validateRequest(createCoursePOST), async (req, res) => {
 
     const alreadyOwned = await prisma.enrolled.findMany({
       where: {
-        user_id: req.auth.userId,
+        user_id: "replace_with_clerk", // req.auth.userId
         role: 2,
       },
     });
@@ -208,12 +210,12 @@ router.post("/", validateRequest(createCoursePOST), async (req, res) => {
     // create the course and add creator of course to enrolled table with owner role (2)
     const course = await prisma.course.create({
       data: {
-        owner_id: req.auth.userId,
+        owner_id: "replace_with_clerk",
         name: req.body.name,
         code: entryCode,
         Enrolled: {
           create: {
-            user_id: req.auth.userId,
+            user_id: "replace_with_clerk",
             role: 2,
           },
         },
