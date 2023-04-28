@@ -134,6 +134,85 @@ router.post("/:meeting_id",validateRequest(enqueueMeetingPOST),async (req, res) 
   }
 );
 
+// dequeue from meeting (leave the queue)
+router.delete("/:meeting_id",validateRequest(enqueueMeetingPOST),async (req, res) => {
+
+  const { course_id, meeting_id } = req.params
+
+  try {
+    // check if course id provided by client matches an existing course
+    const course = await prisma.course.findUnique({
+      where: {
+        id: course_id,
+      },
+      include: {
+        Enrolled: {
+          where: {
+            user_id: req.auth.userId,
+          },
+        },
+        Meeting: {
+          where: {
+            id: meeting_id
+          }
+        }
+      },
+    });
+
+    // if no course exists with the provided entry code
+    if (course === null) {
+      return res
+        .status(404)
+        .json({ error: "This course does not exist" });
+    }
+
+    // requester is not enrolled in the course
+    if (course.Enrolled.length === 0) {
+      return res
+        .status(403)
+        .json({ error: "You are not enrolled in this course" });
+    }
+
+    // if no meeting exists with the provided id
+    if (course.Meeting.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "This meeting does not exist" });
+    }
+
+    // check if student is in queue
+    const queue = await prisma.queue.findUnique({
+      where:{
+        user_id: req.auth.userId,
+        meeting_id: meeting_id
+      }
+    })
+
+    //if student isn't in queue
+    if(queue === null){
+      return res
+      .status(405)
+      .json({error: "User not found in the queue"})
+    }
+
+    // dequeue student
+    const dequeue = await prisma.queue.delete({
+      where: {
+        user_id: req.auth.userId,
+        meeting_id: meeting_id,
+      } 
+    });
+
+    res.status(201).json(dequeue);
+    
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "Something went wrong while attempting to dequeue" });
+    }
+  }
+);
+
 // get current position in queue
 router.get(
   "/:meeting_id",
