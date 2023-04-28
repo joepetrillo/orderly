@@ -337,13 +337,13 @@ export default function Courses() {
 function nextButton() {
   return "asdmasl";
 }
-function createCalendar(
+function createCalendar() {
+/*
   start_time: number,
   end_time: number,
   link: string,
   owner_name: string,
-  CourseName: string
-) {
+  CourseName: string */
   return "https://ics.agical.io/?subject=Meet%20{{company.Account Owner First Name}}&organizer=Sandy&reminder=45&location=Sandy%27s%20Desk&dtstart=2016-10-26T15:00:00-04:00&dtend=2016-10-26T16:00:00-04:00&attach=";
 }
 
