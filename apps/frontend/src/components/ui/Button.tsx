@@ -12,6 +12,8 @@ const buttonVariants = cva(
         secondary: "bg-indigo-100 hover:bg-indigo-200 text-indigo-700",
         outline: "bg-white hover:bg-gray-50 text-gray-700 border-gray-300",
         tabGray: "hover:bg-gray-100 shadow-none",
+        danger:
+          "text-white bg-red-500 hover:bg-red-600 focus-visible:ring-red-500",
       },
       size: {
         xs: "px-2.5 py-1.5 text-xs rounded",
@@ -126,3 +128,5 @@ const Button = React.forwardRef<
 Button.displayName = "Button";
 
 export default Button;
+
+export { buttonVariants };

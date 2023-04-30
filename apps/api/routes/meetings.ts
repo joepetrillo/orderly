@@ -46,7 +46,7 @@ router.post("/", validateRequest(meetingPOST), async (req, res) => {
 
     const meeting = await prisma.meeting.create({
       data: {
-        owner_id: "replace_with_clerk", // should be clerk auth
+        owner_id: req.auth.userId, // should be clerk auth
         course_id: req.body.course_id,
         day: req.body.day,
         start_time: req.body.start_time,

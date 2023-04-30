@@ -29,7 +29,7 @@ export const createCoursePOST = {
     name: z
       .string()
       .min(5, "Must contain at least 5 characters")
-      .max(255, "Must contain at most 255 characters"),
+      .max(100, "Must contain at most 100 characters"),
   }),
 };
 
@@ -106,4 +106,23 @@ export const meetingPATCH = {
     end_time: z.string().datetime().optional(),
     link: z.string().url().optional(),
   }),
+};
+
+type CourseBase = {
+  id: number;
+  name: string;
+  owner_name: string;
+  member_count: number;
+};
+
+export type CourseData =
+  | (CourseBase & { code: string; role: 1 | 2 })
+  | (CourseBase & { role: 0 });
+
+export type Member = {
+  id: string;
+  profileImageUrl: string;
+  name: string;
+  emailAddress: string;
+  role: 0 | 1;
 };
