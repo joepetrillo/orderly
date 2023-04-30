@@ -9,6 +9,8 @@ import {
 import { Dialog, Transition } from "@headlessui/react";
 import Spinner from "@/components/ui/Spinner";
 import Button from "@/components/ui/Button";
+import { VariantProps } from "class-variance-authority";
+import { buttonVariants } from "@/components/ui/Button";
 
 type ModalProps = {
   title: string;
@@ -18,8 +20,12 @@ type ModalProps = {
     e: FormEvent<HTMLFormElement>,
     setOpen: (value: SetStateAction<boolean>) => void
   ) => Promise<void>;
-  setError?: Dispatch<SetStateAction<string>>;
   children: React.ReactNode;
+  setError?: Dispatch<SetStateAction<string>>;
+  initialButtonIcon?: React.ReactNode;
+  initialButtonVariant?: VariantProps<typeof buttonVariants>["variant"];
+  initialButtonSize?: VariantProps<typeof buttonVariants>["size"];
+  confirmButtonVariant?: VariantProps<typeof buttonVariants>["variant"];
 };
 
 export default function Modal({
@@ -29,6 +35,10 @@ export default function Modal({
   handleSubmit,
   setError,
   children,
+  initialButtonIcon,
+  initialButtonVariant,
+  initialButtonSize,
+  confirmButtonVariant,
 }: ModalProps) {
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
@@ -38,11 +48,16 @@ export default function Modal({
   return (
     <>
       <Button
+        size={initialButtonSize ? initialButtonSize : "default"}
+        variant={initialButtonVariant ? initialButtonVariant : "primary"}
         onClick={() => {
           if (setError) setError("");
           setOpen(true);
         }}
       >
+        {initialButtonIcon ? (
+          <span className="h-[1.3em] w-[1.3em]">{initialButtonIcon}</span>
+        ) : null}
         {actionTitle}
       </Button>
       <Transition.Root show={open} as={Fragment}>
@@ -98,7 +113,15 @@ export default function Modal({
                         >
                           Cancel
                         </Button>
-                        <Button className="w-full" type="submit">
+                        <Button
+                          className="w-full"
+                          type="submit"
+                          variant={
+                            confirmButtonVariant
+                              ? confirmButtonVariant
+                              : "primary"
+                          }
+                        >
                           {actionTitle}
                           {loading && <Spinner small />}
                         </Button>

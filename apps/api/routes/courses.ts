@@ -1,26 +1,24 @@
 import express from "express";
 import { prisma } from "../prisma/init";
 import { processRequest, validateRequest } from "zod-express-middleware";
-import { coursePARAM, createCoursePOST, joinCoursePOST } from "@orderly/schema";
+import {
+  coursePARAM,
+  createCoursePOST,
+  joinCoursePOST,
+  CourseData,
+} from "@orderly/schema";
 import clerkClient from "@clerk/clerk-sdk-node";
 import members from "./members";
+import meetings from "./meetings";
 
 const router = express.Router();
 
 router.use("/:course_id/members", members);
+router.use("/:course_id/meetings", meetings);
 
 // get general details about all courses enrolled in
 router.get("/", async (req, res) => {
-  type CourseGeneral = {
-    id: number;
-    name: string;
-    code: string;
-    role: 0 | 1 | 2;
-    owner_name: string;
-    member_count: number;
-  };
-
-  const allCourses: CourseGeneral[] = [];
+  const allCourses: CourseData[] = [];
 
   try {
     // get all of the courses the person making this request are a part of (owner, instructor, or student)
@@ -52,16 +50,26 @@ router.get("/", async (req, res) => {
       const owner = owners.find((user) => user.id === curr.course.owner_id);
       if (!owner) throw new Error("The owner of a course was not found");
 
-      const course = {
-        id: curr.course.id,
-        name: curr.course.name,
-        code: curr.course.code,
-        role: curr.role as 0 | 1 | 2,
-        owner_name: `${owner.firstName} ${owner.lastName}`,
-        member_count: curr.course._count.Enrolled,
-      };
-
-      allCourses.push(course);
+      if (curr.role === 0) {
+        const course: CourseData = {
+          id: curr.course.id,
+          name: curr.course.name,
+          role: curr.role,
+          owner_name: `${owner.firstName} ${owner.lastName}`,
+          member_count: curr.course._count.Enrolled,
+        };
+        allCourses.push(course);
+      } else if (curr.role === 1 || curr.role === 2) {
+        const course: CourseData = {
+          id: curr.course.id,
+          name: curr.course.name,
+          code: curr.course.code,
+          role: curr.role,
+          owner_name: `${owner.firstName} ${owner.lastName}`,
+          member_count: curr.course._count.Enrolled,
+        };
+        allCourses.push(course);
+      }
     }
 
     res.status(200).json(allCourses);
@@ -74,24 +82,6 @@ router.get("/", async (req, res) => {
 
 // get all specific course details for an exact course
 router.get("/:course_id", processRequest(coursePARAM), async (req, res) => {
-  type CourseData = {
-    id: number;
-    name: string;
-    code: string;
-    role: 0 | 1 | 2;
-    meetings: {
-      id: number;
-      owner_id: string;
-      day: 0 | 1 | 2 | 3 | 4 | 5 | 6;
-      start_time: Date;
-      end_time: Date;
-    }[];
-    enrolled: {
-      user_id: string;
-      role: number;
-    }[];
-  };
-
   const { course_id } = req.params;
 
   try {
@@ -104,10 +94,13 @@ router.get("/:course_id", processRequest(coursePARAM), async (req, res) => {
         Enrolled: {
           where: {
             user_id: req.auth.userId,
-            course_id: course_id,
           },
         },
-        Meeting: true,
+        _count: {
+          select: {
+            Enrolled: true,
+          },
+        },
       },
     });
 
@@ -123,41 +116,26 @@ router.get("/:course_id", processRequest(coursePARAM), async (req, res) => {
         .json({ error: "You are not enrolled in this course" });
     }
 
-    const response: CourseData = {
-      id: course.id,
-      name: course.name,
-      code: course.code,
-      role: course.Enrolled[0].role as 0 | 1 | 2,
-      meetings: course.Meeting.map((meeting) => {
-        return {
-          id: meeting.id,
-          owner_id: meeting.owner_id,
-          day: meeting.day as 0 | 1 | 2 | 3 | 4 | 5 | 6,
-          start_time: meeting.start_time,
-          end_time: meeting.end_time,
-        };
-      }),
-      enrolled: course.Enrolled.map((enrollment) => {
-        return {
-          user_id: enrollment.user_id,
-          role: enrollment.role,
-        };
-      }),
-    };
+    const owner = await clerkClient.users.getUser(course.owner_id);
+    let response: CourseData | null = null;
 
-    // if they are an instructor of the course, include ALL of the enrolled data in response
-    if (course.Enrolled[0].role === 2 || course.Enrolled[0].role === 1) {
-      const allEnrolled = await prisma.enrolled.findMany({
-        where: {
-          course_id: course_id,
-        },
-      });
-      response.enrolled = allEnrolled.map((enrollment) => {
-        return {
-          user_id: enrollment.user_id,
-          role: enrollment.role,
-        };
-      });
+    if (course.Enrolled[0].role === 0) {
+      response = {
+        id: course.id,
+        name: course.name,
+        role: course.Enrolled[0].role,
+        owner_name: `${owner.firstName} ${owner.lastName}`,
+        member_count: course._count.Enrolled,
+      };
+    } else if (course.Enrolled[0].role === 1 || course.Enrolled[0].role === 2) {
+      response = {
+        id: course.id,
+        name: course.name,
+        code: course.code,
+        role: course.Enrolled[0].role,
+        owner_name: `${owner.firstName} ${owner.lastName}`,
+        member_count: course._count.Enrolled,
+      };
     }
 
     res.status(200).json(response);
@@ -194,7 +172,7 @@ router.post("/", validateRequest(createCoursePOST), async (req, res) => {
 
     const alreadyOwned = await prisma.enrolled.findMany({
       where: {
-        user_id: req.auth.userId,
+        user_id: req.auth.userId, // req.auth.userId
         role: 2,
       },
     });
@@ -217,9 +195,6 @@ router.post("/", validateRequest(createCoursePOST), async (req, res) => {
             role: 2,
           },
         },
-      },
-      include: {
-        Enrolled: true,
       },
     });
 

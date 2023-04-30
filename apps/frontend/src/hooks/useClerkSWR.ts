@@ -12,7 +12,7 @@ export default function useClerkSWR<Data>(url: string | null) {
     if (!res.ok) {
       const message = await res.json();
       const error: Error & { status?: number } = new Error(
-        message.error || "An error occurred while fetching data"
+        message.error || "An unknown error occurred while fetching data"
       );
       error.status = res.status;
       throw error;

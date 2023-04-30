@@ -1,20 +1,18 @@
 import express from "express";
 import { prisma } from "../prisma/init";
 import { processRequest } from "zod-express-middleware";
-import { coursePARAM, updateRolePATCH, kickUserDELETE } from "@orderly/schema";
+import {
+  coursePARAM,
+  updateRolePATCH,
+  kickUserDELETE,
+  Member,
+} from "@orderly/schema";
 import clerkClient from "@clerk/clerk-sdk-node";
 
 const router = express.Router({ mergeParams: true });
 
-// get everyone enrolled in the course (not including the owner)
+// get everyone enrolled in the course (only owner can do this, list does not include the owner)
 router.get("/", processRequest(coursePARAM), async (req, res) => {
-  type memberList = {
-    id: string;
-    profileImageUrl: string;
-    name: string;
-    emailAddress: string;
-  }[];
-
   const { course_id } = req.params;
 
   try {
@@ -27,6 +25,9 @@ router.get("/", processRequest(coursePARAM), async (req, res) => {
         Enrolled: {
           where: {
             OR: [{ role: 0 }, { role: 1 }],
+          },
+          orderBy: {
+            role: "desc",
           },
         },
       },
@@ -50,27 +51,37 @@ router.get("/", processRequest(coursePARAM), async (req, res) => {
     const userId = course.Enrolled.map((curr) => curr.user_id);
     if (userId.length === 0) return res.status(200).json(userId);
 
+    const lookup: Record<string, Partial<Member>> = {};
+    for (let i = 0; i < course.Enrolled.length; ++i) {
+      const currUser = course.Enrolled[i];
+      if (currUser.role === 0 || currUser.role === 1) {
+        lookup[currUser.user_id] = {
+          id: currUser.user_id,
+          role: currUser.role,
+        };
+      }
+    }
+
     const users = await clerkClient.users.getUserList({ userId });
-    const memberList: memberList = users.map((user) => {
-      return {
-        id: user.id,
-        profileImageUrl: user.profileImageUrl,
-        name: `${user.firstName} ${user.lastName}`,
-        emailAddress: user.emailAddresses.find(
-          (email) => email.id === user.primaryEmailAddressId
-        )?.emailAddress as string,
-      };
+
+    users.forEach((currUser) => {
+      const existingEntry = lookup[currUser.id];
+      existingEntry.name = `${currUser.firstName} ${currUser.lastName}`;
+      existingEntry.profileImageUrl = currUser.profileImageUrl;
+      existingEntry.emailAddress = currUser.emailAddresses.find(
+        (email) => email.id === currUser.primaryEmailAddressId
+      )?.emailAddress as string;
     });
 
-    res.status(200).json(memberList);
+    res.status(200).json(Object.values(lookup));
   } catch (error) {
     res.status(500).json({
-      error: "Something went wrong while fetching users",
+      error: "Something went wrong while fetching members",
     });
   }
 });
 
-// update role of user
+// update role of user to 0 or 1 (only one owner can exist, so we do not allow updating to role 2)
 router.patch("/:user_id", processRequest(updateRolePATCH), async (req, res) => {
   const { course_id, user_id } = req.params;
 
@@ -133,165 +144,159 @@ router.patch("/:user_id", processRequest(updateRolePATCH), async (req, res) => {
   }
 });
 
-// student leaves a course on their own
-router.delete("/", processRequest(coursePARAM), async (req, res) => {
-  const { course_id } = req.params;
-
-  try {
-    // to allow this, requestor must be enrolled and requestor cannot be the owner
-    // first check if course exists
-    const course = await prisma.course.findFirst({
-      where: {
-        id: course_id,
-      },
-      include: {
-        Enrolled: {
-          where: {
-            user_id: req.auth.userId,
-            OR: [{ role: 0 }, { role: 1 }],
-          },
-        },
-        Meeting: true,
-      },
-    });
-
-    // course does not exist
-    if (course === null) {
-      return res.status(404).json({
-        error: "This course does not exist",
-      });
-    }
-
-    // owners cannot leave their own courses
-    if (course.owner_id === req.auth.userId) {
-      return res.status(400).json({
-        error: "You cannot leave your own course",
-      });
-    }
-
-    // length should be 1 if this user is actually enrolled
-    if (course.Enrolled.length !== 1) {
-      return res.status(400).json({
-        error:
-          "You are not enrolled in this course as an instructor or student",
-      });
-    }
-
-    // delete self from course
-    const deletedUser = await prisma.enrolled.delete({
-      where: {
-        user_id_course_id: {
-          user_id: req.auth.userId,
-          course_id: course_id,
-        },
-      },
-    });
-
-    // delete all meetings you may have owned
-    await prisma.meeting.deleteMany({
-      where: {
-        course_id: course_id,
-        owner_id: deletedUser.user_id,
-      },
-    });
-
-    // delete any queue positions you may have held in meetings that were not your own
-    await prisma.queue.deleteMany({
-      where: {
-        user_id: deletedUser.user_id,
-        OR: course.Meeting.map((meeting) => {
-          return {
-            meeting_id: meeting.id,
-          };
-        }),
-      },
-    });
-
-    res.status(200).json(deletedUser);
-  } catch (error) {
-    res.status(500).json({
-      error: "Something went wrong leaving the course",
-    });
-  }
-});
-
-// kick a user from course
+// leave a course (if requestor matches the user_id of the param, treat as leaving, else treat as kicking)
 router.delete("/:user_id", processRequest(kickUserDELETE), async (req, res) => {
   const { course_id, user_id } = req.params;
 
   try {
-    // first check if course exists
-    const course = await prisma.course.findFirst({
-      where: {
-        id: course_id,
-      },
-      include: {
-        Enrolled: {
-          where: {
-            user_id: user_id,
-            OR: [{ role: 0 }, { role: 1 }],
+    // person making request is trying to leave on their own
+    if (user_id === req.auth.userId) {
+      // to allow this, requestor must be enrolled and requestor cannot be the owner
+      // first check if course exists
+      const course = await prisma.course.findFirst({
+        where: {
+          id: course_id,
+        },
+        include: {
+          Enrolled: {
+            where: {
+              user_id: req.auth.userId,
+              OR: [{ role: 0 }, { role: 1 }],
+            },
+          },
+          Meeting: true,
+        },
+      });
+
+      // course does not exist
+      if (course === null) {
+        return res.status(404).json({
+          error: "This course does not exist",
+        });
+      }
+
+      // owners cannot leave their own courses
+      if (course.owner_id === req.auth.userId) {
+        return res.status(400).json({
+          error: "You cannot leave your own course",
+        });
+      }
+
+      // length should be 1 if this user is actually enrolled
+      if (course.Enrolled.length !== 1) {
+        return res.status(400).json({
+          error:
+            "You are not enrolled in this course as an instructor or student",
+        });
+      }
+
+      // delete self from course
+      const deletedUser = await prisma.enrolled.delete({
+        where: {
+          user_id_course_id: {
+            user_id: req.auth.userId,
+            course_id: course_id,
           },
         },
-        Meeting: true,
-      },
-    });
-
-    // course does not exist
-    if (course === null) {
-      return res.status(404).json({
-        error: "This course does not exist",
       });
-    }
 
-    if (course.owner_id !== req.auth.userId) {
-      return res.status(400).json({
-        error: "You do not have permission to kick users from this course",
-      });
-    }
-
-    // length should be 1 if user_id to kick was found
-    if (course.Enrolled.length !== 1) {
-      return res.status(400).json({
-        error:
-          "The user you are trying to kick is not enrolled in this course as an instructor or student",
-      });
-    }
-
-    // delete the user from the course
-    const deletedUser = await prisma.enrolled.delete({
-      where: {
-        user_id_course_id: {
+      // delete all meetings you may have owned
+      await prisma.meeting.deleteMany({
+        where: {
           course_id: course_id,
-          user_id: user_id,
+          owner_id: deletedUser.user_id,
         },
-      },
-    });
+      });
 
-    // delete all meetings the deleted user may have owned
-    await prisma.meeting.deleteMany({
-      where: {
-        course_id: course_id,
-        owner_id: deletedUser.user_id,
-      },
-    });
+      // delete any queue positions you may have held in meetings that were not your own
+      await prisma.queue.deleteMany({
+        where: {
+          user_id: deletedUser.user_id,
+          OR: course.Meeting.map((meeting) => {
+            return {
+              meeting_id: meeting.id,
+            };
+          }),
+        },
+      });
 
-    // delete any queue positions this user may have been in for the meetings that are a part of this course
-    await prisma.queue.deleteMany({
-      where: {
+      res.status(200).json(deletedUser);
+    }
+    // trying to kick a user from course
+    else {
+      // first check if course exists
+      const course = await prisma.course.findFirst({
+        where: {
+          id: course_id,
+        },
+        include: {
+          Enrolled: {
+            where: {
+              user_id: user_id,
+              OR: [{ role: 0 }, { role: 1 }],
+            },
+          },
+          Meeting: true,
+        },
+      });
+
+      // course does not exist
+      if (course === null) {
+        return res.status(404).json({
+          error: "This course does not exist",
+        });
+      }
+
+      if (course.owner_id !== req.auth.userId) {
+        return res.status(400).json({
+          error: "You do not have permission to kick users from this course",
+        });
+      }
+
+      // length should be 1 if user_id to kick was found
+      if (course.Enrolled.length !== 1) {
+        return res.status(400).json({
+          error:
+            "The user you are trying to kick is not enrolled in this course as an instructor or student",
+        });
+      }
+
+      // delete the user from the course
+      const deletedUser = await prisma.enrolled.delete({
+        where: {
+          user_id_course_id: {
+            course_id: course_id,
+            user_id: user_id,
+          },
+        },
+      });
+
+      // delete all meetings the deleted user may have owned
+      await prisma.meeting.deleteMany({
+        where: {
+          course_id: course_id,
+          owner_id: deletedUser.user_id,
+        },
+      });
+
+      // delete any queue positions this user may have been in for the meetings that are a part of this course
+      await prisma.queue.deleteMany({
+        where: {
+          user_id: deletedUser.user_id,
+          OR: course.Meeting.map((meeting) => {
+            return {
+              meeting_id: meeting.id,
+            };
+          }),
+        },
+      });
+
+      res.status(200).json({
         user_id: deletedUser.user_id,
-        OR: course.Meeting.map((meeting) => {
-          return {
-            meeting_id: meeting.id,
-          };
-        }),
-      },
-    });
-
-    res.status(200).json({
-      user_id: deletedUser.user_id,
-      course_id: course.id,
-      role: deletedUser.role,
-    });
+        course_id: course.id,
+        role: deletedUser.role,
+      });
+    }
   } catch (error) {
     res.status(500).json({
       error: "Something went wrong leaving the course",

@@ -11,7 +11,7 @@ const LoadingCard = () => {
   );
 };
 
-export default function CoursesSkeleton() {
+export default function AllCoursesSkeleton() {
   return (
     <>
       <div className="grid animate-pulse-fast gap-6 sm:grid-cols-2 lg:grid-cols-3">

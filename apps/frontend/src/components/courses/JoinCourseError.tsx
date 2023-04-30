@@ -87,7 +87,7 @@ export default function JoinCourseError({ course_id }: { course_id: string }) {
             placeholder="XXXXXXX"
             name="code"
           />
-          <Button disabled={loading} className="mt-5 w-full">
+          <Button className="mt-5 w-full">
             Join
             {loading && <Spinner small />}
           </Button>
