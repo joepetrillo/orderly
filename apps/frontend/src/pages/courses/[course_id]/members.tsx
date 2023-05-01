@@ -38,8 +38,8 @@ const CourseMembers: NextPageWithLayout = () => {
         ) : (
           <div className="-mx-4 mt-10 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full align-middle md:px-6 lg:px-8">
-              <div className="overflow-hidden border border-gray-200 md:rounded">
-                <table className="min-w-full divide-y divide-gray-300">
+              <div className="overflow-hidden border-y border-gray-200 sm:border sm:border-x-gray-200 md:rounded">
+                <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
                       <th
