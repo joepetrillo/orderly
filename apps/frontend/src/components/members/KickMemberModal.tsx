@@ -83,7 +83,7 @@ export default function KickMemberModal({
           Upon confirmation, all potential office hours owned by this user and
           queue positions held will be deleted.
         </p>
-        <p className="mt-2 text-xs text-red-500">{error}</p>
+        {error ? <p className="mt-2 text-xs text-red-500">{error}</p> : null}
       </div>
     </Modal>
   );

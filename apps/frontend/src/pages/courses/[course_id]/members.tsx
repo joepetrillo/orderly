@@ -29,7 +29,7 @@ const CourseMembers: NextPageWithLayout = () => {
       <Container>
         <h1 className="text-xl font-semibold">Members</h1>
         <p className="mt-2 text-sm text-gray-700">
-          All users enrolled in your course
+          View all users enrolled in this course
         </p>
         {loading ? (
           <MembersSkeleton />

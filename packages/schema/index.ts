@@ -33,6 +33,18 @@ export const createCoursePOST = {
   }),
 };
 
+export const updateCourseNamePATCH = {
+  params: z.object({
+    course_id: valid_id_type,
+  }),
+  body: z.object({
+    name: z
+      .string()
+      .min(5, "Must contain at least 5 characters")
+      .max(100, "Must contain at most 100 characters"),
+  }),
+};
+
 // joining a course
 export const joinCoursePOST = {
   body: z.object({
