@@ -6,6 +6,7 @@ import {
   createCoursePOST,
   joinCoursePOST,
   CourseData,
+  updateCourseNamePATCH,
 } from "@orderly/schema";
 import clerkClient from "@clerk/clerk-sdk-node";
 import members from "./members";
@@ -291,5 +292,117 @@ router.delete("/:course_id", processRequest(coursePARAM), async (req, res) => {
       .json({ error: "Something went wrong while deleting the course" });
   }
 });
+
+// update course name
+router.patch(
+  "/:course_id/name",
+  processRequest(updateCourseNamePATCH),
+  async (req, res) => {
+    const { course_id } = req.params;
+
+    try {
+      // first check if the course with the given course id exists
+      const course = await prisma.course.findFirst({
+        where: {
+          id: course_id,
+        },
+      });
+
+      // course does not exist
+      if (course === null) {
+        return res.status(404).json({ error: "This course does not exist" });
+      }
+
+      // requester is not the owner of the course, so they are not allowed to update it
+      if (course.owner_id !== req.auth.userId) {
+        return res.status(403).json({
+          error: "You do not have permission to update the name of this course",
+        });
+      }
+
+      const updatedCourse = await prisma.course.update({
+        where: {
+          id: course_id,
+        },
+        data: {
+          name: req.body.name,
+        },
+      });
+
+      res.status(200).json(updatedCourse);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "Something went wrong while updating the course name" });
+    }
+  }
+);
+
+// regenerate and update course entry code
+router.patch(
+  "/:course_id/code",
+  processRequest(coursePARAM),
+  async (req, res) => {
+    const { course_id } = req.params;
+
+    try {
+      // first check if the course with the given course id exists
+      const course = await prisma.course.findFirst({
+        where: {
+          id: course_id,
+        },
+      });
+
+      // course does not exist
+      if (course === null) {
+        return res.status(404).json({ error: "This course does not exist" });
+      }
+
+      // requester is not the owner of the course, so they are not allowed to update it
+      if (course.owner_id !== req.auth.userId) {
+        return res.status(403).json({
+          error:
+            "You do not have permission to regenerate the entry code of this course",
+        });
+      }
+
+      let newCode: string;
+
+      while (true) {
+        // generate random entry code
+        newCode = Array.from(Array(7), () =>
+          Math.floor(Math.random() * 36).toString(36)
+        )
+          .join("")
+          .toUpperCase();
+
+        // ensure the entry code is not already in use for another course
+        const exists = await prisma.course.findUnique({
+          where: {
+            code: newCode,
+          },
+        });
+
+        // code is not already in use, will only reloop if we need to generate a new code
+        if (exists === null) break;
+      }
+
+      const updatedCourse = await prisma.course.update({
+        where: {
+          id: course_id,
+        },
+        data: {
+          code: newCode,
+        },
+      });
+
+      res.status(200).json(updatedCourse);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "Something went wrong while updating the course name" });
+    }
+  }
+);
 
 export default router;
