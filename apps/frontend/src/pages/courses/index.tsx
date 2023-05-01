@@ -65,12 +65,12 @@ export default function Courses() {
               <h1 className="mb-5 font-display text-3xl font-semibold sm:m-0">
                 Courses
               </h1>
-              <div className="inline-flex gap-4">
+              <div className="inline-flex flex-wrap gap-4">
                 <CreateCourseModal />
                 <JoinCourseModal />
               </div>
             </div>
-            <Tab.List className="inline-flex gap-2">
+            <Tab.List className="flex gap-2 overflow-x-auto [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden">
               {tabs.map((tab, index) => {
                 return (
                   <Tab

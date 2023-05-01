@@ -85,12 +85,3 @@ export default function CourseLayout({
     </div>
   );
 }
-
-// let authorizedView: JSX.Element | null = null;
-// if (data?.role === 2) {
-//   authorizedView = <p>Owner (Professor) view</p>;
-// } else if (data?.role === 1) {
-//   authorizedView = <p>Hoster (TA/UCA) view</p>;
-// } else if (data?.role === 0) {
-//   authorizedView = <p>Enrolled (Student) view</p>;
-// }

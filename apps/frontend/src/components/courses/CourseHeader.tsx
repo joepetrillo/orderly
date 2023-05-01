@@ -32,12 +32,12 @@ export default function CourseHeader({
           <h1 className="mb-5 line-clamp-2 font-display text-3xl font-semibold">
             {data.name}
           </h1>
-          <div className="inline-flex flex-wrap gap-4">
-            <div className="inline-flex shrink-0 items-center gap-2 text-sm text-gray-500">
+          <div className="flex flex-wrap gap-4">
+            <div className="inline-flex shrink-0 items-center gap-1 text-sm text-gray-500">
               <AcademicCapIcon className="h-[1.3em] w-[1.3em]" />
               <p>{data.owner_name}</p>
             </div>
-            <div className="inline-flex shrink-0 items-center gap-2 text-sm text-gray-500">
+            <div className="inline-flex shrink-0 items-center gap-1 text-sm text-gray-500">
               <UserIcon className="h-[1.3em] w-[1.3em]" />
               <p>
                 {data.member_count}{" "}
@@ -45,14 +45,14 @@ export default function CourseHeader({
               </p>
             </div>
             {data.role === 2 || data.role === 1 ? (
-              <div className="inline-flex shrink-0 items-center gap-2 text-sm text-gray-500">
+              <div className="inline-flex shrink-0 items-center gap-1 text-sm text-gray-500">
                 <KeyIcon className="h-[1.3em] w-[1.3em]" />
                 <p>{data.code}</p>
               </div>
             ) : null}
           </div>
         </div>
-        <div className="inline-flex gap-2">
+        <div className="flex gap-2 overflow-x-auto [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden">
           {tabs.map((tab) => {
             if (tab.role > data.role) return;
 
