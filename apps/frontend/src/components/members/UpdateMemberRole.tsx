@@ -16,7 +16,7 @@ const roles: { role: 0 | 1; component: JSX.Element }[] = [
   {
     role: 0,
     component: (
-      <span className="inline-flex rounded bg-indigo-100 px-2 text-xs font-semibold leading-5 text-indigo-800">
+      <span className="inline-flex h-full items-center rounded bg-indigo-100 px-2 text-xs font-semibold leading-5 text-indigo-800">
         Student
       </span>
     ),
@@ -24,7 +24,7 @@ const roles: { role: 0 | 1; component: JSX.Element }[] = [
   {
     role: 1,
     component: (
-      <span className="inline-flex rounded bg-orange-100 px-2 text-xs font-semibold leading-5 text-orange-800">
+      <span className="inline-flex h-full items-center rounded bg-rose-100 px-2 text-xs font-semibold leading-5 text-rose-800">
         Instructor
       </span>
     ),
@@ -162,73 +162,71 @@ export default function UpdateMemberRole({
   return (
     <Listbox value={selected} onChange={handleChange}>
       {({ open }) => (
-        <>
-          <div className="relative mt-1">
-            <Listbox.Button
-              ref={setReferenceElement}
-              className="relative w-[130px] cursor-default rounded-md border border-gray-300 bg-white py-1.5 pl-2 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-            >
-              <span className="block truncate">{selected.component}</span>
-              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                <ChevronDownIcon
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-              </span>
-            </Listbox.Button>
+        <div>
+          <Listbox.Button
+            ref={setReferenceElement}
+            className="relative flex h-[40px] w-[130px] cursor-default items-center rounded border border-gray-300 bg-white py-1.5 pl-2 pr-9 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+          >
+            <span className="block h-full truncate">{selected.component}</span>
+            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+              <ChevronDownIcon
+                className="h-5 w-5 text-gray-400"
+                aria-hidden="true"
+              />
+            </span>
+          </Listbox.Button>
 
-            <Transition
-              show={open}
-              as={Fragment}
-              leave="transition ease-in duration-100"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
+          <Transition
+            show={open}
+            as={Fragment}
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Listbox.Options
+              ref={setPopperElement}
+              style={styles.popper}
+              {...attributes.popper}
+              className="absolute z-20 max-h-60 w-full max-w-[180px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
             >
-              <Listbox.Options
-                ref={setPopperElement}
-                style={styles.popper}
-                {...attributes.popper}
-                className="absolute z-20 max-h-60 w-full max-w-[180px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
-              >
-                {roles.map((role) => (
-                  <Listbox.Option
-                    key={role.role}
-                    className={({ active }) =>
-                      cn(
-                        active ? "bg-indigo-600 text-white" : "text-gray-950",
-                        "relative cursor-default select-none py-2 pl-3 pr-9"
-                      )
-                    }
-                    value={role}
-                  >
-                    {({ selected, active }) => (
-                      <>
+              {roles.map((role) => (
+                <Listbox.Option
+                  key={role.role}
+                  className={({ active }) =>
+                    cn(
+                      active ? "bg-indigo-600 text-white" : "text-gray-950",
+                      "relative cursor-default select-none py-2 pl-3 pr-9"
+                    )
+                  }
+                  value={role}
+                >
+                  {({ selected, active }) => (
+                    <>
+                      <span
+                        className={cn(
+                          selected ? "font-semibold" : "font-normal",
+                          "flex h-[26px] items-center truncate"
+                        )}
+                      >
+                        {role.component}
+                      </span>
+                      {selected ? (
                         <span
                           className={cn(
-                            selected ? "font-semibold" : "font-normal",
-                            "block truncate"
+                            active ? "text-white" : "text-indigo-600",
+                            "absolute inset-y-0 right-0 flex items-center pr-4"
                           )}
                         >
-                          {role.component}
+                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
                         </span>
-                        {selected ? (
-                          <span
-                            className={cn(
-                              active ? "text-white" : "text-indigo-600",
-                              "absolute inset-y-0 right-0 flex items-center pr-4"
-                            )}
-                          >
-                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                          </span>
-                        ) : null}
-                      </>
-                    )}
-                  </Listbox.Option>
-                ))}
-              </Listbox.Options>
-            </Transition>
-          </div>
-        </>
+                      ) : null}
+                    </>
+                  )}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </Transition>
+        </div>
       )}
     </Listbox>
   );
