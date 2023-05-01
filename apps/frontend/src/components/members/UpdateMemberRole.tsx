@@ -167,7 +167,7 @@ export default function UpdateMemberRole({
             ref={setReferenceElement}
             className="relative flex h-[40px] w-[130px] cursor-default items-center rounded border border-gray-300 bg-white py-1.5 pl-2 pr-9 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
           >
-            <span className="block h-full truncate">{selected.component}</span>
+            {selected.component}
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronDownIcon
                 className="h-5 w-5 text-gray-400"
@@ -195,26 +195,19 @@ export default function UpdateMemberRole({
                   className={({ active }) =>
                     cn(
                       active ? "bg-indigo-600 text-white" : "text-gray-950",
-                      "relative cursor-default select-none py-2 pl-3 pr-9"
+                      "relative flex h-[40px] cursor-default select-none items-center border border-transparent py-1.5 pl-2 pr-9"
                     )
                   }
                   value={role}
                 >
                   {({ selected, active }) => (
                     <>
-                      <span
-                        className={cn(
-                          selected ? "font-semibold" : "font-normal",
-                          "flex h-[26px] items-center truncate"
-                        )}
-                      >
-                        {role.component}
-                      </span>
+                      {role.component}
                       {selected ? (
                         <span
                           className={cn(
                             active ? "text-white" : "text-indigo-600",
-                            "absolute inset-y-0 right-0 flex items-center pr-4"
+                            "absolute inset-y-0 right-0 flex items-center pr-2"
                           )}
                         >
                           <CheckIcon className="h-5 w-5" aria-hidden="true" />
