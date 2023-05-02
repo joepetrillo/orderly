@@ -11,13 +11,13 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
   const { getToken } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [name, setName] = useState("");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const formData = Object.fromEntries(new FormData(e.currentTarget));
     const requestBody = {
-      name: formData.name,
+      name: name,
     };
 
     try {
@@ -63,6 +63,7 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
       return;
     }
 
+    setName("");
     mutate(`${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}`);
     setLoading(false);
     setError("");
@@ -80,6 +81,9 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
                 label="New Name"
                 errorMessage={error}
                 name="name"
+                placeholder="Computer Programming 101"
+                onChange={(e) => setName(e.currentTarget.value)}
+                value={name}
               />
             </div>
           </div>
