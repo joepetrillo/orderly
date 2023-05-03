@@ -1,7 +1,7 @@
 import { useAuth } from "@clerk/nextjs";
 import { FormEvent, SetStateAction, useState } from "react";
-import Modal from "@/components/ui/Modal";
 import { useRouter } from "next/router";
+import Modal from "@/components/ui/Modal";
 
 export default function DeleteCourse({ course_id }: { course_id: string }) {
   const router = useRouter();

@@ -1,11 +1,11 @@
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
 import { useAuth } from "@clerk/nextjs";
 import { updateCourseNamePATCH } from "@orderly/schema";
 import { FormEvent, useState } from "react";
 import { mutate } from "swr";
 import { z } from "zod";
-import Spinner from "../ui/Spinner";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Spinner from "@/components/ui/Spinner";
 
 export default function ChangeCourseName({ course_id }: { course_id: string }) {
   const { getToken } = useAuth();
