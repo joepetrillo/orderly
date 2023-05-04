@@ -19,9 +19,9 @@ type ModalProps = {
   handleSubmit: (
     e: FormEvent<HTMLFormElement>,
     setOpen: (value: SetStateAction<boolean>) => void
-  ) => Promise<void>;
+  ) => any;
   children: React.ReactNode;
-  setError?: Dispatch<SetStateAction<string>>;
+  onOpen?: () => void;
   initialButtonIcon?: React.ReactNode;
   initialButtonVariant?: VariantProps<typeof buttonVariants>["variant"];
   initialButtonSize?: VariantProps<typeof buttonVariants>["size"];
@@ -33,7 +33,7 @@ export default function Modal({
   actionTitle,
   loading,
   handleSubmit,
-  setError,
+  onOpen,
   children,
   initialButtonIcon,
   initialButtonVariant,
@@ -51,7 +51,7 @@ export default function Modal({
         size={initialButtonSize ? initialButtonSize : "default"}
         variant={initialButtonVariant ? initialButtonVariant : "primary"}
         onClick={() => {
-          if (setError) setError("");
+          if (onOpen) onOpen();
           setOpen(true);
         }}
       >

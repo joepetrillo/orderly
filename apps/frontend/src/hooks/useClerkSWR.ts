@@ -1,7 +1,17 @@
 import useSWR, { Fetcher } from "swr";
 import { useAuth } from "@clerk/nextjs";
+import { FetcherResponse, PublicConfiguration } from "swr/_internal";
 
-export default function useClerkSWR<Data>(url: string | null) {
+export default function useClerkSWR<Data>(
+  url: string | null,
+  options?: Partial<
+    PublicConfiguration<
+      Data,
+      Error & { status?: number },
+      (arg: string) => FetcherResponse<Data>
+    >
+  >
+) {
   const { getToken, isLoaded } = useAuth();
 
   const fetcher: Fetcher<Data, string> = async (...args) => {
@@ -18,12 +28,13 @@ export default function useClerkSWR<Data>(url: string | null) {
       throw error;
     }
 
-    return res.json();
+    return await res.json();
   };
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<
     Data,
-    Error & { status?: number }
+    Error & { status?: number },
+    string | null
   >(
     isLoaded && url !== null
       ? `${process.env.NEXT_PUBLIC_API_URL}${url}`
@@ -34,6 +45,7 @@ export default function useClerkSWR<Data>(url: string | null) {
         if (error.status === 403) return false;
         return true;
       },
+      ...options,
     }
   );
 

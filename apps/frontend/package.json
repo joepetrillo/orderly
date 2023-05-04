@@ -16,7 +16,7 @@
     "@orderly/schema": "*",
     "@popperjs/core": "^2.11.7",
     "framer-motion": "^10.12.4",
-    "next": "^13.3.0",
+    "next": "13.3.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",

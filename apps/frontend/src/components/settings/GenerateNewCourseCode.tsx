@@ -1,72 +1,69 @@
-import { useAuth } from "@clerk/nextjs";
-import { FormEvent, useState } from "react";
-import { mutate } from "swr";
 import Button from "@/components/ui/Button";
 import Spinner from "@/components/ui/Spinner";
+import useAuthedFetch from "@/hooks/useAuthedFetch";
+import useSWRMutation from "swr/mutation";
 
 export default function GenerateNewCourseCode({
   course_id,
 }: {
   course_id: string;
 }) {
-  const { getToken } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const authedFetch = useAuthedFetch();
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-
-    const requestOptions = {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${await getToken()}`,
-      },
-    };
-
+  async function regenerateCode() {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}/code`,
-        requestOptions
-      );
+      const res = await authedFetch(`/courses/${course_id}/code`, {
+        method: "PATCH",
+      });
+
       const data = await res.json();
 
       if (!res.ok) {
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setError("An unexpected error has occurred, please try again later");
-        }
-        setLoading(false);
-        return;
+        if (data.error) throw new Error(data.error);
+        else throw new Error("An unknown error occurred");
       }
-    } catch (error) {
-      setError(
-        "There was an error reaching the server, please try again later"
-      );
-      setLoading(false);
-      return;
-    }
 
-    mutate(`${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}`);
-    setLoading(false);
-    setError("");
+      return data.code;
+    } catch (error) {
+      if (error instanceof Error) throw new Error(error.message);
+      else throw new Error("An unknown error occurred");
+    }
   }
+
+  const { error, trigger, isMutating } = useSWRMutation(
+    `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}`,
+    regenerateCode,
+    {
+      revalidate: false,
+      populateCache: (newCourseCode, existingCourseData) => {
+        return { ...existingCourseData, code: newCourseCode };
+      },
+      throwOnError: false,
+    }
+  );
 
   return (
     <div className="max-w-screen-md overflow-hidden rounded border border-gray-200 bg-white">
       <div className="px-4 py-5 sm:p-6">
         <h3 className="font-semibold">Regenerate Course Code</h3>
-        {error ? <p className="mt-5 text-xs text-red-500">{error}</p> : null}
+        {error ? (
+          <p className="mt-5 text-xs text-red-500">{error.message}</p>
+        ) : null}
       </div>
       <div className="flex flex-col items-start gap-4 border-t border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <p className="text-sm text-gray-700">
           All previous codes will be invalidated
         </p>
-        <fieldset disabled={loading}>
-          <form onSubmit={handleSubmit}>
-            <Button size="sm">Regenerate {loading && <Spinner small />}</Button>
+        <fieldset disabled={isMutating}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              trigger();
+            }}
+          >
+            <Button size="sm">
+              Regenerate {isMutating && <Spinner small />}
+            </Button>
           </form>
         </fieldset>
       </div>

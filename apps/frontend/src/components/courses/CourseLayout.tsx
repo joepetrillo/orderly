@@ -56,7 +56,7 @@ export default function CourseLayout({
     },
     {
       label: "Settings",
-      role: 2,
+      role: 0,
       href: `/courses/${course_id}/settings`,
       pathname: "/courses/[course_id]/settings",
     },

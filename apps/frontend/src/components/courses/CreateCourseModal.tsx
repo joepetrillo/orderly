@@ -76,7 +76,7 @@ export default function CreateCourseModal() {
       actionTitle="Create"
       handleSubmit={handleSubmit}
       loading={loading}
-      setError={setError}
+      onOpen={() => setError("")}
     >
       <Input
         inputId="course_name"
