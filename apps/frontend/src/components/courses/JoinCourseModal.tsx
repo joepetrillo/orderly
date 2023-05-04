@@ -77,7 +77,7 @@ export default function JoinCourseModal() {
       actionTitle="Join"
       handleSubmit={handleSubmit}
       loading={loading}
-      setError={setError}
+      onOpen={() => setError("")}
     >
       <Input
         inputId="course_code"

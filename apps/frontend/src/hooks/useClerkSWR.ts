@@ -18,12 +18,13 @@ export default function useClerkSWR<Data>(url: string | null) {
       throw error;
     }
 
-    return res.json();
+    return await res.json();
   };
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<
     Data,
-    Error & { status?: number }
+    Error & { status?: number },
+    string | null
   >(
     isLoaded && url !== null
       ? `${process.env.NEXT_PUBLIC_API_URL}${url}`

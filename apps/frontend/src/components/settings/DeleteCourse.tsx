@@ -1,57 +1,46 @@
-import { useAuth } from "@clerk/nextjs";
-import { FormEvent, SetStateAction, useState } from "react";
+import { FormEvent, SetStateAction } from "react";
 import { useRouter } from "next/router";
 import Modal from "@/components/ui/Modal";
+import useAuthedFetch from "@/hooks/useAuthedFetch";
+import useSWRMutation from "swr/mutation";
 
 export default function DeleteCourse({ course_id }: { course_id: string }) {
   const router = useRouter();
-  const { getToken } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const authedFetch = useAuthedFetch();
 
-  async function handleSubmit(
-    e: FormEvent<HTMLFormElement>,
-    setOpen: (value: SetStateAction<boolean>) => void
+  async function deleteCourse(
+    key: string,
+    { arg: setOpen }: { arg: (value: SetStateAction<boolean>) => void }
   ) {
-    e.preventDefault();
-    setLoading(true);
-
-    const requestOptions = {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${await getToken()}`,
-      },
-    };
-
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}`,
-        requestOptions
-      );
+      const res = await authedFetch(`/courses/${course_id}`, {
+        method: "DELETE",
+      });
+
       const data = await res.json();
 
       if (!res.ok) {
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setError("An unexpected error has occurred, please try again later");
-        }
-        setLoading(false);
-        return;
+        if (data.error) throw new Error(data.error);
+        else throw new Error("An unknown error occurred");
       }
-    } catch (error) {
-      setError(
-        "There was an error reaching the server, please try again later"
-      );
-      setLoading(false);
-      return;
-    }
 
-    router.replace("/courses");
-    setLoading(false);
-    setOpen(false);
+      router.replace("/");
+      setOpen(false);
+    } catch (error) {
+      if (error instanceof Error) throw new Error(error.message);
+      else throw new Error("An unknown error occurred");
+    }
   }
+
+  const { error, trigger, isMutating, reset } = useSWRMutation(
+    `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}`,
+    deleteCourse,
+    {
+      revalidate: false,
+      populateCache: () => undefined, // remove from cache
+      throwOnError: false,
+    }
+  );
 
   return (
     <div className="max-w-screen-md overflow-hidden rounded border border-red-300 bg-white">
@@ -65,9 +54,15 @@ export default function DeleteCourse({ course_id }: { course_id: string }) {
         <Modal
           title="Delete Course"
           actionTitle="Delete"
-          handleSubmit={handleSubmit}
-          loading={loading}
-          setError={setError}
+          handleSubmit={(
+            e: FormEvent<HTMLFormElement>,
+            setOpen: (value: SetStateAction<boolean>) => void
+          ) => {
+            e.preventDefault();
+            trigger(setOpen);
+          }}
+          loading={isMutating}
+          onOpen={() => reset()}
           initialButtonVariant="danger"
           initialButtonSize="sm"
           confirmButtonVariant="danger"

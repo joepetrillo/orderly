@@ -68,7 +68,7 @@ export default function KickMemberModal({
       actionTitle="Kick"
       handleSubmit={handleSubmit}
       loading={loading}
-      setError={setError}
+      onOpen={() => setError("")}
       initialButtonIcon={<XCircleIcon />}
       initialButtonVariant="danger"
       initialButtonSize="xs"

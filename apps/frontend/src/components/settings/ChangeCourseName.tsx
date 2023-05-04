@@ -1,85 +1,72 @@
-import { useAuth } from "@clerk/nextjs";
+import useSWRMutation from "swr/mutation";
 import { updateCourseNamePATCH } from "@orderly/schema";
-import { FormEvent, useState } from "react";
-import { mutate } from "swr";
+import { useState } from "react";
 import { z } from "zod";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Spinner from "@/components/ui/Spinner";
+import useAuthedFetch from "@/hooks/useAuthedFetch";
 
 export default function ChangeCourseName({ course_id }: { course_id: string }) {
-  const { getToken } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const authedFetch = useAuthedFetch();
   const [name, setName] = useState("");
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const requestBody = {
-      name: name,
-    };
-
+  async function updateName(key: string, { arg }: { arg: string }) {
     try {
-      updateCourseNamePATCH.body.parse(requestBody);
+      updateCourseNamePATCH.body.parse({ name: arg });
     } catch (error) {
       const zodError = error as z.ZodError;
-      setError(zodError.issues[0].message);
-      return;
+      throw new Error(zodError.issues[0].message);
     }
 
-    setLoading(true);
-
-    const requestOptions = {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${await getToken()}`,
-      },
-      body: JSON.stringify(requestBody),
-    };
-
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}/name`,
-        requestOptions
-      );
+      const res = await authedFetch(`/courses/${course_id}/name`, {
+        method: "PATCH",
+        body: JSON.stringify({ name: arg }),
+      });
+
       const data = await res.json();
 
       if (!res.ok) {
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setError("An unexpected error has occurred, please try again later");
-        }
-        setLoading(false);
-        return;
+        if (data.error) throw new Error(data.error);
+        else throw new Error("An unknown error occurred");
       }
-    } catch (error) {
-      setError(
-        "There was an error reaching the server, please try again later"
-      );
-      setLoading(false);
-      return;
-    }
 
-    setName("");
-    mutate(`${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}`);
-    setLoading(false);
-    setError("");
+      return data.name;
+    } catch (error) {
+      if (error instanceof Error) throw new Error(error.message);
+      else throw new Error("An unknown error occurred");
+    }
   }
+
+  const { error, trigger, isMutating } = useSWRMutation(
+    `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}`,
+    updateName,
+    {
+      revalidate: false,
+      populateCache: (newCourseName, existingCourseData) => {
+        return { ...existingCourseData, name: newCourseName };
+      },
+      throwOnError: false,
+    }
+  );
 
   return (
     <div className="max-w-screen-md overflow-hidden rounded border border-gray-200 bg-white">
-      <fieldset disabled={loading}>
-        <form onSubmit={handleSubmit}>
+      <fieldset disabled={isMutating}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            trigger(name);
+          }}
+        >
           <div className="px-4 py-5 sm:p-6">
             <h3 className="font-semibold">Change Course Name</h3>
             <div className="mt-6">
               <Input
                 inputId="update_course_name"
                 label="New Name"
-                errorMessage={error}
+                errorMessage={error?.message}
                 name="name"
                 placeholder="Computer Programming 101"
                 onChange={(e) => setName(e.currentTarget.value)}
@@ -91,7 +78,7 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
             <p className="text-sm text-gray-700">
               Please use between 5 and 100 characters
             </p>
-            <Button size="sm">Update {loading && <Spinner small />}</Button>
+            <Button size="sm">Update {isMutating && <Spinner small />}</Button>
           </div>
         </form>
       </fieldset>
