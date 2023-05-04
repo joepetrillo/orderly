@@ -27,7 +27,7 @@ const CourseSettings: NextPageWithLayout = () => {
       </>
     );
   } else if (data?.role === 1) {
-    authedView = null;
+    authedView = <LeaveCourse course_id={course_id} />;
   } else if (data?.role === 0) {
     authedView = <LeaveCourse course_id={course_id} />;
   }
