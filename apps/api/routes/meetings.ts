@@ -2,11 +2,13 @@ import express from "express";
 import { prisma } from "../prisma/init";
 import { processRequest, validateRequest } from "zod-express-middleware";
 import {
+  coursePARAM,
   enqueueMeetingPOST,
   meetingPOST,
   meetingPATCH,
   courseAndMeetingPARAM,
 } from "@orderly/schema";
+import { PrismaClient } from "@prisma/client";
 
 const router = express.Router({ mergeParams: true });
 
@@ -134,8 +136,13 @@ router.get("/:meeting_id", processRequest(courseAndMeetingPARAM), async (req, re
        },
     });
 
+    const meeting = await prisma.meeting.findFirst({
+      where:{
+        id: meeting_id
+      }
+    });
 
-    if (queue === null) {
+    if (queue === null || queue.length == 0) {
       return res.status(404).json({ error: "Could not find queue with meeting id" });
     }
 
@@ -181,12 +188,88 @@ router.get("/:meeting_id", processRequest(courseAndMeetingPARAM), async (req, re
     //     },
     //   },
     // });
+    
+    if(userPosition.length == 0){
+      return res.status(404).json({ error: "Could not find user in queue" });
+    }
 
-    res.status(200).json(userPosition);
+    const meetingAndPosition = {
+      meeting,
+      userPosition,
+    }
+    res.status(200).json(meetingAndPosition);
   } catch (error) {
     res.status(500).json({
       error: "Something went wrong getting queue position",
     });
+  }
+});
+
+
+// get associated meetings with a course
+router.get("/", processRequest(coursePARAM), async (req, res) => {
+  const { course_id } = req.params
+  try {
+    const meetings = await prisma.meeting.findMany({
+      where:{
+        course_id: course_id
+      }
+    });
+
+    if(meetings == null || meetings.length == 0){
+      return res.status(404).json({ error: "Could not find meetings with course" });
+    }
+
+    res.status(201).json(meetings);
+  } catch (error) {
+    console.log(error)
+    res
+      .status(500)  
+      .json({ error: "Something went wrong while fetching meetings" });
+  }
+});
+
+// get associated meetings with a course
+router.get("/", processRequest(coursePARAM), async (req, res) => {
+  const { course_id } = req.params
+  try {
+    const meetings = await prisma.meeting.findMany({
+      where:{
+        course_id: course_id
+      }
+    });
+
+    if(meetings == null || meetings.length == 0){
+      return res.status(404).json({ error: "Could not find meetings with course" });
+    }
+
+    res.status(201).json(meetings);
+  } catch (error) {
+    console.log(error)
+    res
+      .status(500)  
+      .json({ error: "Something went wrong while fetching meetings" });
+  }
+});
+
+router.get("/", processRequest(coursePARAM), async (req, res) => {
+
+  try {
+    const enrolled = await prisma.enrolled.create({
+      data: {
+        user_id: req.body.user_id,
+        course_id: req.body.course_id,
+        role: 0,
+      },
+    });
+
+
+    res.status(201).json(enrolled);
+  } catch (error) {
+    console.log(error)
+    res
+      .status(500)  
+      .json({ error: "Something went wrong while generating data" });
   }
 });
 

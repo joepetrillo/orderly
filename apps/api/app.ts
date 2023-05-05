@@ -17,7 +17,7 @@ const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
-app.use(ClerkExpressRequireAuth());
+//app.use(ClerkExpressRequireAuth());
 app.use("/courses", courses);
 
 const authErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
@@ -28,7 +28,7 @@ const authErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   }
 };
 
-app.use(authErrorHandler);
+//app.use(authErrorHandler);
 
 app.listen(port, () => {
   console.log(`✅ express server running on port ${port}`);
