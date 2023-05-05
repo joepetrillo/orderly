@@ -6,6 +6,7 @@ import {
   meetingPOST,
   meetingPATCH,
   courseAndMeetingPARAM,
+  removeMeetingDELETE,
 } from "@orderly/schema";
 
 const router = express.Router({ mergeParams: true });
@@ -64,68 +65,65 @@ router.post("/", validateRequest(meetingPOST), async (req, res) => {
 });
 
 // enqueue in meeting (join the queue)
-router.post("/:meeting_id",validateRequest(enqueueMeetingPOST),async (req, res) => {
+router.post(
+  "/:meeting_id",
+  validateRequest(enqueueMeetingPOST),
+  async (req, res) => {
+    const { course_id, meeting_id } = req.params;
 
-  const { course_id, meeting_id } = req.params
-
-  try {
-    // check if course id provided by client matches an existing course
-    const course = await prisma.course.findUnique({
-      where: {
-        id: course_id,
-      },
-      include: {
-        Enrolled: {
-          where: {
-            user_id: req.auth.userId,
+    try {
+      // check if course id provided by client matches an existing course
+      const course = await prisma.course.findUnique({
+        where: {
+          id: course_id,
+        },
+        include: {
+          Enrolled: {
+            where: {
+              user_id: req.auth.userId,
+            },
+          },
+          Meeting: {
+            where: {
+              id: meeting_id,
+            },
           },
         },
-        Meeting: {
-          where: {
-            id: meeting_id
-          }
-        }
-      },
-    });
+      });
 
-    // if no course exists with the provided entry code
-    if (course === null) {
-      return res
-        .status(404)
-        .json({ error: "This course does not exist" });
-    }
+      // if no course exists with the provided entry code
+      if (course === null) {
+        return res.status(404).json({ error: "This course does not exist" });
+      }
 
-    // requester is not enrolled in the course
-    if (course.Enrolled.length === 0) {
-      return res
-        .status(403)
-        .json({ error: "You are not enrolled in this course" });
-    }
+      // requester is not enrolled in the course
+      if (course.Enrolled.length === 0) {
+        return res
+          .status(403)
+          .json({ error: "You are not enrolled in this course" });
+      }
 
-    // instructors cannot enqueue
-    if (course.Enrolled[0].role === 2 || course.Enrolled[0].role === 1) {
-      return res
-        .status(400)
-        .json({ error: "Only students can join the queue" });
-    }
+      // instructors cannot enqueue
+      if (course.Enrolled[0].role === 2 || course.Enrolled[0].role === 1) {
+        return res
+          .status(400)
+          .json({ error: "Only students can join the queue" });
+      }
 
-    // if no meeting exists with the provided id
-    if (course.Meeting.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "This meeting does not exist" });
-    }
+      // if no meeting exists with the provided id
+      if (course.Meeting.length === 0) {
+        return res.status(404).json({ error: "This meeting does not exist" });
+      }
 
-    // enqueue student
-    const enqueue = await prisma.queue.create({
-      data: {
-        user_id: req.auth.userId,
-        meeting_id: meeting_id,
-      },
-    });
+      // enqueue student
+      const enqueue = await prisma.queue.create({
+        data: {
+          user_id: req.auth.userId,
+          meeting_id: meeting_id,
+        },
+      });
 
-    res.status(201).json(enqueue);
-    
+      res.status(201).json(enqueue);
     } catch (error) {
       res
         .status(500)
@@ -135,76 +133,94 @@ router.post("/:meeting_id",validateRequest(enqueueMeetingPOST),async (req, res) 
 );
 
 // dequeue from meeting (leave the queue)
-router.delete("/:meeting_id",validateRequest(enqueueMeetingPOST),async (req, res) => {
+router.delete(
+  "/:meeting_id/:user_id",
+  validateRequest(removeMeetingDELETE),
+  async (req, res) => {
+    const { course_id, meeting_id, user_id } = req.params;
 
-  const { course_id, meeting_id } = req.params
-
-  try {
-    // check if course id provided by client matches an existing course
-    const course = await prisma.course.findUnique({
-      where: {
-        id: course_id,
-      },
-      include: {
-        Enrolled: {
-          where: {
-            user_id: req.auth.userId,
+    try {
+      // check if course id provided by client matches an existing course
+      const course = await prisma.course.findUnique({
+        where: {
+          id: course_id,
+        },
+        include: {
+          Enrolled: {
+            where: {
+              user_id: req.auth.userId,
+            },
+          },
+          Meeting: {
+            where: {
+              id: meeting_id,
+            },
+            include: {
+              Queue: {
+                where: {
+                  user_id: user_id,
+                },
+              },
+            },
           },
         },
-        Meeting: {
-          where: {
-            id: meeting_id
-          }
-        }
-      },
-    });
+      });
 
-    // if no course exists with the provided entry code
-    if (course === null) {
-      return res
-        .status(404)
-        .json({ error: "This course does not exist" });
-    }
-
-    // requester is not enrolled in the course
-    if (course.Enrolled.length === 0) {
-      return res
-        .status(403)
-        .json({ error: "You are not enrolled in this course" });
-    }
-
-    // if no meeting exists with the provided id
-    if (course.Meeting.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "This meeting does not exist" });
-    }
-
-    // check if student is in queue
-    const queue = await prisma.queue.findUnique({
-      where:{
-        user_id: req.auth.userId,
-        meeting_id: meeting_id
+      // if no course exists with the provided entry code
+      if (course === null) {
+        return res.status(404).json({ error: "This course does not exist" });
       }
-    })
 
-    //if student isn't in queue
-    if(queue === null){
-      return res
-      .status(405)
-      .json({error: "User not found in the queue"})
-    }
+      // if no meeting exists with the provided id
+      if (course.Meeting.length === 0) {
+        return res.status(404).json({ error: "This meeting does not exist" });
+      }
 
-    // dequeue student
-    const dequeue = await prisma.queue.delete({
-      where: {
-        user_id: req.auth.userId,
-        meeting_id: meeting_id,
-      } 
-    });
+      // student trying to leave own course
+      if (user_id === req.auth.userId) {
+        // requester is not enrolled in the course
+        if (course.Enrolled.length === 0) {
+          return res
+            .status(400)
+            .json({ error: "You are not enrolled in this course" });
+        }
 
-    res.status(201).json(dequeue);
-    
+        // if student isn't in queue
+        if (course.Meeting[0].Queue.length === 0) {
+          return res
+            .status(400)
+            .json({ error: "You are not in the queue for this meeting" });
+        }
+      } else {
+        if (course.Enrolled.length === 0) {
+          return res
+            .status(400)
+            .json({ error: "User not enrolled in this course" });
+        }
+
+        // if student isn't in queue
+        if (course.Meeting[0].Queue.length === 0) {
+          return res.status(400).json({ error: "User not found in the queue" });
+        }
+
+        if (course.Meeting[0].owner_id !== req.auth.userId) {
+          return res
+            .status(400)
+            .json({ error: "Only owner can remove users from queue" });
+        }
+      }
+
+      // dequeue student
+      const dequeue = await prisma.queue.delete({
+        where: {
+          user_id_meeting_id: {
+            user_id: user_id,
+            meeting_id: meeting_id,
+          },
+        },
+      });
+
+      res.status(201).json(dequeue);
     } catch (error) {
       res
         .status(500)
