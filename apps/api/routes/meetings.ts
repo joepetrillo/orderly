@@ -2,7 +2,6 @@ import express from "express";
 import { prisma } from "../prisma/init";
 import { processRequest, validateRequest } from "zod-express-middleware";
 import {
-  enqueueMeetingPOST,
   meetingPOST,
   meetingPATCH,
   courseAndMeetingPARAM,
@@ -64,7 +63,7 @@ router.post("/", validateRequest(meetingPOST), async (req, res) => {
 });
 
 // enqueue in meeting (join the queue)
-router.post("/:meeting_id",validateRequest(enqueueMeetingPOST),async (req, res) => {
+router.post("/:meeting_id",validateRequest(courseAndMeetingPARAM),async (req, res) => {
 
   const { course_id, meeting_id } = req.params
 
