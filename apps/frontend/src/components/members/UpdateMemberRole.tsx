@@ -1,6 +1,4 @@
-import { useAuth } from "@clerk/nextjs";
 import { Fragment, useState } from "react";
-import { mutate } from "swr";
 import {
   CheckCircleIcon,
   CheckIcon,
@@ -11,6 +9,9 @@ import { Listbox, Transition } from "@headlessui/react";
 import { cn } from "@/lib/utils";
 import { usePopper } from "react-popper";
 import { toast } from "react-hot-toast";
+import useAuthedFetch from "@/hooks/useAuthedFetch";
+import useSWRMutation from "swr/mutation";
+import { Member } from "@orderly/schema";
 
 const roles: { role: 0 | 1; component: JSX.Element }[] = [
   {
@@ -38,6 +39,7 @@ const showErrorToast = () =>
         appear={true}
         as={Fragment}
         show={t.visible}
+        unmount={false}
         enter="transform ease-out duration-300 transition"
         enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
         enterTo="translate-y-0 opacity-100 sm:translate-x-0"
@@ -74,6 +76,7 @@ const showSuccessToast = () =>
         appear={true}
         as={Fragment}
         show={t.visible}
+        unmount={false}
         enter="transform ease-out duration-300 transition"
         enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
         enterTo="translate-y-0 opacity-100 sm:translate-x-0"
@@ -112,7 +115,6 @@ export default function UpdateMemberRole({
   course_id: string;
   user_id: string;
 }) {
-  const { getToken } = useAuth();
   const [selected, setSelected] = useState(roles[role]);
   const [referenceElement, setReferenceElement] =
     useState<HTMLButtonElement | null>(null);
@@ -123,40 +125,71 @@ export default function UpdateMemberRole({
     strategy: "fixed",
   });
 
-  async function handleChange(value: { role: 0 | 1; component: JSX.Element }) {
-    if (selected.role === value.role) return;
+  const authedFetch = useAuthedFetch();
 
-    const prevSelected = selected;
-    setSelected(value);
-
-    const requestOptions = {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${await getToken()}`,
-      },
-      body: JSON.stringify({ role: value.role }),
-    };
-
+  async function updateRole(
+    key: string,
+    { arg: newValue }: { arg: { role: 0 | 1; component: JSX.Element } }
+  ) {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}/members/${user_id}`,
-        requestOptions
+      const res = await authedFetch(
+        `/courses/${course_id}/members/${user_id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ role: newValue.role }),
+        }
       );
 
+      const data = await res.json();
+
       if (!res.ok) {
-        setSelected(prevSelected);
-        showErrorToast();
-        return;
+        if (data.error) throw new Error(data.error);
+        else throw new Error("An unknown error occurred");
       }
+
+      showSuccessToast();
+      return data;
     } catch (error) {
+      if (error instanceof Error) throw new Error(error.message);
+      else throw new Error("An unknown error occurred");
+    }
+  }
+
+  const { trigger } = useSWRMutation(
+    `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}/members`,
+    updateRole,
+    {
+      revalidate: false,
+      populateCache: (
+        updatedMember: { user_id: string; course_id: string; role: 0 | 1 },
+        memberList: Member[]
+      ) => {
+        return memberList.map((member) => {
+          if (member.id === updatedMember.user_id) {
+            member.role = updatedMember.role;
+          }
+          return member;
+        });
+      },
+    }
+  );
+
+  async function handleChange(newValue: {
+    role: 0 | 1;
+    component: JSX.Element;
+  }) {
+    if (selected.role === newValue.role) return;
+
+    const prevSelected = selected;
+    setSelected(newValue);
+
+    try {
+      await trigger(newValue);
+    } catch (err) {
+      // show toast with error
       setSelected(prevSelected);
       showErrorToast();
-      return;
     }
-
-    showSuccessToast();
-    mutate(`${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}/members`);
   }
 
   return (

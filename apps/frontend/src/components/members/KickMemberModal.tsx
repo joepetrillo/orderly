@@ -50,10 +50,11 @@ export default function KickMemberModal({
       revalidate: false,
       populateCache: (kickedMemberId: string, memberList: Member[]) => {
         return memberList.filter((member) => member.id !== kickedMemberId);
-      }, // remove from cache
+      },
       throwOnError: false,
     }
   );
+
   return (
     <Modal
       title="Kick User"
@@ -83,52 +84,3 @@ export default function KickMemberModal({
     </Modal>
   );
 }
-
-// const { getToken } = useAuth();
-// const [loading, setLoading] = useState(false);
-// const [error, setError] = useState("");
-
-// async function handleSubmit(
-//   e: FormEvent<HTMLFormElement>,
-//   setOpen: (value: SetStateAction<boolean>) => void
-// ) {
-//   e.preventDefault();
-
-//   setLoading(true);
-
-//   const requestOptions = {
-//     method: "DELETE",
-//     headers: {
-//       "Content-Type": "application/json",
-//       Authorization: `Bearer ${await getToken()}`,
-//     },
-//   };
-
-//   try {
-//     const res = await fetch(
-//       `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}/members/${user_id}`,
-//       requestOptions
-//     );
-//     const data = await res.json();
-
-//     if (!res.ok) {
-//       if (data.error) {
-//         setError(data.error);
-//       } else {
-//         setError("An unexpected error has occurred, please try again later");
-//       }
-//       setLoading(false);
-//       return;
-//     }
-//   } catch (error) {
-//     setError(
-//       "There was an error reaching the server, please try again later"
-//     );
-//     setLoading(false);
-//     return;
-//   }
-
-//   mutate(`${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}/members`);
-//   setOpen(false);
-//   setLoading(false);
-// }
