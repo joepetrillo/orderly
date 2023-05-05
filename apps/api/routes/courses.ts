@@ -17,7 +17,9 @@ const router = express.Router();
 router.use("/:course_id/members", members);
 router.use("/:course_id/meetings", meetings);
 
-// get general details about all courses enrolled in
+/*  Gets the details of every course the requestor is enrolled in
+    - Anyone can use this route
+*/
 router.get("/", async (req, res) => {
   const allCourses: CourseData[] = [];
 
@@ -81,7 +83,9 @@ router.get("/", async (req, res) => {
   }
 });
 
-// get all specific course details for an exact course
+/*  Gets the details of a specific course
+    - Requestor must be enrolled in the course
+*/
 router.get("/:course_id", processRequest(coursePARAM), async (req, res) => {
   const { course_id } = req.params;
 
@@ -147,7 +151,10 @@ router.get("/:course_id", processRequest(coursePARAM), async (req, res) => {
   }
 });
 
-// create new course
+/*  Creates a new course
+    - Anyone can use this route
+    - Each user is limited to owning 6 courses
+*/
 router.post("/", validateRequest(createCoursePOST), async (req, res) => {
   try {
     let entryCode: string;
@@ -207,7 +214,9 @@ router.post("/", validateRequest(createCoursePOST), async (req, res) => {
   }
 });
 
-// enroll in a course
+/*  Enrolls user into a course that uses the code given
+    - Anyone can use this route
+*/
 router.post("/enroll", validateRequest(joinCoursePOST), async (req, res) => {
   try {
     // check if code provided by client matches an existing course
@@ -254,7 +263,10 @@ router.post("/enroll", validateRequest(joinCoursePOST), async (req, res) => {
   }
 });
 
-// delete a course
+/*  Deletes a course and ALL related resources
+    - Only the owner of the course can use this route
+    - The deletion cascades to all meetings and queue positions (everything is lost)
+*/
 router.delete("/:course_id", processRequest(coursePARAM), async (req, res) => {
   const { course_id } = req.params;
 
@@ -293,7 +305,9 @@ router.delete("/:course_id", processRequest(coursePARAM), async (req, res) => {
   }
 });
 
-// update course name
+/*  Updates the name of a course
+    - Only the owner of the course can use this route
+*/
 router.patch(
   "/:course_id/name",
   processRequest(updateCourseNamePATCH),
@@ -338,7 +352,10 @@ router.patch(
   }
 );
 
-// regenerate and update course entry code
+/*  Regenerates the entry code of a course
+    - Only the owner of the course can use this route
+    - Only the latest code generated is valid
+*/
 router.patch(
   "/:course_id/code",
   processRequest(coursePARAM),

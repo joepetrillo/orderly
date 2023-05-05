@@ -11,7 +11,11 @@ import clerkClient from "@clerk/clerk-sdk-node";
 
 const router = express.Router({ mergeParams: true });
 
-// get everyone enrolled in the course (only owner can do this, list does not include the owner)
+/*  Gets everyone enrolled in the course
+    - Only the owner of the course has permission to use this route
+    - The list of members returned does NOT include the owner
+    - The order of the list puts members with instructor role first
+*/
 router.get("/", processRequest(coursePARAM), async (req, res) => {
   const { course_id } = req.params;
 
@@ -81,7 +85,10 @@ router.get("/", processRequest(coursePARAM), async (req, res) => {
   }
 });
 
-// update role of user to 0 or 1 (only one owner can exist, so we do not allow updating to role 2)
+/*  Update the role of the user to 0 or 1 (student or instructor)
+    - Only the owner of the course has permission to use this route
+    - Only one course owner can exist, so we do not allow updating to role 2 (owner)
+*/
 router.patch("/:user_id", processRequest(updateRolePATCH), async (req, res) => {
   const { course_id, user_id } = req.params;
 
@@ -110,14 +117,14 @@ router.patch("/:user_id", processRequest(updateRolePATCH), async (req, res) => {
 
     // only owners can update roles
     if (course.owner_id !== req.auth.userId) {
-      return res.status(400).json({
+      return res.status(403).json({
         error: "You do not have permission to update roles in this course",
       });
     }
 
     // user id being updated is not enrolled in course as instructor or student
     if (course.Enrolled.length !== 1) {
-      return res.status(400).json({
+      return res.status(404).json({
         error:
           "The user you are trying to update is not enrolled in this course as an instructor or student",
       });
@@ -144,7 +151,11 @@ router.patch("/:user_id", processRequest(updateRolePATCH), async (req, res) => {
   }
 });
 
-// leave a course (if requestor matches the user_id of the param, treat as leaving, else treat as kicking)
+/*  Handles leaving a course (could be a user leaving on their own or the owner of a course kicking a user)
+    - Only the owner of the course has permission to kick others
+    - When the userid param matches the requestor userid, we know its a user trying to leave on their own
+    - When the userid param does NOT match the requestor userid, we know a kick is being attempted
+*/
 router.delete("/:user_id", processRequest(kickUserDELETE), async (req, res) => {
   const { course_id, user_id } = req.params;
 
@@ -291,11 +302,7 @@ router.delete("/:user_id", processRequest(kickUserDELETE), async (req, res) => {
         },
       });
 
-      res.status(200).json({
-        user_id: deletedUser.user_id,
-        course_id: course.id,
-        role: deletedUser.role,
-      });
+      res.status(200).json(deletedUser);
     }
   } catch (error) {
     res.status(500).json({

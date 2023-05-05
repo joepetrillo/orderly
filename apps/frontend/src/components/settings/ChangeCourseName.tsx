@@ -32,6 +32,7 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
         else throw new Error("An unknown error occurred");
       }
 
+      setName("");
       return data.name;
     } catch (error) {
       if (error instanceof Error) throw new Error(error.message);
