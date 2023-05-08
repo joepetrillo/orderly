@@ -5,5 +5,5 @@ module.exports = {
     "prettier-plugin-tailwindcss",
   ],
   pluginSearchDirs: false,
-  importOrder: ["^@/", "^@orderly/(.*)$"],
+  importOrder: ["^@/", "^[./]", "^@orderly/(.*)$"],
 };

@@ -1,6 +1,9 @@
+import clerkClient from "@clerk/clerk-sdk-node";
 import express from "express";
-import { prisma } from "../prisma/init";
 import { processRequest, validateRequest } from "zod-express-middleware";
+import { prisma } from "../prisma/init";
+import meetings from "./meetings";
+import members from "./members";
 import {
   coursePARAM,
   createCoursePOST,
@@ -8,9 +11,6 @@ import {
   CourseData,
   updateCourseNamePATCH,
 } from "@orderly/schema";
-import clerkClient from "@clerk/clerk-sdk-node";
-import members from "./members";
-import meetings from "./meetings";
 
 const router = express.Router();
 

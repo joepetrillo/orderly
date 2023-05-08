@@ -1,8 +1,8 @@
-import { SetStateAction } from "react";
-import Modal from "@/components/ui/Modal";
 import { XCircleIcon } from "@heroicons/react/20/solid";
-import useAuthedFetch from "@/hooks/useAuthedFetch";
+import { SetStateAction } from "react";
 import useSWRMutation from "swr/mutation";
+import Modal from "@/components/ui/Modal";
+import useAuthedFetch from "@/hooks/useAuthedFetch";
 import { Member } from "@orderly/schema";
 
 export default function KickMemberModal({

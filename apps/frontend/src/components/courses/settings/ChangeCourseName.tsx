@@ -1,11 +1,11 @@
-import useSWRMutation from "swr/mutation";
-import { updateCourseNamePATCH } from "@orderly/schema";
 import { useState } from "react";
+import useSWRMutation from "swr/mutation";
 import { z } from "zod";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Spinner from "@/components/ui/Spinner";
 import useAuthedFetch from "@/hooks/useAuthedFetch";
+import { updateCourseNamePATCH } from "@orderly/schema";
 
 export default function ChangeCourseName({ course_id }: { course_id: string }) {
   const authedFetch = useAuthedFetch();

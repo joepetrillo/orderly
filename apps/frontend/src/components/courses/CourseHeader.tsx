@@ -1,10 +1,10 @@
-import { CourseData } from "@orderly/schema";
-import { Container } from "../Container";
-import Link from "next/link";
-import CourseHeaderSkeleton from "@/components/skeletons/CourseHeaderSkeleton";
-import { motion } from "framer-motion";
-import { useRouter } from "next/router";
 import { KeyIcon, UserIcon, AcademicCapIcon } from "@heroicons/react/20/solid";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import CourseHeaderSkeleton from "@/components/skeletons/CourseHeaderSkeleton";
+import { Container } from "../Container";
+import { CourseData } from "@orderly/schema";
 
 export default function CourseHeader({
   loading,
@@ -29,7 +29,7 @@ export default function CourseHeader({
     <div className="border-b border-b-gray-200 bg-white pb-5 pt-10">
       <Container>
         <div className="mb-10">
-          <h1 className="mb-5 line-clamp-2 font-display text-3xl font-semibold">
+          <h1 className="font-display mb-5 line-clamp-2 text-3xl font-semibold">
             {data.name}
           </h1>
           <div className="flex flex-wrap gap-4">

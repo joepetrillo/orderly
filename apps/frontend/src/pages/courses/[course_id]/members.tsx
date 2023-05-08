@@ -1,14 +1,14 @@
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { ReactElement } from "react";
 import { Container } from "@/components/Container";
 import CourseLayout from "@/components/courses/CourseLayout";
-import { NextPageWithLayout } from "@/pages/_app";
-import { ReactElement } from "react";
-import Image from "next/image";
-import { Member } from "@orderly/schema";
-import { useRouter } from "next/router";
-import useClerkSWR from "@/hooks/useClerkSWR";
-import MembersSkeleton from "@/components/skeletons/MembersSkeleton";
 import KickMemberModal from "@/components/courses/members/KickMemberModal";
 import UpdateMemberRole from "@/components/courses/members/UpdateMemberRole";
+import MembersSkeleton from "@/components/skeletons/MembersSkeleton";
+import useClerkSWR from "@/hooks/useClerkSWR";
+import { NextPageWithLayout } from "@/pages/_app";
+import { Member } from "@orderly/schema";
 
 const CourseMembers: NextPageWithLayout = () => {
   const router = useRouter();

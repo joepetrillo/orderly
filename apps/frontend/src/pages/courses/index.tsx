@@ -1,14 +1,14 @@
-import useClerkSWR from "@/hooks/useClerkSWR";
+import { Tab } from "@headlessui/react";
+import { UserIcon, KeyIcon, AcademicCapIcon } from "@heroicons/react/20/solid";
+import { motion } from "framer-motion";
 import Link from "next/link";
-import AllCoursesSkeleton from "@/components/skeletons/AllCoursesSkeleton";
+import { useState } from "react";
+import { Container } from "@/components/Container";
 import CreateCourseModal from "@/components/courses/CreateCourseModal";
 import JoinCourseModal from "@/components/courses/JoinCourseModal";
-import { Container } from "@/components/Container";
+import AllCoursesSkeleton from "@/components/skeletons/AllCoursesSkeleton";
+import useClerkSWR from "@/hooks/useClerkSWR";
 import { doubleFilter } from "@/lib/utils";
-import { UserIcon, KeyIcon, AcademicCapIcon } from "@heroicons/react/20/solid";
-import { Tab } from "@headlessui/react";
-import { useState } from "react";
-import { motion } from "framer-motion";
 import type { CourseData } from "@orderly/schema";
 
 const CourseCard = (props: CourseData) => {
@@ -62,7 +62,7 @@ export default function Courses() {
         <div className="border-b border-b-gray-200 bg-white pb-5 pt-10">
           <Container>
             <div className="mb-10 items-center justify-between sm:flex sm:h-9">
-              <h1 className="mb-5 font-display text-3xl font-semibold sm:m-0">
+              <h1 className="font-display mb-5 text-3xl font-semibold sm:m-0">
                 Courses
               </h1>
               <div className="inline-flex flex-wrap gap-4">
@@ -75,7 +75,7 @@ export default function Courses() {
                 return (
                   <Tab
                     key={tab.id}
-                    className="relative rounded px-4 py-1.5 text-sm font-medium ring-indigo-400 transition duration-100 hover:bg-gray-100 focus:outline-none ui-focus-visible:ring-2"
+                    className="ui-focus-visible:ring-2 relative rounded px-4 py-1.5 text-sm font-medium ring-indigo-400 transition duration-100 hover:bg-gray-100 focus:outline-none"
                     style={{ WebkitTapHighlightColor: "transparent" }}
                   >
                     <span className="relative z-10">{tab.label}</span>

@@ -1,13 +1,13 @@
+import clerkClient from "@clerk/clerk-sdk-node";
 import express from "express";
-import { prisma } from "../prisma/init";
 import { processRequest } from "zod-express-middleware";
+import { prisma } from "../prisma/init";
 import {
   coursePARAM,
   updateRolePATCH,
   kickUserDELETE,
   Member,
 } from "@orderly/schema";
-import clerkClient from "@clerk/clerk-sdk-node";
 
 const router = express.Router({ mergeParams: true });
 

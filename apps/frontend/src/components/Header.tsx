@@ -1,13 +1,13 @@
-import { Container } from "@/components/Container";
-import Button from "@/components/ui/Button";
-import { LogoWithText, LogoWithoutText } from "@/components/ui/Logo";
-import { cn } from "@/lib/utils";
 import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Container } from "@/components/Container";
+import Button from "@/components/ui/Button";
+import { LogoWithText, LogoWithoutText } from "@/components/ui/Logo";
+import { cn } from "@/lib/utils";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

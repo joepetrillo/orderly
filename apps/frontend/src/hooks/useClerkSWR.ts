@@ -1,6 +1,6 @@
-import { FetcherResponse, PublicConfiguration } from "swr/_internal";
-import useSWR, { Fetcher } from "swr";
 import { useAuth } from "@clerk/nextjs";
+import useSWR, { Fetcher } from "swr";
+import { FetcherResponse, PublicConfiguration } from "swr/_internal";
 
 export default function useClerkSWR<Data>(
   url: string | null,

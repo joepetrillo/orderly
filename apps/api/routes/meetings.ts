@@ -1,6 +1,6 @@
 import express from "express";
-import { prisma } from "../prisma/init";
 import { processRequest, validateRequest } from "zod-express-middleware";
+import { prisma } from "../prisma/init";
 import {
   enqueueMeetingPOST,
   meetingPOST,

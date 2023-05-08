@@ -1,8 +1,8 @@
-import { FormEvent, SetStateAction } from "react";
 import { useRouter } from "next/router";
+import { FormEvent, SetStateAction } from "react";
+import useSWRMutation from "swr/mutation";
 import Modal from "@/components/ui/Modal";
 import useAuthedFetch from "@/hooks/useAuthedFetch";
-import useSWRMutation from "swr/mutation";
 
 export default function DeleteCourse({ course_id }: { course_id: string }) {
   const router = useRouter();
