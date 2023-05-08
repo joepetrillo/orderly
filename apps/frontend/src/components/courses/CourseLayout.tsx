@@ -66,8 +66,8 @@ export default function CourseLayout({
     const roleRequired = tabs.find(
       (tab) => tab.pathname === router.pathname
     )?.role;
-    if (roleRequired) {
-      if (data?.role < roleRequired) return <NotFound />;
+    if (roleRequired !== undefined) {
+      if (data.role < roleRequired) return <NotFound />;
     }
   }
 
