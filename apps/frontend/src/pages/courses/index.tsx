@@ -104,32 +104,38 @@ export default function Courses() {
             <p className="text-red-500">{error.message}</p>
           ) : (
             <Tab.Panels>
-              <Tab.Panel className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <Tab.Panel>
                 {data?.length === 0 && (
                   <p>You have not created or joined any courses</p>
                 )}
-                {ownedCourses.map((curr) => (
-                  <CourseCard key={curr.id} {...curr} />
-                ))}
-                {joinedCourses.map((curr) => (
-                  <CourseCard key={curr.id} {...curr} />
-                ))}
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {ownedCourses.map((curr) => (
+                    <CourseCard key={curr.id} {...curr} />
+                  ))}
+                  {joinedCourses.map((curr) => (
+                    <CourseCard key={curr.id} {...curr} />
+                  ))}
+                </div>
               </Tab.Panel>
-              <Tab.Panel className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <Tab.Panel>
                 {ownedCourses.length === 0 && (
                   <p>You have not created any courses</p>
                 )}
-                {ownedCourses.map((curr) => (
-                  <CourseCard key={curr.id} {...curr} />
-                ))}
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {ownedCourses.map((curr) => (
+                    <CourseCard key={curr.id} {...curr} />
+                  ))}
+                </div>
               </Tab.Panel>
-              <Tab.Panel className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <Tab.Panel>
                 {joinedCourses.length === 0 && (
                   <p>You have not joined any courses</p>
                 )}
-                {joinedCourses.map((curr) => (
-                  <CourseCard key={curr.id} {...curr} />
-                ))}
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {joinedCourses.map((curr) => (
+                    <CourseCard key={curr.id} {...curr} />
+                  ))}
+                </div>
               </Tab.Panel>
             </Tab.Panels>
           )}

@@ -1,7 +1,7 @@
-import * as React from "react";
-import Link, { LinkProps } from "next/link";
-import { VariantProps, cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { VariantProps, cva } from "class-variance-authority";
+import Link, { LinkProps } from "next/link";
+import * as React from "react";
 
 const buttonVariants = cva(
   "transition duration-100 inline-flex items-center justify-center gap-2 shadow-sm border border-transparent font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:opacity-50",

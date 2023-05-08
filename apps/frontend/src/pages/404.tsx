@@ -14,8 +14,8 @@ export default function NotFound() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.replace("/");
-    }, 3600);
+      router.replace("/courses");
+    }, 3500);
     return () => clearTimeout(timeout);
   }, [router]);
 

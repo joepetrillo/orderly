@@ -5,7 +5,6 @@ import NotFound from "@/pages/404";
 import { coursePARAM, CourseData } from "@orderly/schema";
 import JoinCourseError from "@/components/courses/JoinCourseError";
 import Spinner from "@/components/ui/Spinner";
-import { Container } from "@/components/Container";
 
 export default function CourseLayout({
   children,

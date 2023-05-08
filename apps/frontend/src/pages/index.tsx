@@ -1,6 +1,6 @@
-import Button from "@/components/ui/Button";
+import { CakeIcon } from "@heroicons/react/24/outline";
 import { Container } from "@/components/Container";
-import { CakeIcon, KeyIcon, UserIcon } from "@heroicons/react/24/outline";
+import Button from "@/components/ui/Button";
 
 const BackgroundBlur = () => {
   return (

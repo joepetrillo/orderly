@@ -7,8 +7,8 @@ import { Member } from "@orderly/schema";
 import { useRouter } from "next/router";
 import useClerkSWR from "@/hooks/useClerkSWR";
 import MembersSkeleton from "@/components/skeletons/MembersSkeleton";
-import KickMemberModal from "@/components/members/KickMemberModal";
-import UpdateMemberRole from "@/components/members/UpdateMemberRole";
+import KickMemberModal from "@/components/courses/members/KickMemberModal";
+import UpdateMemberRole from "@/components/courses/members/UpdateMemberRole";
 
 const CourseMembers: NextPageWithLayout = () => {
   const router = useRouter();

@@ -3,11 +3,11 @@ import type { NextPage } from "next";
 import type { ReactElement, ReactNode } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Lexend, Golos_Text } from "next/font/google";
-import "@/styles/globals.css";
+import { Toaster } from "react-hot-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RootLayout from "@/components/RootLayout";
-import { Toaster } from "react-hot-toast";
+import "@/styles/globals.css";
 
 const primaryFont = Golos_Text({ subsets: ["latin"] });
 const secondaryFont = Lexend({ subsets: ["latin"] });

@@ -1,14 +1,14 @@
-import { Container } from "@/components/Container";
-import CourseLayout from "@/components/courses/CourseLayout";
-import ChangeCourseName from "@/components/settings/ChangeCourseName";
-import DeleteCourse from "@/components/settings/DeleteCourse";
-import GenerateNewCourseCode from "@/components/settings/GenerateNewCourseCode";
-import LeaveCourse from "@/components/settings/LeaveCourse";
+import { ReactElement } from "react";
 import useClerkSWR from "@/hooks/useClerkSWR";
 import { NextPageWithLayout } from "@/pages/_app";
 import { CourseData } from "@orderly/schema";
 import { useRouter } from "next/router";
-import { ReactElement } from "react";
+import { Container } from "@/components/Container";
+import CourseLayout from "@/components/courses/CourseLayout";
+import DeleteCourse from "@/components/courses/settings/DeleteCourse";
+import LeaveCourse from "@/components/courses/settings/LeaveCourse";
+import GenerateNewCourseCode from "@/components/courses/settings/GenerateNewCourseCode";
+import ChangeCourseName from "@/components/courses/settings/ChangeCourseName";
 
 const CourseSettings: NextPageWithLayout = () => {
   const router = useRouter();
