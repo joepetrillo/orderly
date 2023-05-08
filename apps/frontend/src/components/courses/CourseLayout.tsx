@@ -1,11 +1,10 @@
-import CourseHeader from "@/components/courses/CourseHeader";
-import useClerkSWR from "@/hooks/useClerkSWR";
 import { useRouter } from "next/router";
-import NotFound from "@/pages/404";
-import { coursePARAM, CourseData } from "@orderly/schema";
+import CourseHeader from "@/components/courses/CourseHeader";
 import JoinCourseError from "@/components/courses/JoinCourseError";
 import Spinner from "@/components/ui/Spinner";
-import { Container } from "@/components/Container";
+import useClerkSWR from "@/hooks/useClerkSWR";
+import NotFound from "@/pages/404";
+import { coursePARAM, CourseData } from "@orderly/schema";
 
 export default function CourseLayout({
   children,
@@ -67,8 +66,8 @@ export default function CourseLayout({
     const roleRequired = tabs.find(
       (tab) => tab.pathname === router.pathname
     )?.role;
-    if (roleRequired) {
-      if (data?.role < roleRequired) return <NotFound />;
+    if (roleRequired !== undefined) {
+      if (data.role < roleRequired) return <NotFound />;
     }
   }
 

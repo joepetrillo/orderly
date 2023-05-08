@@ -14,7 +14,7 @@ const LoadingCard = () => {
 export default function AllCoursesSkeleton() {
   return (
     <>
-      <div className="grid animate-pulse-fast gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="animate-pulse-fast grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <LoadingCard />
         <LoadingCard />
         <LoadingCard />

@@ -14,14 +14,14 @@ export default function NotFound() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.replace("/");
-    }, 3600);
+      router.replace("/courses");
+    }, 3500);
     return () => clearTimeout(timeout);
   }, [router]);
 
   return (
     <Container className="flex flex-col items-center justify-center py-20 text-center">
-      <h1 className="max-w-sm font-display text-4xl font-bold">
+      <h1 className="font-display max-w-sm text-4xl font-bold">
         Page Not Found
       </h1>
       <p className="mt-5 text-gray-600">

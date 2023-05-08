@@ -6,7 +6,7 @@
   },
   "settings": {
     "tailwindcss": {
-      "callees": ["cn", "cva", "clsx", "twMerge"]
+      "callees": ["cn", "cva"]
     }
   }
 }

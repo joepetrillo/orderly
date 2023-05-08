@@ -1,12 +1,12 @@
-import Input from "@/components/ui/Input";
 import { useAuth } from "@clerk/nextjs";
-import { joinCoursePOST } from "@orderly/schema";
 import { FormEvent, useState } from "react";
 import { mutate } from "swr";
 import { z } from "zod";
-import Button from "@/components/ui/Button";
-import Spinner from "@/components/ui/Spinner";
 import { Container } from "@/components/Container";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Spinner from "@/components/ui/Spinner";
+import { joinCoursePOST } from "@orderly/schema";
 
 export default function JoinCourseError({ course_id }: { course_id: string }) {
   const { getToken } = useAuth();
@@ -71,7 +71,7 @@ export default function JoinCourseError({ course_id }: { course_id: string }) {
 
   return (
     <Container className="flex flex-col items-center justify-center py-20">
-      <h1 className="max-w-sm text-center font-display text-4xl font-bold">
+      <h1 className="font-display max-w-sm text-center text-4xl font-bold">
         You are not enrolled in this course
       </h1>
       <p className="mt-5 text-center text-gray-600">

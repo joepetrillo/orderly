@@ -1,7 +1,7 @@
+import useSWRMutation from "swr/mutation";
 import Button from "@/components/ui/Button";
 import Spinner from "@/components/ui/Spinner";
 import useAuthedFetch from "@/hooks/useAuthedFetch";
-import useSWRMutation from "swr/mutation";
 
 export default function GenerateNewCourseCode({
   course_id,

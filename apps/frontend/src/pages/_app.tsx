@@ -1,13 +1,13 @@
-import type { AppProps } from "next/app";
-import type { NextPage } from "next";
-import type { ReactElement, ReactNode } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
+import type { NextPage } from "next";
+import type { AppProps } from "next/app";
 import { Lexend, Golos_Text } from "next/font/google";
-import "@/styles/globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import RootLayout from "@/components/RootLayout";
+import type { ReactElement, ReactNode } from "react";
 import { Toaster } from "react-hot-toast";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import RootLayout from "@/components/RootLayout";
+import "@/styles/globals.css";
 
 const primaryFont = Golos_Text({ subsets: ["latin"] });
 const secondaryFont = Lexend({ subsets: ["latin"] });

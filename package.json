@@ -5,9 +5,11 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "postinstall": "prisma generate --schema=./apps/api/prisma/schema.prisma"
+    "postinstall": "prisma generate --schema=./apps/api/prisma/schema.prisma",
+    "format": "prettier --write \"./**/*.{ts,tsx}\""
   },
   "devDependencies": {
+    "prettier": "^2.8.8",
     "turbo": "^1.9.3"
   },
   "workspaces": [

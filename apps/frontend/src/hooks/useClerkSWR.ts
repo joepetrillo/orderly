@@ -1,5 +1,5 @@
-import useSWR, { Fetcher } from "swr";
 import { useAuth } from "@clerk/nextjs";
+import useSWR, { Fetcher } from "swr";
 import { FetcherResponse, PublicConfiguration } from "swr/_internal";
 
 export default function useClerkSWR<Data>(
@@ -19,16 +19,17 @@ export default function useClerkSWR<Data>(
       headers: { Authorization: `Bearer ${await getToken()}` },
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
-      const message = await res.json();
       const error: Error & { status?: number } = new Error(
-        message.error || "An unknown error occurred while fetching data"
+        data.error || "An unknown error occurred while fetching data"
       );
       error.status = res.status;
       throw error;
     }
 
-    return await res.json();
+    return data;
   };
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<

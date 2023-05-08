@@ -1,7 +1,7 @@
+import { ReactElement } from "react";
 import { Container } from "@/components/Container";
 import CourseLayout from "@/components/courses/CourseLayout";
 import { NextPageWithLayout } from "@/pages/_app";
-import { ReactElement } from "react";
 
 const Course: NextPageWithLayout = () => {
   return (

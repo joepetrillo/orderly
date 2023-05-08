@@ -1,16 +1,9 @@
-import {
-  Dispatch,
-  FormEvent,
-  Fragment,
-  SetStateAction,
-  useRef,
-  useState,
-} from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import Spinner from "@/components/ui/Spinner";
-import Button from "@/components/ui/Button";
 import { VariantProps } from "class-variance-authority";
+import { FormEvent, Fragment, SetStateAction, useRef, useState } from "react";
+import Button from "@/components/ui/Button";
 import { buttonVariants } from "@/components/ui/Button";
+import Spinner from "@/components/ui/Spinner";
 
 type ModalProps = {
   title: string;
