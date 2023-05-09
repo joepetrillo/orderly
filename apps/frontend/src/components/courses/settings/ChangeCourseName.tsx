@@ -12,7 +12,7 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
 
   async function updateName() {
     const requestBody = {
-      name: name.trim(),
+      name: name.replace(/\s{2,}/g, " ").trim(),
     };
 
     try {

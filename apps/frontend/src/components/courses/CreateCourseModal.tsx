@@ -21,7 +21,7 @@ export default function CreateCourseModal() {
     const courseName = formData.name as string;
 
     const requestBody = {
-      name: courseName.trim(),
+      name: courseName.replace(/\s{2,}/g, " ").trim(),
     };
 
     try {
