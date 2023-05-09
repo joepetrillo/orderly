@@ -73,9 +73,9 @@ const CourseMembers: NextPageWithLayout = () => {
                       <tr key={user.emailAddress}>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                           <div className="flex items-center">
-                            <div className="relative h-10 w-10 shrink-0">
+                            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
                               <Image
-                                className="h-10 w-10 rounded-full"
+                                className="object-cover"
                                 fill={true}
                                 sizes="2.5rem"
                                 src={user.profileImageUrl}
