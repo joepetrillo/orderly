@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import courses from "./routes/courses";
 import { ClerkExpressRequireAuth, StrictAuthProp } from "@clerk/clerk-sdk-node";
-import cors from "cors";
 import express, { ErrorRequestHandler } from "express";
+import cors from "cors";
+import courses from "./routes/courses";
 
 declare global {
   namespace Express {

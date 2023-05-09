@@ -29,7 +29,7 @@ export default function CourseHeader({
     <div className="border-b border-b-gray-200 bg-white pb-5 pt-10">
       <Container>
         <div className="mb-10">
-          <h1 className="font-display mb-5 line-clamp-2 text-3xl font-semibold">
+          <h1 className="font-display mb-5 text-3xl font-semibold">
             {data.name}
           </h1>
           <div className="flex flex-wrap gap-4">
