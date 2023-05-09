@@ -1,110 +1,46 @@
 import { Listbox, Transition } from "@headlessui/react";
-import {
-  CheckCircleIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  XCircleIcon,
-} from "@heroicons/react/20/solid";
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Fragment, useState } from "react";
-import { toast } from "react-hot-toast";
 import { usePopper } from "react-popper";
 import useSWRMutation from "swr/mutation";
+import { showErrorToast, showSuccessToast } from "@/components/ui/Toast";
 import useAuthedFetch from "@/hooks/useAuthedFetch";
 import { cn } from "@/lib/utils";
 import { Member } from "@orderly/schema";
+
+function RoleBadge({
+  className,
+  children,
+}: {
+  className: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex h-full items-center rounded px-2 text-xs font-semibold leading-5",
+        className
+      )}
+    >
+      {children}
+    </span>
+  );
+}
 
 const roles: { role: 0 | 1; component: JSX.Element }[] = [
   {
     role: 0,
     component: (
-      <span className="inline-flex h-full items-center rounded bg-indigo-100 px-2 text-xs font-semibold leading-5 text-indigo-800">
-        Student
-      </span>
+      <RoleBadge className="bg-indigo-100 text-indigo-800">Student</RoleBadge>
     ),
   },
   {
     role: 1,
     component: (
-      <span className="inline-flex h-full items-center rounded bg-rose-100 px-2 text-xs font-semibold leading-5 text-rose-800">
-        Instructor
-      </span>
+      <RoleBadge className="bg-rose-100 text-rose-800">Instructor</RoleBadge>
     ),
   },
 ];
-
-const showErrorToast = () =>
-  toast.custom(
-    (t) => (
-      <Transition
-        appear={true}
-        as={Fragment}
-        show={t.visible}
-        unmount={false}
-        enter="transform ease-out duration-300 transition"
-        enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-        enterTo="translate-y-0 opacity-100 sm:translate-x-0"
-        leave="transition ease-in duration-100"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-      >
-        <div className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black/5">
-          <div className="p-4">
-            <div className="flex items-center">
-              <div className="shrink-0">
-                <XCircleIcon
-                  className="h-8 w-8 text-red-500"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ml-3 w-0 flex-1 pt-0.5">
-                <p className="text-sm font-medium">
-                  There was an error while updating a role
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Transition>
-    ),
-    { position: "bottom-right", duration: 2500 }
-  );
-
-const showSuccessToast = () =>
-  toast.custom(
-    (t) => (
-      <Transition
-        appear={true}
-        as={Fragment}
-        show={t.visible}
-        unmount={false}
-        enter="transform ease-out duration-300 transition"
-        enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-        enterTo="translate-y-0 opacity-100 sm:translate-x-0"
-        leave="transition ease-in duration-100"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-      >
-        <div className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black/5">
-          <div className="p-4">
-            <div className="flex items-center">
-              <div className="shrink-0">
-                <CheckCircleIcon
-                  className="h-8 w-8 text-indigo-600"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ml-3 w-0 flex-1 pt-0.5">
-                <p className="text-sm font-medium text-gray-900">
-                  Successfully updated role
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Transition>
-    ),
-    { position: "bottom-right", duration: 2500 }
-  );
 
 export default function UpdateMemberRole({
   role,
@@ -147,7 +83,7 @@ export default function UpdateMemberRole({
         else throw new Error("An unknown error occurred");
       }
 
-      showSuccessToast();
+      showSuccessToast("Successfully updated role");
       return data;
     } catch (error) {
       if (error instanceof Error) throw new Error(error.message);
@@ -186,9 +122,8 @@ export default function UpdateMemberRole({
     try {
       await trigger(newValue);
     } catch (err) {
-      // show toast with error
       setSelected(prevSelected);
-      showErrorToast();
+      showErrorToast("There was an error while updating a role");
     }
   }
 

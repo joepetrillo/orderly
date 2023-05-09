@@ -4,8 +4,8 @@ import { Container } from "@/components/Container";
 import CourseLayout from "@/components/courses/CourseLayout";
 import ChangeCourseName from "@/components/courses/settings/ChangeCourseName";
 import DeleteCourse from "@/components/courses/settings/DeleteCourse";
-import GenerateNewCourseCode from "@/components/courses/settings/GenerateNewCourseCode";
 import LeaveCourse from "@/components/courses/settings/LeaveCourse";
+import RegenerateCourseCode from "@/components/courses/settings/RegenerateCourseCode";
 import useClerkSWR from "@/hooks/useClerkSWR";
 import { NextPageWithLayout } from "@/pages/_app";
 import { CourseData } from "@orderly/schema";
@@ -22,7 +22,7 @@ const CourseSettings: NextPageWithLayout = () => {
     authedView = (
       <>
         <ChangeCourseName course_id={course_id} />
-        <GenerateNewCourseCode course_id={course_id} />
+        <RegenerateCourseCode course_id={course_id} />
         <DeleteCourse course_id={course_id} />
       </>
     );

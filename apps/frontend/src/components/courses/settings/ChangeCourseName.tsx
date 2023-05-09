@@ -1,19 +1,18 @@
 import { useState } from "react";
 import useSWRMutation from "swr/mutation";
 import { z } from "zod";
-import Button from "@/components/ui/Button";
+import SettingsCard from "@/components/courses/settings/SettingsCard";
 import Input from "@/components/ui/Input";
-import Spinner from "@/components/ui/Spinner";
 import useAuthedFetch from "@/hooks/useAuthedFetch";
-import { updateCourseNamePATCH } from "@orderly/schema";
+import { CourseData, updateCourseNamePATCH } from "@orderly/schema";
 
 export default function ChangeCourseName({ course_id }: { course_id: string }) {
   const authedFetch = useAuthedFetch();
   const [name, setName] = useState("");
 
-  async function updateName(key: string, { arg }: { arg: string }) {
+  async function updateName() {
     try {
-      updateCourseNamePATCH.body.parse({ name: arg });
+      updateCourseNamePATCH.body.parse({ name: name });
     } catch (error) {
       const zodError = error as z.ZodError;
       throw new Error(zodError.issues[0].message);
@@ -22,7 +21,7 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
     try {
       const res = await authedFetch(`/courses/${course_id}/name`, {
         method: "PATCH",
-        body: JSON.stringify({ name: arg }),
+        body: JSON.stringify({ name: name }),
       });
 
       const data = await res.json();
@@ -45,7 +44,10 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
     updateName,
     {
       revalidate: false,
-      populateCache: (newCourseName, existingCourseData) => {
+      populateCache: (
+        newCourseName: string,
+        existingCourseData: CourseData
+      ) => {
         return { ...existingCourseData, name: newCourseName };
       },
       throwOnError: false,
@@ -53,36 +55,25 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
   );
 
   return (
-    <div className="max-w-screen-md overflow-hidden rounded border border-gray-200 bg-white">
-      <fieldset disabled={isMutating}>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            trigger(name);
-          }}
-        >
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="font-semibold">Change Course Name</h3>
-            <div className="mt-6">
-              <Input
-                inputId="update_course_name"
-                label="New Name"
-                errorMessage={error?.message}
-                name="name"
-                placeholder="Computer Programming 101"
-                onChange={(e) => setName(e.currentTarget.value)}
-                value={name}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col items-start gap-4 border-t border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <p className="text-sm text-gray-700">
-              Please use between 5 and 100 characters
-            </p>
-            <Button size="sm">Update {isMutating && <Spinner small />}</Button>
-          </div>
-        </form>
-      </fieldset>
-    </div>
+    <SettingsCard
+      headerTitle="Change Course Name"
+      buttonTitle="Update"
+      description="Please use between 5 and 100 characters"
+      loading={isMutating}
+      onSubmit={async (e) => {
+        e.preventDefault();
+        await trigger();
+      }}
+    >
+      <Input
+        label="New Name"
+        placeholder="Computer Programming 101"
+        errorMessage={error?.message}
+        name="name"
+        value={name}
+        onChange={(e) => setName(e.currentTarget.value)}
+        inputId="update_course_name"
+      />
+    </SettingsCard>
   );
 }
