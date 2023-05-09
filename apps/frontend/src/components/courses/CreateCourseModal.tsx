@@ -18,8 +18,10 @@ export default function CreateCourseModal() {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(e.currentTarget));
+    const courseName = formData.name as string;
+
     const requestBody = {
-      name: formData.name,
+      name: courseName.trim(),
     };
 
     try {

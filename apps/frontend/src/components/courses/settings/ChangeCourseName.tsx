@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWRMutation from "swr/mutation";
 import { z } from "zod";
 import SettingsCard from "@/components/courses/settings/SettingsCard";
@@ -11,8 +11,12 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
   const [name, setName] = useState("");
 
   async function updateName() {
+    const requestBody = {
+      name: name.trim(),
+    };
+
     try {
-      updateCourseNamePATCH.body.parse({ name: name });
+      updateCourseNamePATCH.body.parse(requestBody);
     } catch (error) {
       const zodError = error as z.ZodError;
       throw new Error(zodError.issues[0].message);
@@ -21,7 +25,7 @@ export default function ChangeCourseName({ course_id }: { course_id: string }) {
     try {
       const res = await authedFetch(`/courses/${course_id}/name`, {
         method: "PATCH",
-        body: JSON.stringify({ name: name }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await res.json();
