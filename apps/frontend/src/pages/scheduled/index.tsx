@@ -1,13 +1,8 @@
 import useClerkSWR from "@/hooks/useClerkSWR";
-import Link from "next/link";
-import CoursesSkeleton from "@/components/courses/CoursesSkeleton";
-import CreateCourseModal from "@/components/courses/CreateCourseModal";
-import JoinCourseModal from "@/components/courses/JoinCourseModal";
 import { Container } from "@/components/Container";
 import { doubleFilter } from "@/lib/utils";
-import { UserIcon, KeyIcon } from "@heroicons/react/20/solid";
 import { Tab } from "@headlessui/react";
-import { useState } from "react";
+import { SVGProps, useState } from "react";
 import { motion } from "framer-motion";
 import MeetingSkeleton from "@/components/courses/MeetingSkeleton";
 import Button from "@/components/ui/Button";
@@ -15,8 +10,11 @@ import SwiperCore, { EffectCoverflow, Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.min.css";
 import "swiper/swiper.min.css";
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
-import { Menu } from "@headlessui/react";
+import { Menu, Transition, Popover } from '@headlessui/react'
+import { Fragment, useEffect, useRef,} from 'react'
+
+
+SwiperCore.use([EffectCoverflow, Pagination]);
 
 type QueueGeneral = {
   id: number;
@@ -26,39 +24,128 @@ type QueueGeneral = {
   role: 0 | 1 | 2;
   owner_name: string;
   member_count: number;
+  queue_count: number;
 };
 
 const QueueCard = ({
   id,
   name,
-  question_type = "Private Question",
-  question = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
-  owner_name,
+  question_type,
+  question,
+   owner_name,
   member_count,
+  queue_count,
 }: QueueGeneral) => {
+
+  const [showQuestion, setShowQuestion] = useState(true);
+
+  const toggleQuestionVisibility = () => {
+    setShowQuestion(!showQuestion);
+  };
   return (
-    <Link
-      className="flex flex-col gap-2 rounded border border-gray-200 bg-white p-6 shadow shadow-gray-200/70 transition-all duration-150  hover:border-gray-300 hover:shadow-md"
-      href={`/courses/${id}`}
+
+    <Popover
+    className="flex flex-col gap-2 rounded border border-gray-200 bg-white p-6 shadow shadow-gray-200/70 transition-all duration-150  hover:border-gray-300 hover:shadow-md"
     >
+     
+  
+      <Popover.Button onClick={toggleQuestionVisibility} className="focus:outline-none">
       <div>
         <div className="float-right">
-          <Menu>
-            <Menu.Button>...</Menu.Button>
-            <Menu.Items>Dequeue</Menu.Items>
-            <Menu.Items>Move to Front</Menu.Items>
+          <Menu as="div" className="relative inline-block text-left">
+            <Menu.Button className={"text-4xl"} >...</Menu.Button>
+            <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+            <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+           <div className="px-1 py-1 ">
+               <Menu.Item>
+                {({ active }) => (
+                  <button
+                    className={`${
+                      active ? 'bg-indigo-600 text-white' : 'text-gray-900'
+                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                  >
+                    {active ? (
+                      <MoveActiveIcon
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <MoveInactiveIcon
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                    )}
+                    
+                    Move to Front
+                  </button>
+                )}
+              </Menu.Item>
+              </div>
+              <div className="px-1 py-1 ">
+              <Menu.Item>
+           
+                {({ active }) => (
+                  <button
+                    className={`${
+                      active ? 'bg-indigo-600 text-white' : 'text-gray-900'
+                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                  >
+                    {active ? (
+                      <ExitActiveIcon
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <ExitInactiveIcon
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                    )}
+                    Dequeue
+                  </button>
+                )}
+              </Menu.Item>
+             
+            </div>
+            </Menu.Items>
+          </Transition>
           </Menu>
         </div>
 
-        <p className="line-clamp-1 text-sm text-gray-500">{owner_name}</p>
+        <p className="line-clamp-1 text-sm text-gray-500 text-left">{name}</p>
 
-        <h3 className="mb-2 line-clamp-2 h-12 font-medium">{question_type}</h3>
-        <div className="flex flex-wrap items-center justify-between gap-1"></div>
-        <h3 className="h-15 mb-3 line-clamp-3 font-medium">
-          Question: {question}
+        <h3 className="mb-1 line-clamp-2 h-12 font-medium text-left">{question_type}</h3>
+        <h3 className="text-center font-medium mb-1">
+          Queue Position: {queue_count}
         </h3>
-      </div>
-    </Link>
+        <br />
+        <div className="flex flex-wrap items-center justify-between gap-1"></div>
+        <h3 className="h-15 mb-3 line-clamp-4 font-medium text-left">
+        {showQuestion && (
+      <h3 className="h-15 mb-3 line-clamp-4 font-medium text-left">
+        Question: {question}
+      </h3>
+    )}
+        </h3>
+        </div>
+        </Popover.Button>
+        <Popover.Panel className="z-10" /*onClick={toggleQuestionVisibility}*/>
+        <div className="h-15 font-medium text-left">
+         <h3>{question}</h3>
+        </div>
+
+        <img src="/solutions.jpg" alt="" />
+      </Popover.Panel>
+    
+       </Popover>
   );
 };
 
@@ -86,17 +173,17 @@ const FutureOfficeHoursCard = ({
   link,
 }: FutureOfficeHours) => {
   return (
-    <Link className="" href={`/courses/${id}`}>
+   <div>
       <div>
-        <div className="pb-4">
+        <div className="py-2">
           <p className="py-1 pl-2">CS 320 Prof Jaime</p>
           <p className="py-1 pl-2">4/15, 8:00 to 9:00pm</p>
-          <Button as="link" href={createCalendar()} variant="outline">
+          <Button as="link" href={createCalendar(start_time, end_time, link, owner_name, CourseName)} variant="outline">
             Add to Calendar
           </Button>
         </div>
       </div>
-    </Link>
+      </div>
   );
 };
 
@@ -113,6 +200,8 @@ type MeetingGeneral = {
   CourseName: string;
 };
 
+let i = 0;
+
 const MeetingCard = ({
   id,
   Owner_id,
@@ -126,10 +215,7 @@ const MeetingCard = ({
   link,
 }: MeetingGeneral) => {
   return (
-    <Link
-      //  className="flex flex-col gap-2 rounded border border-gray-200 bg-white p-6 shadow shadow-gray-200/70 transition-all duration-150 hover:border-gray-300 hover:shadow-md"
-      href={`/course/${id}`}
-    >
+   <div>
       <div className="rounded-md border-[1px] border-gray-300/60 bg-white p-4 shadow shadow-gray-200/70 transition-all duration-100 hover:shadow-md">
         <div className=" pl-6">
           <p className="">{CourseName}</p>
@@ -157,21 +243,21 @@ const MeetingCard = ({
               <Button variant="outline">
                 <p className="text-sm">Edit Queue Submission</p>
               </Button>
-              <Button as="link" href={createCalendar()}>
+              <Button as="externalLink" href="https://umass-amherst.zoom.us/j/5662083749?pwd=eGpRV3hZTUpLc2E3SHJsMVcxVmpJZz09" target="_blank">
                 <p className="text-sm">Join Zoom</p>
               </Button>
             </div>
           </div>
         </div>
       </div>
-    </Link>
+      </div>
   );
 };
 
 const tabs = [
   // { id: "all", label: "All" },
-  { id: "created", label: "Hosted" },
   { id: "joined", label: "Joined" },
+  { id: "created", label: "Hosted" },
 ];
 
 export default function Courses() {
@@ -193,7 +279,9 @@ export default function Courses() {
                 Office Hours
               </h1>
             </div>
+           
             <Tab.List className="inline-flex gap-2 pb-5">
+        
               {tabs.map((tab, index) => {
                 return (
                   <Tab
@@ -227,67 +315,11 @@ export default function Courses() {
             <p className="text-red-500">{error.message}</p>
           ) : (
             <Tab.Panels>
-              <Tab.Panel className="">
-                <div className="float-right py-8">
-                  <Button as="link" href={createCalendar()}>
-                    <p className="text-md">Join Zoom</p>
-                  </Button>
-                </div>
-                <h1 className="mb-5 py-8 font-display text-4xl font-semibold sm:m-0">
+             
+              <Tab.Panel>
+              <h1 className="mb-5 py-8 font-display text-4xl font-semibold sm:m-0">
                   Current Office Hours Queue
                 </h1>
-
-                {ownedCourses.length === 0 && (
-                  <p>You have no hosted office hours at this time</p>
-                )}
-                <div>
-                  <Swiper
-                    grabCursor={true}
-                    slidesPerView={"auto"}
-                    className="mySwiper"
-                    spaceBetween={50}
-                    pagination={{
-                      clickable: true,
-                    }}
-                  >
-                    {ownedCourses.map((curr, i) => (
-                      <SwiperSlide key={i} className="max-w-md">
-                        <QueueCard key={curr.id} {...curr} />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                </div>
-
-                <div className="pb-10 pt-6">
-                  <Button as="link" href={nextButton()}>
-                    <p className="p text-md">Dequeue Front</p>
-                  </Button>
-                </div>
-                <div className="items-center justify-between pb-5 sm:flex ">
-                  <h1 className="mb-5 font-display text-4xl font-semibold sm:m-0">
-                    Future Office Hour Times
-                  </h1>
-                </div>
-                <div className="">
-                  {ownedCourses.length === 0 && (
-                    <p>You have future hosted office hours at this time</p>
-                  )}
-                  {joinedCourses.map((curr) => (
-                    <FutureOfficeHoursCard
-                      Owner_id={0}
-                      course_id={0}
-                      day={0}
-                      start_time={""}
-                      end_time={""}
-                      link={""}
-                      CourseName={""}
-                      key={curr.id}
-                      {...curr}
-                    />
-                  ))}
-                </div>
-              </Tab.Panel>
-              <Tab.Panel>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {joinedCourses.map((curr) => (
                     <MeetingCard
@@ -303,6 +335,8 @@ export default function Courses() {
                     />
                   ))}
                 </div>
+                <br />
+                <br />
                 <div className="items-center justify-between pt-6 sm:flex ">
                   <h1 className="mb-5 font-display text-4xl font-semibold sm:m-0">
                     Future Office Hour Times
@@ -327,24 +361,92 @@ export default function Courses() {
                   ))}
                 </div>
               </Tab.Panel>
+              <Tab.Panel className="">
+                <div className="float-right py-8">
+                  <Button as="link" href={'https://umass-amherst.zoom.us/j/5662083749?pwd=eGpRV3hZTUpLc2E3SHJsMVcxVmpJZz09'}>
+                    <p className="text-md">Join Zoom</p>
+                  </Button>
+                </div>
+                <h1 className="mb-5 py-8 font-display text-4xl font-semibold sm:m-0">
+                  Current Office Hours Queue
+                </h1>
+
+                {ownedCourses.length === 0 && (
+                  <p>You have no hosted office hours at this time</p>
+                )}
+                <div>
+                  <Swiper
+                   // effect={"Slide"}
+                    grabCursor={true}
+                    slidesPerView={"auto"}
+                    className="mySwiper"
+                    spaceBetween={50}
+                    pagination={{
+                      clickable: true,
+                    }}
+                  >
+                    {ownedCourses.map((curr, i) => (
+                      <SwiperSlide key={i} className="max-w-md">
+                        <QueueCard key={curr.id} id={0} name={nameArray[i]} question_type={"Public Question"} question={arrayQuestions[i]} role={0} owner_name={""} member_count={0} queue_count={i++} />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                </div>
+
+                <div className="pb-10 pt-6">
+                  <Button as="link" href={nextButton()}>
+                    <p className="p text-md">Dequeue Front</p>
+                  </Button>
+                </div>
+                <div className="items-center justify-between pb-5 sm:flex ">
+                  <h1 className=" font-display text-4xl font-semibold sm:m-0">
+                    Future Office Hour Times
+                  </h1>
+                </div>
+                <div className="">
+                  {ownedCourses.length === 0 && (
+                    <p>You have no future hosted office hours at this time</p>
+                  )}
+                  {joinedCourses.map((curr) => (
+                    <FutureOfficeHoursCard
+                      Owner_id={0}
+                      course_id={0}
+                      day={0}
+                      start_time={""}
+                      end_time={""}
+                      link={""}
+                      CourseName={""}
+                      key={curr.id}
+                      {...curr}
+                    />
+                  ))}
+                </div>
+                <div className="w-full max-w-sm px-4">
+    
+    </div>
+
+              </Tab.Panel>
             </Tab.Panels>
           )}
+
         </Container>
       </Tab.Group>
     </div>
   );
 }
 function nextButton() {
-  return "asdmasl";
+  return "";
 }
-function createCalendar() {
-/*
-  start_time: number,
-  end_time: number,
+function createCalendar(start_time: string,
+  end_time: string,
   link: string,
   owner_name: string,
-  CourseName: string */
-  return "https://ics.agical.io/?subject=Meet%20{{company.Account Owner First Name}}&organizer=Sandy&reminder=45&location=Sandy%27s%20Desk&dtstart=2016-10-26T15:00:00-04:00&dtend=2016-10-26T16:00:00-04:00&attach=";
+  CourseName: string ) {
+
+  if (false) {
+    return `https://ics.agical.io/?subject=Meet%20&organizer=${owner_name}&reminder=45&location=Sandy%27s%20Desk&dtstart=${start_time}&end=${end_time}&attach=${link}`
+  }
+  return 'https://ics.agical.io/?subject=Meet%20{{company.Account Owner First Name}}&organizer=Sandy&reminder=45&location=Sandy%27s%20Desk&dtstart=2016-10-26T15:00:00-04:00&dtend=2016-10-26T16:00:00-04:00&attach=http://www.example.com/';
 }
 
 function Role(role: number) {
@@ -387,26 +489,74 @@ function DayOfWeek(day: number) {
   if (day == 6) {
     return "Sunday, ";
   }
-  /*
-   <Tab.Panel className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {data?.length === 0 && (
-                  <p>You do not have any office hours at this time</p>
-                )}
-                {ownedCourses.map((curr) => (
-                  <CourseCard key={curr.id} {...curr} />
-                ))}
-                {joinedCourses.map((curr) => (
-                  <MeetingCard
-                    Owner_id={0}
-                    course_id={0}
-                    day={0}
-                    start_time={"6:00"}
-                    end_time={"7:00pm"}
-                    link={""}
-                    CourseName={""}
-                    key={curr.id}
-                    {...curr}
-                  />
-                ))}
-              </Tab.Panel>*/
 }
+
+function ExitInactiveIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...props} 
+    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" >
+    <path 
+           d="M6 18L18 6M6 6l12 12" 
+           fill="#4f46e5"
+           stroke="#4f46e5"
+          stroke-width="2"/>
+  </svg>
+  
+  )
+}
+
+function ExitActiveIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...props} 
+    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" >
+    <path 
+           d="M6 18L18 6M6 6l12 12" 
+           fill="#ffffff"
+          stroke="#ffffff"
+          stroke-width="2"/>
+  </svg>
+
+  )
+}
+
+function MoveInactiveIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d= "M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+        fill="#4f46e5"
+        stroke="#4f46e5"
+        strokeWidth="2"
+      />
+    </svg>
+
+
+
+  )
+}
+
+function MoveActiveIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+    {...props}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d= "M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+      fill="#ffffff"
+      stroke="#ffffff"
+      strokeWidth="2"
+    />
+  </svg>
+
+  )
+}
+let nameArray = ["John Smith", "Jane Doe", "Jason Dullaghan", "Jason Derulo", "Jason Smith"];
+let arrayQuestions = ["How do I use CSS to style my webpage? Specifically, I want to know how to change the font, color, and size of text, as well as how to add borders and backgrounds to elements. Can you provide some examples of CSS code and explain how they work?", "How can I make my webpage responsive and mobile-friendly? I've heard about media queries and viewport meta tags, but I'm not sure how to use them. Can you explain the basics of responsive web design and provide some tips for optimizing my website for different devices?", "What is the difference between HTML and XHTML? I know that they are both markup languages used for creating web pages, but I'm not sure how they differ in terms of syntax and structure. Can you provide some examples of HTML and XHTML code and explain the key differences between them?", "How do I use JavaScript to create dynamic effects on my webpage? I want to add things like dropdown menus, image sliders, and form validation to my site, but I'm not sure where to start. Can you provide some examples of JavaScript code and explain how they can be used to add interactivity to a webpage?"];
