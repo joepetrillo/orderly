@@ -35,8 +35,8 @@ model Meeting {
   owner_id   String
   course_id  Int
   day        Int      @db.SmallInt
-  start_time DateTime
-  end_time   DateTime
+  start_time DateTime @db.Time()
+  end_time   DateTime @db.Time()
   link       String
 
   course Course  @relation(fields: [course_id], references: [id], onDelete: Cascade)

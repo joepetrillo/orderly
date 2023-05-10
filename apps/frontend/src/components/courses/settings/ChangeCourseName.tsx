@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useSWRMutation from "swr/mutation";
 import { z } from "zod";
 import SettingsCard from "@/components/courses/settings/SettingsCard";
