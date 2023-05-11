@@ -27,7 +27,8 @@ const Schedule: NextPageWithLayout = () => {
   const { course_id } = router.query as { course_id: string };
 
   const { data, error, loading } = useClerkSWR<Meeting[]>(
-    `/courses/${course_id}/meetings/owned`
+    `/courses/${course_id}/meetings/owned`,
+    { revalidateIfStale: false }
   );
 
   if (error) {
