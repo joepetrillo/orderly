@@ -1,27 +1,66 @@
+import { Prisma } from "@prisma/client";
 import { useState } from "react";
 import useSWRMutation from "swr/mutation";
+import { z } from "zod";
 import SettingsCard from "@/components/courses/settings/SettingsCard";
 import Input from "@/components/ui/Input";
 import useAuthedFetch from "@/hooks/useAuthedFetch";
+import { createMeetingPOST } from "@orderly/schema";
 
-export default function CreateMeeting({
-  course_id,
-  user_id,
-}: {
-  course_id: string;
-  user_id: string | null | undefined;
-}) {
+type Meeting = Prisma.MeetingGetPayload<{
+  select: {
+    id: true;
+    owner_id: true;
+    course_id: true;
+    day: true;
+    start_time: true;
+    end_time: true;
+    link: true;
+  };
+}>;
+
+function getUTCTime(inputTime: string) {
+  const inputHours = Number(inputTime.split(":")[0]);
+  const inputMinutes = Number(inputTime.split(":")[1]);
+
+  const myDate = new Date();
+  myDate.setMilliseconds(0);
+  myDate.setSeconds(0);
+  myDate.setHours(inputHours);
+  myDate.setMinutes(inputMinutes);
+
+  const utcHours = myDate.getUTCHours();
+  const utcMinutes = myDate.getUTCMinutes();
+  return `${utcHours > 9 ? utcHours : `0${utcHours}`}:${
+    utcMinutes > 9 ? utcMinutes : `0${utcMinutes}`
+  }`;
+}
+
+export default function CreateMeeting({ course_id }: { course_id: string }) {
   const authedFetch = useAuthedFetch();
-  const [name, setName] = useState("");
+  const [day, setDay] = useState("Mondays");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [link, setLink] = useState("");
 
   async function createMeeting() {
     const requestBody = {
-      name: name.replace(/\s{2,}/g, " ").trim(),
+      day: day,
+      start_time: getUTCTime(startTime),
+      end_time: getUTCTime(endTime),
+      link: link,
     };
 
     try {
-      const res = await authedFetch(`/courses/${course_id}/name`, {
-        method: "PATCH",
+      createMeetingPOST.body.parse(requestBody);
+    } catch (error) {
+      const zodError = error as z.ZodError;
+      throw new Error(zodError.issues[0].message);
+    }
+
+    try {
+      const res = await authedFetch(`/courses/${course_id}/meetings`, {
+        method: "POST",
         body: JSON.stringify(requestBody),
       });
 
@@ -32,23 +71,28 @@ export default function CreateMeeting({
         else throw new Error("An unknown error occurred");
       }
 
-      setName("");
-      return data.name;
+      setDay("Mondays");
+      setStartTime("");
+      setEndTime("");
+      setLink("");
+      return data;
     } catch (error) {
       if (error instanceof Error) throw new Error(error.message);
       else throw new Error("An unknown error occurred");
     }
   }
 
-  const { error, trigger, isMutating } = useSWRMutation(
-    `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}/users/${user_id}/meetings`,
+  const {
+    error: mutateError,
+    trigger,
+    isMutating,
+  } = useSWRMutation(
+    `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}/meetings/owned`,
     createMeeting,
     {
       revalidate: false,
-      populateCache: (newMeeting, existingMeetings) => {
-        // Meeting and Meeting[]
-        existingMeetings.push(newMeeting);
-        return existingMeetings;
+      populateCache: (newMeeting: Meeting, existingMeetings: Meeting[]) => {
+        return [newMeeting, ...existingMeetings];
       },
       throwOnError: false,
     }
@@ -65,39 +109,59 @@ export default function CreateMeeting({
         await trigger();
       }}
     >
-      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 ">
-        <select name="Day" id="meeting_day" className="form-select">
-          <option value="Monday">Monday</option>
-          <option value="Tuesday">Tuesday</option>
-          <option value="Wednesday">Wednesday</option>
-          <option value="Thursday">Thursday</option>
-          <option value="Friday">Friday</option>
-        </select>
+      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
+        <div className="flex flex-col">
+          <label
+            htmlFor="day"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Day
+          </label>
+          <select
+            required
+            id="day"
+            className="form-select mt-1 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 sm:text-sm"
+            value={day}
+            onChange={(e) => setDay(e.currentTarget.value)}
+          >
+            <option value="Mondays">Mondays</option>
+            <option value="Tuesdays">Tuesdays</option>
+            <option value="Wednesdays">Wednesdays</option>
+            <option value="Thursdays">Thursdays</option>
+            <option value="Fridays">Fridays</option>
+          </select>
+        </div>
         <Input
+          required
+          inputId="start_time"
           label="Start Time"
           type="Time"
-          required
-          onChange={(e) => console.log(e.currentTarget.value)}
-          inputId="meeting_start_time"
+          value={startTime}
+          onChange={(e) => setStartTime(e.currentTarget.value)}
         />
         <Input
+          required
+          inputId="end_time"
           label="End Time"
           type="Time"
-          required
-          onChange={(e) => console.log(e.currentTarget.value)}
-          inputId="meeting_end_time"
+          value={endTime}
+          onChange={(e) => setEndTime(e.currentTarget.value)}
         />
-        <div className="col-span-3">
+        <div className="col-auto sm:col-span-3">
           <Input
+            required
+            inputId="link"
             label="Link"
             type="url"
-            required
-            placeholder="The link to join this meeting"
-            onChange={(e) => console.log(e.currentTarget.value)}
-            inputId="meeting_link"
+            value={link}
+            onChange={(e) => setLink(e.currentTarget.value)}
+            placeholder="Used to join the meeting"
           />
         </div>
       </div>
+      {mutateError && (
+        <p className="mt-5 text-xs text-red-500">{mutateError.message}</p>
+      )}
     </SettingsCard>
   );
 }

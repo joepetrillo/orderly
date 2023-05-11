@@ -4,66 +4,106 @@ import { prisma } from "../prisma/init";
 import {
   coursePARAM,
   enqueueMeetingPOST,
-  meetingPOST,
-  meetingPATCH,
+  createMeetingPOST,
+  updateMeetingPATCH,
   courseAndMeetingPARAM,
   removeMeetingDELETE,
 } from "@orderly/schema";
 
 const router = express.Router({ mergeParams: true });
 
-// edit all fields of a meetings (not all fields required)
-router.patch("/:id", processRequest(meetingPATCH), async (req, res) => {
+/*  Get all meetings owned by requestor
+    - Anyone can use this route, but only helpful to office hours hosters
+*/
+router.get("/owned", processRequest(coursePARAM), async (req, res) => {
+  const { course_id } = req.params;
+
   try {
-    // check if meeting id exists
-    const meeting = await prisma.meeting.findFirst({
+    const meetings = await prisma.meeting.findMany({
       where: {
-        id: req.body.id,
+        owner_id: req.auth.userId,
+        course_id: course_id,
       },
     });
-    const updatedMeeting = await prisma.meeting.update({
-      where: {
-        id: req.body.id,
-      },
-      data: {
-        day: req.body.day,
-        start_time: req.body.start_time,
-        end_time: req.body.end_time,
-        link: req.body.link,
-      },
-    });
-    res.status(200).json(updatedMeeting);
+
+    res.status(200).json(meetings);
   } catch (error) {
     res.status(500).json({
-      error: "Something went wrong while updating the meeting",
+      error: "Something went wrong fetching meetings",
     });
   }
 });
 
-// create new meeting
-router.post("/", validateRequest(meetingPOST), async (req, res) => {
-  try {
-    //error check end date is after start date
-    // error check end and start date are in the future and not the past
+/*  Create new meeting
+    - Only course owners or instructors can use this route
+    - Currently no cap for number of owned meetings, but theoretically could limit to around 10 per hoster
+*/
+router.post("/", processRequest(createMeetingPOST), async (req, res) => {
+  const { course_id } = req.params;
 
+  // have to check if the course exists
+  // have to check that requestor role is 1 or 2 to use this route
+
+  try {
     const meeting = await prisma.meeting.create({
       data: {
-        owner_id: req.auth.userId, // should be clerk auth
-        course_id: req.body.course_id,
+        owner_id: req.auth.userId,
+        course_id: course_id,
         day: req.body.day,
         start_time: req.body.start_time,
         end_time: req.body.end_time,
         link: req.body.link,
       },
     });
+
     res.status(200).json(meeting);
   } catch (error) {
-    console.log(error);
     res
       .status(500)
-      .json({ error: "Something went wrong while creating a new meeting" });
+      .json({ error: "Something went wrong while creating a meeting" });
   }
 });
+
+// edit fields of a meeting (not all fields required)
+router.patch(
+  "/:meeting_id",
+  processRequest(updateMeetingPATCH),
+  async (req, res) => {
+    const { meeting_id } = req.params;
+
+    try {
+      // check if meeting id exists
+      const meeting = await prisma.meeting.findFirst({
+        where: {
+          id: meeting_id,
+        },
+      });
+
+      // course does not exist
+      if (meeting === null) {
+        return res.status(404).json({ error: "This meeting does not exist" });
+      }
+
+      const updatedMeeting = await prisma.meeting.update({
+        where: {
+          id: meeting_id,
+        },
+        data: {
+          day: req.body.day,
+          start_time: req.body.start_time,
+          end_time: req.body.end_time,
+          link: req.body.link,
+        },
+      });
+
+      res.status(200).json(updatedMeeting);
+    } catch (error) {
+      res.status(500).json({
+        error: "Something went wrong while updating the meeting",
+      });
+    }
+  }
+);
 
 // enqueue in meeting (join the queue)
 router.post(

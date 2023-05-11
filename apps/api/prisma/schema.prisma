@@ -31,12 +31,12 @@ model Enrolled {
 }
 
 model Meeting {
-  id         Int      @id @default(autoincrement())
+  id         Int    @id @default(autoincrement())
   owner_id   String
   course_id  Int
-  day        Int      @db.SmallInt
-  start_time DateTime @db.Time()
-  end_time   DateTime @db.Time()
+  day        String @db.VarChar(10)
+  start_time String @db.Char(5)
+  end_time   String @db.Char(5)
   link       String
 
   course Course  @relation(fields: [course_id], references: [id], onDelete: Cascade)

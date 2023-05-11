@@ -1,3 +1,3 @@
 export default function OwnedMeetingSkeleton() {
-  return <p>Hello World</p>;
+  return <p>Loading...</p>;
 }

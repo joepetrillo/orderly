@@ -1,4 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
+import { Prisma } from "@prisma/client";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
 import { Container } from "@/components/Container";
@@ -9,13 +10,25 @@ import OwnedMeetingsSkeleton from "@/components/skeletons/OwnedMeetingsSkeleton"
 import useClerkSWR from "@/hooks/useClerkSWR";
 import { NextPageWithLayout } from "@/pages/_app";
 
+type Meeting = Prisma.MeetingGetPayload<{
+  select: {
+    id: true;
+    owner_id: true;
+    course_id: true;
+    day: true;
+    start_time: true;
+    end_time: true;
+    link: true;
+  };
+}>;
+
 const Schedule: NextPageWithLayout = () => {
-  const { userId } = useAuth();
   const router = useRouter();
   const { course_id } = router.query as { course_id: string };
 
-  // Meeting[] /${course_id}/users/${userId}/meetings
-  const { data, error, loading } = useClerkSWR<any[]>(`/courses`);
+  const { data, error, loading } = useClerkSWR<Meeting[]>(
+    `/courses/${course_id}/meetings/owned`
+  );
 
   if (error) {
     return (
@@ -29,7 +42,7 @@ const Schedule: NextPageWithLayout = () => {
         <h2 className="text-xl font-semibold">Schedule</h2>
         <p className="mt-2 text-sm text-gray-700">Edit your office hours</p>
         <div className="mt-10 space-y-10">
-          <CreateMeeting course_id={course_id} user_id={userId} />
+          <CreateMeeting course_id={course_id} />
           <div>
             <h2 className="text-xl font-semibold">Your Office Hours</h2>
             <p className="mt-2 text-sm text-gray-700">Edit your office hours</p>
@@ -39,9 +52,11 @@ const Schedule: NextPageWithLayout = () => {
           ) : data?.length === 0 ? (
             <p>You have not setup any office hours yet</p>
           ) : (
-            data?.map((meeting) => {
-              return <OwnedMeeting key={meeting.id} {...meeting} />;
-            })
+            <div className="flex flex-wrap gap-10">
+              {data?.map((meeting) => {
+                return <OwnedMeeting key={meeting.id} {...meeting} />;
+              })}
+            </div>
           )}
         </div>
       </Container>
