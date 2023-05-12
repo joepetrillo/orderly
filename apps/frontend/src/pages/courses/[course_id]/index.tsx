@@ -82,14 +82,11 @@ const Course: NextPageWithLayout = () => {
   return (
     <div className="pb-10 pt-5">
       <Container>
-        <div className="items-center justify-between sm:flex">
-          <div className="mb-5 sm:mb-0">
-            <h1 className="text-xl font-semibold">Office Hours</h1>
-            <p className="mt-2 text-sm text-gray-700">
-              View all meeting times in this course
-            </p>
-          </div>
-          {courseData.role > 0 && <Button>Modify Schedule</Button>}
+        <div className="mb-5 sm:mb-0">
+          <h1 className="text-xl font-semibold">Office Hours</h1>
+          <p className="mt-2 text-sm text-gray-700">
+            View all meeting times in this course
+          </p>
         </div>
         <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           <OfficeHoursCard name="Jaime Davila" profileImageUrl="" />

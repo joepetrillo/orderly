@@ -1,9 +1,9 @@
 import { Prisma } from "@prisma/client";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import useSWRMutation from "swr/mutation";
 import { z } from "zod";
-import SettingsCard from "@/components/courses/settings/SettingsCard";
 import Input from "@/components/ui/Input";
+import Modal from "@/components/ui/Modal";
 import useAuthedFetch from "@/hooks/useAuthedFetch";
 import { createMeetingPOST } from "@orderly/schema";
 
@@ -43,7 +43,10 @@ export default function CreateMeeting({ course_id }: { course_id: string }) {
   const [endTime, setEndTime] = useState("");
   const [link, setLink] = useState("");
 
-  async function createMeeting() {
+  async function createMeeting(
+    key: string,
+    { arg: setOpen }: { arg: (value: SetStateAction<boolean>) => void }
+  ) {
     const requestBody = {
       day: day,
       start_time: getUTCTime(startTime),
@@ -71,10 +74,7 @@ export default function CreateMeeting({ course_id }: { course_id: string }) {
         else throw new Error("An unknown error occurred");
       }
 
-      setDay("Mondays");
-      setStartTime("");
-      setEndTime("");
-      setLink("");
+      setOpen(false);
       return data;
     } catch (error) {
       if (error instanceof Error) throw new Error(error.message);
@@ -86,6 +86,7 @@ export default function CreateMeeting({ course_id }: { course_id: string }) {
     error: mutateError,
     trigger,
     isMutating,
+    reset,
   } = useSWRMutation(
     `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}/meetings/owned`,
     createMeeting,
@@ -99,14 +100,20 @@ export default function CreateMeeting({ course_id }: { course_id: string }) {
   );
 
   return (
-    <SettingsCard
-      headerTitle="Create New Meeting"
-      buttonTitle="Create"
-      description="Students will be able to sign up right away"
+    <Modal
+      title="Create New Meeting"
+      actionTitle="Create"
       loading={isMutating}
-      onSubmit={async (e) => {
+      onOpen={() => {
+        reset();
+        setDay("Mondays");
+        setStartTime("");
+        setEndTime("");
+        setLink("");
+      }}
+      handleSubmit={async (e, setOpen) => {
         e.preventDefault();
-        await trigger();
+        await trigger(setOpen);
       }}
     >
       <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
@@ -162,6 +169,6 @@ export default function CreateMeeting({ course_id }: { course_id: string }) {
       {mutateError && (
         <p className="mt-5 text-xs text-red-500">{mutateError.message}</p>
       )}
-    </SettingsCard>
+    </Modal>
   );
 }

@@ -41,10 +41,33 @@ router.get("/owned", processRequest(coursePARAM), async (req, res) => {
 router.post("/", processRequest(createMeetingPOST), async (req, res) => {
   const { course_id } = req.params;
 
-  // have to check if the course exists
-  // have to check that requestor role is 1 or 2 to use this route
-
   try {
+    const course = await prisma.course.findFirst({
+      where: {
+        id: course_id,
+      },
+      include: {
+        Enrolled: {
+          where: {
+            user_id: req.auth.userId,
+            role: 1,
+          },
+        },
+      },
+    });
+
+    // course does not exist
+    if (course === null) {
+      return res.status(404).json({ error: "This course does not exist" });
+    }
+
+    // no permission to make meeting
+    if (course.Enrolled.length === 0 && course.owner_id !== req.auth.userId) {
+      return res.status(403).json({
+        error: "You do not have permission to create a meeting in this course",
+      });
+    }
+
     const meeting = await prisma.meeting.create({
       data: {
         owner_id: req.auth.userId,
@@ -64,43 +87,53 @@ router.post("/", processRequest(createMeetingPOST), async (req, res) => {
   }
 });
 
-// edit fields of a meeting (not all fields required)
-router.patch(
+/*  Delete a meeting
+    - Only course owners or instructors can use this route on their own meetings
+*/
+router.delete(
   "/:meeting_id",
-  processRequest(updateMeetingPATCH),
+  processRequest(courseAndMeetingPARAM),
   async (req, res) => {
     const { meeting_id } = req.params;
 
     try {
-      // check if meeting id exists
       const meeting = await prisma.meeting.findFirst({
         where: {
           id: meeting_id,
         },
       });
 
-      // course does not exist
+      // meeting does not exist
       if (meeting === null) {
         return res.status(404).json({ error: "This meeting does not exist" });
       }
 
-      const updatedMeeting = await prisma.meeting.update({
+      // check that owner is the requestor
+      if (meeting.owner_id !== req.auth.userId) {
+        return res
+          .status(403)
+          .json({ error: "You do not have permission to delete this meeting" });
+      }
+
+      // delete the meeting
+      const deletedMeeting = await prisma.meeting.delete({
         where: {
           id: meeting_id,
         },
-        data: {
-          day: req.body.day,
-          start_time: req.body.start_time,
-          end_time: req.body.end_time,
-          link: req.body.link,
+      });
+
+      // delete all related queue positions for meeting
+      await prisma.queue.deleteMany({
+        where: {
+          meeting_id: deletedMeeting.id,
         },
       });
 
-      res.status(200).json(updatedMeeting);
+      res.status(200).json(deletedMeeting);
     } catch (error) {
-      res.status(500).json({
-        error: "Something went wrong while updating the meeting",
-      });
+      res
+        .status(500)
+        .json({ error: "Something went wrong while creating a meeting" });
     }
   }
 );
@@ -369,12 +402,6 @@ router.get("/", processRequest(coursePARAM), async (req, res) => {
       },
     });
 
-    if (meetings == null || meetings.length == 0) {
-      return res
-        .status(404)
-        .json({ error: "Could not find meetings with course" });
-    }
-
     res.status(201).json(meetings);
   } catch (error) {
     console.log(error);
@@ -384,48 +411,45 @@ router.get("/", processRequest(coursePARAM), async (req, res) => {
   }
 });
 
-// get associated meetings with a course
-router.get("/", processRequest(coursePARAM), async (req, res) => {
-  const { course_id } = req.params;
-  try {
-    const meetings = await prisma.meeting.findMany({
-      where: {
-        course_id: course_id,
-      },
-    });
+// edit fields of a meeting (not all fields required)
+router.patch(
+  "/:meeting_id",
+  processRequest(updateMeetingPATCH),
+  async (req, res) => {
+    const { meeting_id } = req.params;
 
-    if (meetings == null || meetings.length == 0) {
-      return res
-        .status(404)
-        .json({ error: "Could not find meetings with course" });
+    try {
+      // check if meeting id exists
+      const meeting = await prisma.meeting.findFirst({
+        where: {
+          id: meeting_id,
+        },
+      });
+
+      // course does not exist
+      if (meeting === null) {
+        return res.status(404).json({ error: "This meeting does not exist" });
+      }
+
+      const updatedMeeting = await prisma.meeting.update({
+        where: {
+          id: meeting_id,
+        },
+        data: {
+          day: req.body.day,
+          start_time: req.body.start_time,
+          end_time: req.body.end_time,
+          link: req.body.link,
+        },
+      });
+
+      res.status(200).json(updatedMeeting);
+    } catch (error) {
+      res.status(500).json({
+        error: "Something went wrong while updating the meeting",
+      });
     }
-
-    res.status(201).json(meetings);
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ error: "Something went wrong while fetching meetings" });
   }
-});
-
-router.get("/", processRequest(coursePARAM), async (req, res) => {
-  try {
-    const enrolled = await prisma.enrolled.create({
-      data: {
-        user_id: req.body.user_id,
-        course_id: req.body.course_id,
-        role: 0,
-      },
-    });
-
-    res.status(201).json(enrolled);
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ error: "Something went wrong while generating data" });
-  }
-});
+);
 
 export default router;

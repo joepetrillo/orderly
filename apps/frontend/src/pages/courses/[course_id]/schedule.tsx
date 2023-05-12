@@ -1,4 +1,3 @@
-import { useAuth } from "@clerk/nextjs";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
@@ -40,20 +39,20 @@ const Schedule: NextPageWithLayout = () => {
   return (
     <div className="pb-10 pt-5">
       <Container>
-        <h2 className="text-xl font-semibold">Schedule</h2>
-        <p className="mt-2 text-sm text-gray-700">Edit your office hours</p>
-        <div className="mt-10 space-y-10">
-          <CreateMeeting course_id={course_id} />
-          <div>
-            <h2 className="text-xl font-semibold">Your Office Hours</h2>
+        <div className="items-center justify-between sm:flex">
+          <div className="mb-5 sm:mb-0">
+            <h1 className="text-xl font-semibold">Schedule</h1>
             <p className="mt-2 text-sm text-gray-700">Edit your office hours</p>
           </div>
+          <CreateMeeting course_id={course_id} />
+        </div>
+        <div className="mt-10 space-y-10">
           {loading ? (
             <OwnedMeetingsSkeleton />
           ) : data?.length === 0 ? (
-            <p>You have not setup any office hours yet</p>
+            <p>You have not set up any meetings</p>
           ) : (
-            <div className="flex flex-wrap gap-10">
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
               {data?.map((meeting) => {
                 return <OwnedMeeting key={meeting.id} {...meeting} />;
               })}
