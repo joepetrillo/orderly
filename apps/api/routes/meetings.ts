@@ -1,3 +1,4 @@
+import clerkClient from "@clerk/clerk-sdk-node";
 import express from "express";
 import { processRequest, validateRequest } from "zod-express-middleware";
 import { prisma } from "../prisma/init";
@@ -7,7 +8,8 @@ import {
   createMeetingPOST,
   updateMeetingPATCH,
   courseAndMeetingPARAM,
-  removeMeetingDELETE,
+  dequeueMeetingDELETE,
+  Member,
 } from "@orderly/schema";
 
 const router = express.Router({ mergeParams: true });
@@ -138,16 +140,126 @@ router.delete(
   }
 );
 
-// enqueue in meeting (join the queue)
+/*  Get queue of specific meeting
+    - Only the owner of the meeting can use this route
+    - This will return the entire queue for a given meeting
+*/
+router.get(
+  "/:meeting_id/queue",
+  processRequest(courseAndMeetingPARAM),
+  async (req, res) => {
+    const { meeting_id } = req.params;
+
+    try {
+      const meeting = await prisma.meeting.findFirst({
+        where: {
+          id: meeting_id,
+        },
+      });
+
+      if (meeting === null) {
+        return res.status(404).json({ error: "This meeting does not exist" });
+      }
+
+      if (meeting.owner_id !== req.auth.userId) {
+        return res.status(404).json({
+          error: "You do not have permission to view the queue of this meeting",
+        });
+      }
+
+      // get the queue and associated clerk user details (pic and full name), must maintain order
+      const queue = await prisma.queue.findMany({
+        orderBy: {
+          join_time: "asc",
+        },
+        where: {
+          meeting_id: meeting.id,
+        },
+      });
+
+      // if queue is empty, this is not an error just send back empty array to convey this
+      if (queue.length === 0) {
+        return res.status(200).json(queue);
+      }
+
+      const userId = queue.map((row) => row.user_id);
+      const users = await clerkClient.users.getUserList({ userId });
+
+      const lookup: Record<
+        string,
+        Partial<Omit<Member, "emailAddress" | "role">>
+      > = {};
+      for (let i = 0; i < queue.length; ++i) {
+        const currUser = queue[i];
+        lookup[currUser.user_id] = {
+          id: currUser.user_id,
+        };
+      }
+
+      users.forEach((currUser) => {
+        const existingEntry = lookup[currUser.id];
+        existingEntry.name = `${currUser.firstName} ${currUser.lastName}`;
+        existingEntry.profileImageUrl = currUser.profileImageUrl;
+      });
+
+      res.status(200).json(Object.values(lookup));
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "Something went wrong while fetching a meeting queue" });
+    }
+  }
+);
+
+/*  Get all meetings for a course
+    - Anyone enrolled in the course can use this route, will include positions for each
+*/
+router.get("/", processRequest(coursePARAM), async (req, res) => {
+  const { course_id } = req.params;
+  try {
+    const meetings = await prisma.meeting.findMany({
+      where: {
+        course_id: course_id,
+      },
+      include: {
+        Queue: {
+          orderBy: {
+            join_time: "asc",
+          },
+        },
+      },
+    });
+
+    const allMeetings = meetings.map((meeting) => {
+      const { Queue, ...publicMeeting } = meeting;
+
+      return {
+        ...publicMeeting,
+        position: meeting.Queue.findIndex(
+          (row) => row.user_id === req.auth.userId
+        ),
+      };
+    });
+
+    res.status(200).json(allMeetings);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error: "Something went wrong while fetching meetings" });
+  }
+});
+
+// enqueue in meeting (join the queue) and return position in queue
 router.post(
-  "/:meeting_id",
-  validateRequest(enqueueMeetingPOST),
+  "/:meeting_id/enqueue",
+  processRequest(enqueueMeetingPOST),
   async (req, res) => {
     const { course_id, meeting_id } = req.params;
 
     try {
       // check if course id provided by client matches an existing course
-      const course = await prisma.course.findUnique({
+      const course = await prisma.course.findFirst({
         where: {
           id: course_id,
         },
@@ -181,7 +293,7 @@ router.post(
       if (course.Enrolled[0].role === 2 || course.Enrolled[0].role === 1) {
         return res
           .status(400)
-          .json({ error: "Only students can join the queue" });
+          .json({ error: "Only students can join meeting queues" });
       }
 
       // if no meeting exists with the provided id
@@ -197,25 +309,38 @@ router.post(
         },
       });
 
-      res.status(201).json(enqueue);
+      // get the queue and associated clerk user details (pic and full name), must maintain order
+      const queue = await prisma.queue.findMany({
+        orderBy: {
+          join_time: "asc",
+        },
+        where: {
+          meeting_id: meeting_id,
+        },
+      });
+
+      res.status(201).json({
+        ...enqueue,
+        position: queue.findIndex((row) => row.user_id === req.auth.userId),
+      });
     } catch (error) {
-      res
-        .status(500)
-        .json({ error: "Something went wrong while enrolling in a course" });
+      res.status(500).json({
+        error: "Something went wrong while joining the meeting queue",
+      });
     }
   }
 );
 
 // dequeue from meeting (leave the queue)
 router.delete(
-  "/:meeting_id/:user_id",
-  validateRequest(removeMeetingDELETE),
+  "/:meeting_id/dequeue/:user_id",
+  processRequest(dequeueMeetingDELETE),
   async (req, res) => {
     const { course_id, meeting_id, user_id } = req.params;
 
     try {
       // check if course id provided by client matches an existing course
-      const course = await prisma.course.findUnique({
+      const course = await prisma.course.findFirst({
         where: {
           id: course_id,
         },
@@ -280,7 +405,10 @@ router.delete(
         if (course.Meeting[0].owner_id !== req.auth.userId) {
           return res
             .status(400)
-            .json({ error: "Only owner can remove users from queue" });
+            .json({
+              error:
+                "Only the owner of the meeting can remove users from queue",
+            });
         }
       }
 
@@ -307,7 +435,7 @@ router.delete(
 router.get(
   "/:meeting_id",
   processRequest(courseAndMeetingPARAM),
-  async (req, res, next) => {
+  async (req, res) => {
     const { meeting_id } = req.params;
 
     try {
@@ -328,7 +456,7 @@ router.get(
         },
       });
 
-      if (queue === null || queue.length == 0) {
+      if (queue.length === 0) {
         return res
           .status(404)
           .json({ error: "Could not find queue with meeting id" });
@@ -348,33 +476,6 @@ router.get(
         (user) => user.user_id == req.body.user_id
       );
 
-      // const course = await prisma.course.findFirst({
-      //   where: {
-      //     id: req.body.course_id,
-      //     Meeting: {
-      //       some: {
-      //         Queue: {
-      //           some:{
-      //             user_id : req.auth.userId,
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   include: {
-      //     Meeting: {
-      //       include: {
-      //         Queue: {
-      //           select: {
-      //             user_id: true,
-      //             join_time: true,
-      //           }
-      //         },
-      //       },
-      //     },
-      //   },
-      // });
-
       if (userPosition.length == 0) {
         return res.status(404).json({ error: "Could not find user in queue" });
       }
@@ -383,6 +484,7 @@ router.get(
         meeting,
         userPosition,
       };
+
       res.status(200).json(meetingAndPosition);
     } catch (error) {
       res.status(500).json({
@@ -391,25 +493,6 @@ router.get(
     }
   }
 );
-
-// get associated meetings with a course
-router.get("/", processRequest(coursePARAM), async (req, res) => {
-  const { course_id } = req.params;
-  try {
-    const meetings = await prisma.meeting.findMany({
-      where: {
-        course_id: course_id,
-      },
-    });
-
-    res.status(201).json(meetings);
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ error: "Something went wrong while fetching meetings" });
-  }
-});
 
 // edit fields of a meeting (not all fields required)
 router.patch(

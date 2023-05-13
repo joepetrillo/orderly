@@ -6,7 +6,7 @@ import { Fragment } from "react";
 import useSWRMutation from "swr/mutation";
 import Spinner from "@/components/ui/Spinner";
 import useAuthedFetch from "@/hooks/useAuthedFetch";
-import { cn } from "@/lib/utils";
+import { cn, getTimes } from "@/lib/utils";
 
 type Meeting = Prisma.MeetingGetPayload<{
   select: {
@@ -19,39 +19,6 @@ type Meeting = Prisma.MeetingGetPayload<{
     link: true;
   };
 }>;
-
-function getTimes(start_time: string, end_time: string) {
-  const startDate = new Date();
-  startDate.setUTCHours(
-    Number(start_time.split(":")[0]),
-    Number(start_time.split(":")[1]),
-    0,
-    0
-  );
-
-  const endDate = new Date();
-  endDate.setUTCHours(
-    Number(end_time.split(":")[0]),
-    Number(end_time.split(":")[1]),
-    0,
-    0
-  );
-
-  // Get the local time in the user's timezone as a string in HH:MM format
-  const localeStartTime = startDate.toLocaleTimeString("en-US", {
-    hour12: true,
-    hour: "numeric",
-    minute: "numeric",
-  });
-
-  const localeEndTime = endDate.toLocaleTimeString("en-US", {
-    hour12: true,
-    hour: "numeric",
-    minute: "numeric",
-  });
-
-  return [localeStartTime, localeEndTime];
-}
 
 function DeleteMeeting(props: Meeting) {
   const authedFetch = useAuthedFetch();

@@ -88,7 +88,7 @@ export const enqueueMeetingPOST = {
   }),
 };
 
-export const removeMeetingDELETE = {
+export const dequeueMeetingDELETE = {
   params: z.object({
     course_id: valid_id_type,
     meeting_id: valid_id_type,

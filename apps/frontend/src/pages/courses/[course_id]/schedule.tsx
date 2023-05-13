@@ -42,7 +42,9 @@ const Schedule: NextPageWithLayout = () => {
         <div className="items-center justify-between sm:flex">
           <div className="mb-5 sm:mb-0">
             <h1 className="text-xl font-semibold">Schedule</h1>
-            <p className="mt-2 text-sm text-gray-700">Edit your office hours</p>
+            <p className="mt-2 text-sm text-gray-700">
+              Edit when you host your office hours
+            </p>
           </div>
           <CreateMeeting course_id={course_id} />
         </div>
