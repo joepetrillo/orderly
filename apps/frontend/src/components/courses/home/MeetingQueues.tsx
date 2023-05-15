@@ -125,7 +125,7 @@ export default function MeetingQueues({ course_id }: { course_id: string }) {
                 {localeStartTime} - {localeEndTime}
               </span>
             </div>
-            <div className="divide-y p-4 text-sm leading-6 text-gray-700 sm:px-6">
+            <div className="divide-y p-4 text-sm leading-6 sm:px-6">
               <Queue meeting_id={meeting.id} course_id={course_id} />
             </div>
           </div>

@@ -112,9 +112,9 @@ function LeaveQueueButton(props: Meeting) {
     leaveMeetingQueue,
     {
       revalidate: false,
-      populateCache: (updatedMeeting, existingMeetings: Meeting[]) => {
+      populateCache: (deletedQueueRow, existingMeetings: Meeting[]) => {
         return existingMeetings.map((meeting) => {
-          if (meeting.id === updatedMeeting.meeting_id) {
+          if (meeting.id === deletedQueueRow.meeting_id) {
             return { ...meeting, position: -1 };
           }
           return meeting;
@@ -195,20 +195,36 @@ export default function MeetingSignups({ course_id }: { course_id: string }) {
                   )}
                 </div>
               </div>
-              <p className="py-4">
-                {meeting.position === -1
-                  ? "You haven't joined this queue"
-                  : meeting.position === 0
-                  ? "You're up"
-                  : meeting.position === 1
-                  ? "You're next"
-                  : `Position: ${meeting.position}`}
-              </p>
-              <div className="hidden py-4 md:block">
+              <div className="flex items-center justify-between gap-2 py-4">
+                <p>
+                  {meeting.position === -1
+                    ? "You haven't joined this queue"
+                    : meeting.position === 0
+                    ? "You're up"
+                    : meeting.position === 1
+                    ? "You're next"
+                    : `Position: ${meeting.position}`}
+                </p>
+                <div className="md:hidden">
+                  {meeting.position === 0 ? (
+                    <Button as="externalLink" href={meeting.link} size="xs">
+                      Enter Call
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+              <div className="hidden items-center justify-between gap-2 py-4 md:flex">
                 {meeting.position === -1 ? (
                   <JoinQueueButton {...meeting} />
                 ) : (
-                  <LeaveQueueButton {...meeting} />
+                  <>
+                    <LeaveQueueButton {...meeting} />
+                    {meeting.position === 0 ? (
+                      <Button as="externalLink" href={meeting.link} size="xs">
+                        Enter Call
+                      </Button>
+                    ) : null}
+                  </>
                 )}
               </div>
             </div>
