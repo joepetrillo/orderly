@@ -403,12 +403,9 @@ router.delete(
         }
 
         if (course.Meeting[0].owner_id !== req.auth.userId) {
-          return res
-            .status(400)
-            .json({
-              error:
-                "Only the owner of the meeting can remove users from queue",
-            });
+          return res.status(400).json({
+            error: "Only the owner of the meeting can remove users from queue",
+          });
         }
       }
 
@@ -431,108 +428,108 @@ router.delete(
   }
 );
 
-// get current position in queue
-router.get(
-  "/:meeting_id",
-  processRequest(courseAndMeetingPARAM),
-  async (req, res) => {
-    const { meeting_id } = req.params;
+// // get current position in queue
+// router.get(
+//   "/:meeting_id",
+//   processRequest(courseAndMeetingPARAM),
+//   async (req, res) => {
+//     const { meeting_id } = req.params;
 
-    try {
-      const queue = await prisma.queue.findMany({
-        orderBy: [
-          {
-            join_time: "asc",
-          },
-        ],
-        where: {
-          meeting_id: meeting_id,
-        },
-      });
+//     try {
+//       const queue = await prisma.queue.findMany({
+//         orderBy: [
+//           {
+//             join_time: "asc",
+//           },
+//         ],
+//         where: {
+//           meeting_id: meeting_id,
+//         },
+//       });
 
-      const meeting = await prisma.meeting.findFirst({
-        where: {
-          id: meeting_id,
-        },
-      });
+//       const meeting = await prisma.meeting.findFirst({
+//         where: {
+//           id: meeting_id,
+//         },
+//       });
 
-      if (queue.length === 0) {
-        return res
-          .status(404)
-          .json({ error: "Could not find queue with meeting id" });
-      }
+//       if (queue.length === 0) {
+//         return res
+//           .status(404)
+//           .json({ error: "Could not find queue with meeting id" });
+//       }
 
-      let pos = 0;
-      const queueList = queue.map((user) => {
-        pos++;
-        return {
-          user_id: user.user_id,
-          meeting_id: meeting_id,
-          position: pos,
-        };
-      });
+//       let pos = 0;
+//       const queueList = queue.map((user) => {
+//         pos++;
+//         return {
+//           user_id: user.user_id,
+//           meeting_id: meeting_id,
+//           position: pos,
+//         };
+//       });
 
-      const userPosition = queueList.filter(
-        (user) => user.user_id == req.body.user_id
-      );
+//       const userPosition = queueList.filter(
+//         (user) => user.user_id == req.body.user_id
+//       );
 
-      if (userPosition.length == 0) {
-        return res.status(404).json({ error: "Could not find user in queue" });
-      }
+//       if (userPosition.length == 0) {
+//         return res.status(404).json({ error: "Could not find user in queue" });
+//       }
 
-      const meetingAndPosition = {
-        meeting,
-        userPosition,
-      };
+//       const meetingAndPosition = {
+//         meeting,
+//         userPosition,
+//       };
 
-      res.status(200).json(meetingAndPosition);
-    } catch (error) {
-      res.status(500).json({
-        error: "Something went wrong getting queue position",
-      });
-    }
-  }
-);
+//       res.status(200).json(meetingAndPosition);
+//     } catch (error) {
+//       res.status(500).json({
+//         error: "Something went wrong getting queue position",
+//       });
+//     }
+//   }
+// );
 
-// edit fields of a meeting (not all fields required)
-router.patch(
-  "/:meeting_id",
-  processRequest(updateMeetingPATCH),
-  async (req, res) => {
-    const { meeting_id } = req.params;
+// // edit fields of a meeting (not all fields required)
+// router.patch(
+//   "/:meeting_id",
+//   processRequest(updateMeetingPATCH),
+//   async (req, res) => {
+//     const { meeting_id } = req.params;
 
-    try {
-      // check if meeting id exists
-      const meeting = await prisma.meeting.findFirst({
-        where: {
-          id: meeting_id,
-        },
-      });
+//     try {
+//       // check if meeting id exists
+//       const meeting = await prisma.meeting.findFirst({
+//         where: {
+//           id: meeting_id,
+//         },
+//       });
 
-      // course does not exist
-      if (meeting === null) {
-        return res.status(404).json({ error: "This meeting does not exist" });
-      }
+//       // course does not exist
+//       if (meeting === null) {
+//         return res.status(404).json({ error: "This meeting does not exist" });
+//       }
 
-      const updatedMeeting = await prisma.meeting.update({
-        where: {
-          id: meeting_id,
-        },
-        data: {
-          day: req.body.day,
-          start_time: req.body.start_time,
-          end_time: req.body.end_time,
-          link: req.body.link,
-        },
-      });
+//       const updatedMeeting = await prisma.meeting.update({
+//         where: {
+//           id: meeting_id,
+//         },
+//         data: {
+//           day: req.body.day,
+//           start_time: req.body.start_time,
+//           end_time: req.body.end_time,
+//           link: req.body.link,
+//         },
+//       });
 
-      res.status(200).json(updatedMeeting);
-    } catch (error) {
-      res.status(500).json({
-        error: "Something went wrong while updating the meeting",
-      });
-    }
-  }
-);
+//       res.status(200).json(updatedMeeting);
+//     } catch (error) {
+//       res.status(500).json({
+//         error: "Something went wrong while updating the meeting",
+//       });
+//     }
+//   }
+// );
 
 export default router;
