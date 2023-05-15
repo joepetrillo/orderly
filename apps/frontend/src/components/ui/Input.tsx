@@ -6,19 +6,21 @@ const Input = React.forwardRef<
   HTMLInputElement,
   React.InputHTMLAttributes<HTMLInputElement> & {
     inputId: string;
-    label: string;
+    label?: string;
     errorMessage?: string;
   }
 >(({ className, inputId, label, errorMessage, ...props }, ref) => {
   return (
     <div>
-      <label
-        htmlFor={inputId}
-        className="block text-sm font-medium text-gray-700"
-      >
-        {label}
-      </label>
-      <div className="relative mt-1 rounded-md shadow-sm">
+      {label && (
+        <label
+          htmlFor={inputId}
+          className="mb-1 block text-sm font-medium text-gray-700"
+        >
+          {label}
+        </label>
+      )}
+      <div className="relative rounded-md shadow-sm">
         <input
           ref={ref}
           id={inputId}

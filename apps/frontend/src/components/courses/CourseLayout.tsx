@@ -48,6 +48,12 @@ export default function CourseLayout({
       pathname: "/courses/[course_id]",
     },
     {
+      label: "Schedule",
+      role: 1,
+      href: `/courses/${course_id}/schedule`,
+      pathname: "/courses/[course_id]/schedule",
+    },
+    {
       label: "Members",
       role: 2,
       href: `/courses/${course_id}/members`,

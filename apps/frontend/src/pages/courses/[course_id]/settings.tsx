@@ -13,12 +13,17 @@ import { CourseData } from "@orderly/schema";
 const CourseSettings: NextPageWithLayout = () => {
   const router = useRouter();
   const { course_id } = router.query as { course_id: string };
-  const { data } = useClerkSWR<CourseData>(`/courses/${course_id}`, {
-    revalidateIfStale: false,
-  });
+  const { data: courseData } = useClerkSWR<CourseData>(
+    `/courses/${course_id}`,
+    {
+      revalidateIfStale: false,
+    }
+  );
+
+  if (!courseData) return null;
 
   let authedView: JSX.Element | null = null;
-  if (data?.role === 2) {
+  if (courseData.role === 2) {
     authedView = (
       <>
         <ChangeCourseName course_id={course_id} />
@@ -26,9 +31,9 @@ const CourseSettings: NextPageWithLayout = () => {
         <DeleteCourse course_id={course_id} />
       </>
     );
-  } else if (data?.role === 1) {
+  } else if (courseData.role === 1) {
     authedView = <LeaveCourse course_id={course_id} />;
-  } else if (data?.role === 0) {
+  } else if (courseData.role === 0) {
     authedView = <LeaveCourse course_id={course_id} />;
   }
 
@@ -36,7 +41,9 @@ const CourseSettings: NextPageWithLayout = () => {
     <div className="pb-10 pt-5">
       <Container>
         <h1 className="text-xl font-semibold">Settings</h1>
-        <p className="mt-2 text-sm text-gray-700">Edit course details</p>
+        <p className="mt-2 text-sm text-gray-700">
+          Edit course specific details
+        </p>
         <div className="mt-10 space-y-10">{authedView}</div>
       </Container>
     </div>

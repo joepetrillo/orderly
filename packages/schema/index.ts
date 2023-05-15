@@ -8,6 +8,10 @@ const valid_id_type = z.coerce
   .safe()
   .transform(Number);
 
+const valid_time = z
+  .string()
+  .regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/, "Invalid time format");
+
 // just for checking course_id
 export const coursePARAM = {
   params: z.object({
@@ -84,38 +88,46 @@ export const enqueueMeetingPOST = {
   }),
 };
 
-export const meetingPOST = {
+export const dequeueMeetingDELETE = {
+  params: z.object({
+    course_id: valid_id_type,
+    meeting_id: valid_id_type,
+    user_id: z.string(),
+  }),
+};
+
+export const createMeetingPOST = {
+  params: z.object({
+    course_id: valid_id_type,
+  }),
   body: z.object({
-    course_id: z.number(),
     day: z
-      .literal(0)
-      .or(z.literal(1))
-      .or(z.literal(2))
-      .or(z.literal(3))
-      .or(z.literal(4))
-      .or(z.literal(5))
-      .or(z.literal(6)),
-    start_time: z.string().datetime(),
-    end_time: z.string().datetime(),
+      .literal("Mondays")
+      .or(z.literal("Tuesdays"))
+      .or(z.literal("Wednesdays"))
+      .or(z.literal("Thursdays"))
+      .or(z.literal("Fridays")),
+    start_time: valid_time,
+    end_time: valid_time,
     link: z.string().url(),
   }),
 };
 
-export const meetingPATCH = {
+export const updateMeetingPATCH = {
+  params: z.object({
+    course_id: valid_id_type,
+    meeting_id: valid_id_type,
+  }),
   body: z.object({
-    id: z.number(),
-    course_id: z.number().optional(),
     day: z
-      .literal(0)
-      .or(z.literal(1))
-      .or(z.literal(2))
-      .or(z.literal(3))
-      .or(z.literal(4))
-      .or(z.literal(5))
-      .or(z.literal(6))
+      .literal("Mondays")
+      .or(z.literal("Tuesdays"))
+      .or(z.literal("Wednesdays"))
+      .or(z.literal("Thursdays"))
+      .or(z.literal("Fridays"))
       .optional(),
-    start_time: z.string().datetime().optional(),
-    end_time: z.string().datetime().optional(),
+    start_time: valid_time.optional(),
+    end_time: valid_time.optional(),
     link: z.string().url().optional(),
   }),
 };
