@@ -2,7 +2,7 @@ import { authMiddleware } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 export default authMiddleware({
-  publicRoutes: ["/", "/signin", "/signup", "/404"],
+  publicRoutes: ["/", "/signin(.*)", "/signup(.*)", "/404"],
   afterAuth(auth, req) {
     // not logged in and trying to go to private page, redirect to root
     if (!auth.userId && !auth.isPublicRoute) {
